@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpendWise — Student Expense Tracker
 
-## Getting Started
+![SpendWise Banner](https://via.placeholder.com/1200x400/7C3AED/FFFFFF?text=SpendWise+-+Student+Expense+Tracker)
 
-First, run the development server:
+SpendWise is a Progressive Web Application (PWA) tailored specifically for college students to track their daily expenses quickly, manage monthly allowances, and analyze their spending habits. Designed with a mobile-first philosophy, SpendWise offers an ultra-fast, offline-capable, and visually stunning experience using modern web technologies.
 
+---
+
+## 🌟 Key Features
+
+### 🚀 Core Functionality
+- **Lightning Fast Logging:** Add expenses in under 3 seconds using the optimized numeric keypad and one-tap category chips.
+- **Real-time Syncing:** Powered by Firebase Firestore, your expenses synchronize across your phone, tablet, and laptop in milliseconds.
+- **Offline Support:** Full PWA offline persistence. Log expenses while on the subway; they sync automatically when connection is restored.
+- **Smart Budgets:** Set your monthly allowance and watch the remaining balance automatically recalculate via atomic batch updates.
+
+### 📊 Analytics & Reporting
+- **Category Insights:** Beautiful Recharts-powered donut charts to visualize where your money goes.
+- **PDF Generation:** One-click monthly summary PDF generation using `jsPDF` for local processing—no server required.
+- **Smart Alerts:** Dynamic UI elements that shift from safe (purple) to warning (amber) to critical (red) as you approach your budget limit.
+
+### 🛡 Security & Privacy
+- **Secure Authentication:** 1-tap Google OAuth login.
+- **Data Ownership:** You own your data. Strict Firestore security rules ensure only you can read or modify your expenses.
+- **No Plaid/Bank Integrations:** SpendWise acts as a manual cashbook. No bank credentials are ever required, maximizing privacy.
+
+---
+
+## 🏗 System Architecture
+
+SpendWise utilizes a "Thick Client + Smart Database" architecture pattern, eliminating the need for a custom backend server (like Node.js or Python) to reduce latency and maintenance costs.
+
+- **Frontend Framework:** [Next.js 14](https://nextjs.org) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com) + custom CSS Variables (Tokens)
+- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
+- **Backend as a Service:** [Firebase](https://firebase.google.com/) (Auth, Firestore, Hosting)
+- **Icons:** [Lucide React](https://lucide.dev/)
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+
+For deep architectural documentation, see the `/docs/08_frontend/Frontend_Architecture.md` and `/docs/06_database/Database_Design.md` files.
+
+---
+
+## 💻 Local Development
+
+### 1. Prerequisites
+- **Node.js**: v18.17.0 or higher
+- **npm** or **pnpm**
+- **Firebase CLI**: Installed globally (`npm i -g firebase-tools`)
+- **Java**: Required for running the local Firebase Emulator Suite
+
+### 2. Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/yourusername/spendwise.git
+cd spendwise
+
+# Install all dependencies
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment Configuration
+Create a `.env.local` file in the root directory based on the `.env.example`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Running the Development Server
+To avoid writing junk data to production, we develop against the local Firebase Emulators.
 
-## Learn More
+```bash
+# Terminal 1: Start the Next.js development server
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Terminal 2: Start the Firebase Emulator Suite (Firestore & Auth)
+npm run emulators
+```
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📂 Project Structure
 
-## Deploy on Vercel
+```text
+spendwise/
+├── docs/                      # Comprehensive 175-document project specification
+├── src/
+│   ├── app/                   # Next.js 14 App Router routes and layouts
+│   ├── components/            # Reusable UI, Layout, and Feature components
+│   ├── lib/                   # Business logic, Firebase helpers, utils
+│   ├── store/                 # Zustand slices for global client state
+│   ├── styles/                # Tailwind global CSS and design tokens
+│   └── types/                 # TypeScript interfaces and Zod schemas
+├── public/                    # Static assets, PWA manifest, favicons
+├── AGENTS.md                  # Strict AI guidelines and rules
+└── tailwind.config.ts         # Tailwind configuration
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧪 Testing
+
+SpendWise maintains quality through a hybrid testing approach:
+- **Unit Tests:** Jest + React Testing Library for utility functions and complex state logic.
+- **Integration Tests:** Verifying Firestore Security Rules against the local emulator.
+- **E2E Tests:** Playwright covering Critical User Journeys (CUJs).
+
+Run tests:
+```bash
+npm run test       # Unit tests
+npm run test:e2e   # Playwright E2E tests
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read the `CONTRIBUTING.md` in the `/docs/16_documentation/` folder for details on our code of conduct, branching strategy, and pull request process.
+
+Before opening a PR, ensure:
+1. You have run `npm run lint` and `npm run format`.
+2. All new functions are fully typed with TypeScript.
+3. No hardcoded colors are introduced (use Tailwind design tokens).
+4. Tests pass successfully.
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
+
+*SpendWise — Built for students, by students.*

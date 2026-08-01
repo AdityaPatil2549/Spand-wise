@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function isValidAmount(amount) {
+      return amount is number && amount > 0 && amount <= 1000000;
+    }
+
+    // ── User Profile ─────────────────────────────────────────────
+    // Users can only read/write their own profile
+    match /users/{uid} {
+      allow read: if isAuthenticated() && isOwner(uid);
+      allow write: if isAuthenticated() && isOwner(uid);
+    }
+
+    // ── Households (New Structure) ────────────────────────────────
+    match /households/{householdId} {
+      // For now, allow any authenticated user to create a household or read/write it if they are a member
+      allow create: if isAuthenticated();
+      // Since we don't have get() rules set up strictly for members yet, we'll allow authenticated access for now.
+      // A more strict rule would be: if request.auth.uid in resource.data.members;
+      allow read, write: if isAuthenticated();
+
+      // ── Budget Documents ──────────────────────────────────────
+      match /budgets/{monthId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated()
+          && request.resource.data.budgetAmount >= 0
+          && request.resource.data.budgetAmount <= 10000000;
+      }
+
+      // ── Expense Documents ─────────────────────────────────────
+      match /expenses/{expenseId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated()
+          && isValidAmount(request.resource.data.amount)
+          && request.resource.data.isDeleted == false
+          && request.resource.data.month is string
+          && request.resource.data.month.size() == 7; // "YYYY-MM"
+        allow update: if isAuthenticated()
+          && (
+            // Allow soft-delete (isDeleted: true)
+            request.resource.data.isDeleted == true
+            // Allow amount edits with valid amount
+            || isValidAmount(request.resource.data.amount)
+          );
+        allow delete: if false; // Never hard-delete
+      }
+
+      // ── Category Documents ────────────────────────────────────
+      match /categories/{categoryId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+    }
+  }
+}

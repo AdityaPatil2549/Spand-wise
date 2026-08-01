@@ -1,0 +1,63 @@
+# .cursorrules
+# Comprehensive AI Coding Guidelines for SpendWise
+
+You are an expert developer utilizing the Cursor IDE to build SpendWise, a robust Next.js 14 and Firebase PWA. 
+Your goal is to write clean, type-safe, performant, and perfectly styled code.
+
+## 1. Project Context & Stack
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript v5
+- **Styling:** Tailwind CSS v3 (Custom token configuration)
+- **State:** Zustand v4
+- **Backend:** Firebase (Firestore, Auth, Web SDK v10)
+- **Root Directory:** `e:\Projects\Expense Tracker\Via antigravity\`
+
+## 2. Global Code Rules
+- **Type Safety:** `any` is strictly prohibited. If typing is difficult, use `unknown` and perform type narrowing.
+- **Component Exports:** Use named exports. Only Next.js specific files (`page.tsx`, `layout.tsx`, `loading.tsx`) may use default exports.
+- **File Naming:** React components are `PascalCase.tsx`. Utilities and hooks are `camelCase.ts`. Types are `camelCase.ts` or `kebab-case.ts`.
+- **Absolute Imports:** Always use the `@/` alias (e.g., `import { Button } from '@/components/ui/Button'`).
+- **Client Components:** Add `"use client"` at the top of any file using React hooks, Context, or DOM event listeners. Minimize client components where possible.
+
+## 3. Styling Rules (Strict Design System)
+- **No Hardcoded Hex Colors:** Use semantic Tailwind tokens (`bg-surface-primary`, `text-text-brand`).
+- **No Hardcoded Spacing:** Rely on the Tailwind spacing scale (`p-4`, `m-6`, `gap-2`).
+- **Merge Classes Safely:** When passing `className` props to custom components, always use `clsx` and `tailwind-merge` (`twMerge`) to avoid CSS conflicts.
+  ```typescript
+  import { twMerge } from 'tailwind-merge';
+  import { clsx, type ClassValue } from 'clsx';
+  
+  export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+  }
+  ```
+
+## 4. Firebase Development Guidelines
+- **Thick Client Approach:** Since SpendWise has no backend server, the Next.js client is responsible for complex data aggregation.
+- **Atomic Batches:** When modifying an expense, the corresponding Budget document's `totalSpent` must be updated atomically using `writeBatch()`.
+- **Query Structure:** Never fetch a whole collection. Always apply `limit()`, `orderBy()`, and `where('userId', '==', uid)`.
+- **Real-time Listeners:** When using `onSnapshot` in a React component, you must unsubscribe on unmount.
+  ```typescript
+  useEffect(() => {
+    const unsub = onSnapshot(q, (snapshot) => { /* update store */ });
+    return () => unsub();
+  }, []);
+  ```
+
+## 5. Error Handling
+- Do not let Firebase errors bleed into the UI. Map them to readable strings.
+- Example: Map `auth/network-request-failed` to "Please check your internet connection."
+- Trigger UI notifications via the global store: `useUIStore.getState().showToast({ type: 'error', message: '...' })`.
+
+## 6. Code Generation Behavior
+- Provide COMPLETE, syntactically correct code blocks.
+- Do NOT output placeholder comments like `// implement logic here` or `// ... rest of component`.
+- Automatically include all required imports at the top of the file.
+- When creating a new component, also write its corresponding props interface immediately above it.
+
+## 7. Referencing Documentation
+If you are unsure about the design system, architecture, or business logic, cross-reference the detailed markdown files located in `e:\Projects\Expense Tracker\Via antigravity\docs\`.
+Specifically:
+- `docs/04_ui/` for styling
+- `docs/06_database/` for Firestore schema
+- `docs/08_frontend/` for component structure
