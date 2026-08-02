@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { useStore } from '@/store';
-import { addExpense, editExpense } from '@/lib/expenses/index';
+import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
 import {
   MAX_EXPENSE_AMOUNT,
@@ -47,6 +47,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const addToast = useStore((s) => s.addToast);
   const addExpenseOptimistic = useStore((s) => s.addExpenseOptimistic);
   const updateExpenseOptimistic = useStore((s) => s.updateExpenseOptimistic);
+  const removeExpenseOptimistic = useStore((s) => s.removeExpenseOptimistic);
   const adjustTotalSpentOptimistic = useStore((s) => s.adjustTotalSpentOptimistic);
 
   const isEdit = !!editingExpense;
@@ -88,11 +89,23 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       }
       reset();
       onSuccess();
-    } catch (error) {
-      console.error('[ExpenseForm]', error);
-      // Rollback optimistic changes
-      if (!isEdit) adjustTotalSpentOptimistic(-data.amount);
-      addToast({ type: 'error', message: 'Something went wrong. Please try again.' });
+    } catch (error: any) {
+      console.error('Failed to save expense:', error);
+      addToast({ type: 'error', message: error.message || 'Failed to save expense' });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingExpense || !householdId || !user) return;
+    try {
+      await softDeleteExpense(householdId, editingExpense.id, editingExpense.amount, editingExpense.month);
+      removeExpenseOptimistic(editingExpense.id);
+      adjustTotalSpentOptimistic(-editingExpense.amount);
+      addToast({ type: 'success', message: 'Expense deleted' });
+      onSuccess();
+    } catch (error: any) {
+      console.error('Failed to delete expense:', error);
+      addToast({ type: 'error', message: error.message || 'Failed to delete expense' });
     }
   };
 
@@ -100,11 +113,11 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
       {/* Amount Input */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] mb-1.5 block">
+        <label className="text-sm font-medium text-[#605850] mb-1.5 block font-body">
           Amount
         </label>
         <div className="relative flex items-center">
-          <span className="absolute left-4 text-[var(--text-secondary)] font-bold text-xl pointer-events-none select-none">
+          <span className="absolute left-4 text-[#605850] font-bold text-xl pointer-events-none select-none">
             {CURRENCY_SYMBOL}
           </span>
           <input
@@ -114,9 +127,9 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
             placeholder="0"
             autoFocus
             className="w-full pl-10 pr-4 py-4 text-4xl font-bold rounded-2xl border-2
-              bg-[var(--surface-secondary)] text-[var(--text-primary)]
-              placeholder:text-[var(--text-tertiary)]
-              border-transparent focus:border-violet-500 focus:outline-none
+              bg-[#eae2da] text-[#3a302a]
+              placeholder:text-[#78706a]
+              border-transparent focus:border-[#c2652a] focus:outline-none focus:ring-2 focus:ring-[#c2652a]
               transition-all duration-150"
             {...register('amount', { valueAsNumber: true })}
             aria-label="Expense amount in rupees"
@@ -132,7 +145,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
       {/* Category Picker */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] mb-2 block">
+        <label className="text-sm font-medium text-[#605850] mb-2 block font-body">
           Category
         </label>
         <Controller
@@ -166,16 +179,31 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         error={errors.date?.message}
       />
 
-      {/* Submit */}
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        fullWidth
-        isLoading={isSubmitting}
-      >
-        {isEdit ? 'Update Expense' : 'Add Expense'}
-      </Button>
+      {/* Submit / Actions */}
+      <div className="flex gap-3">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="flex-1"
+          isLoading={isSubmitting}
+        >
+          {isEdit ? 'Update Expense' : 'Add Expense'}
+        </Button>
+        {isEdit && (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={handleDelete}
+            className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors px-4 flex-shrink-0"
+            disabled={isSubmitting}
+            title="Delete Expense"
+          >
+            <span className="material-symbols-outlined text-[20px]">delete</span>
+          </Button>
+        )}
+      </div>
     </form>
   );
 };

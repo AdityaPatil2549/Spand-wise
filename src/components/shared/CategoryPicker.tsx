@@ -51,13 +51,13 @@ const CategoryChip = ({ category, isSelected, onSelect }: CategoryChipProps) => 
     className={clsx(
       'flex flex-col items-center gap-1 flex-shrink-0 px-3 py-2 rounded-2xl',
       'transition-[transform,background-color,border-color,opacity,box-shadow] duration-150 ease-out min-w-[64px]',
-      'touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 active:scale-[0.97]',
+      'touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c2652a] active:scale-[0.97]',
       isSelected
         ? 'scale-[1.02] shadow-sm'
-        : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+        : 'opacity-70 hover:opacity-100 hover:bg-[#d8d0c8]/20'
     )}
     style={{
-      backgroundColor: isSelected ? `${category.color}22` : 'var(--surface-secondary)',
+      backgroundColor: isSelected ? `${category.color}22` : '#eae2da',
       border: isSelected
         ? `2px solid ${category.color}88`
         : '2px solid transparent',
@@ -67,8 +67,8 @@ const CategoryChip = ({ category, isSelected, onSelect }: CategoryChipProps) => 
       {category.icon ? <CategoryIcon iconName={category.icon} size={24} /> : category.emoji}
     </div>
     <span
-      className="text-[10px] font-medium leading-tight text-center"
-      style={{ color: isSelected ? category.color : 'var(--text-secondary)' }}
+      className="text-[10px] font-medium leading-tight text-center font-body"
+      style={{ color: isSelected ? category.color : '#605850' }}
     >
       {category.name.split(' ')[0]}
     </span>

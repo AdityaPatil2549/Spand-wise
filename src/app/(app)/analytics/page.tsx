@@ -1,150 +1,233 @@
 'use client';
 
-import { useAuthGuard } from '@/hooks/useAuth';
+import React, { useMemo } from 'react';
 import { useStore } from '@/store';
-import { DonutChart } from '@/components/analytics/DonutChart';
-import { MonthComparisonChart } from '@/components/analytics/MonthComparisonChart';
-import { DayHeatmap } from '@/components/analytics/DayHeatmap';
-import { AIPredictionCard } from '@/components/analytics/AIPredictionCard';
-import { Card } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { getRecentMonths } from '@/lib/utils/date';
-import { formatCurrency } from '@/lib/utils/format';
-import { useMemo } from 'react';
+import { Carousel, CarouselContent, CarouselNavigation, CarouselItem, CarouselIndicator } from '@/components/ui/motion/carousel';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/motion/accordion';
+import { DEFAULT_CATEGORY_ID } from '@/config/categories';
+import { AnimatedNumber } from '@/components/ui/motion/animated-number';
+import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
+import { getMaterialIcon } from '@/lib/utils';
+import { TextEffect } from '@/components/ui/motion/text-effect';
+import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
+import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns';
+import { CURRENCY_SYMBOL } from '@/config/constants';
 
 export default function AnalyticsPage() {
-  const { isLoading } = useAuthGuard();
-  const expenses = useStore((s) => s.expenses);
-  const isExpensesLoading = useStore((s) => s.isExpensesLoading);
-  const budget = useStore((s) => s.budget);
-  const selectedMonth = useStore((s) => s.selectedMonth);
-  const setSelectedMonth = useStore((s) => s.setSelectedMonth);
-  const months = getRecentMonths(6);
+  const { expenses, budget, categoriesMap } = useStore();
 
-  const totalSpent = useMemo(
-    () => expenses.reduce((sum, e) => sum + e.amount, 0),
-    [expenses]
-  );
+  const { categoryTotals, totalSpent, highestCategory, pieData, areaData } = useMemo(() => {
+    let total = 0;
+    const totals: Record<string, number> = {};
+    
+    // Calculate category totals
+    expenses.forEach((expense) => {
+      total += expense.amount;
+      totals[expense.categoryId] = (totals[expense.categoryId] || 0) + expense.amount;
+    });
 
-  const dailyAverage = useMemo(() => {
-    if (expenses.length === 0) return 0;
-    const days = new Set(expenses.map((e) => e.date.toDate().toDateString())).size;
-    return totalSpent / (days || 1);
-  }, [expenses, totalSpent]);
+    // Find highest category
+    let maxAmount = 0;
+    let maxCat = DEFAULT_CATEGORY_ID;
+    for (const [catId, amount] of Object.entries(totals)) {
+      if (amount > maxAmount) {
+        maxAmount = amount;
+        maxCat = catId;
+      }
+    }
 
-  if (isLoading) {
-    return (
-      <div className="pt-6 space-y-4 px-4">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-52 rounded-2xl" />
-        <Skeleton className="h-32 rounded-2xl" />
-      </div>
-    );
-  }
+    // Pie chart data
+    const pie = Object.entries(totals).map(([id, value]) => ({
+      name: categoriesMap.get(id)?.name || 'Other',
+      value: value,
+      color: categoriesMap.get(id)?.color || '#3a302a'
+    })).sort((a, b) => b.value - a.value);
+
+    // Area chart data (cumulative spend over the month)
+    const now = new Date();
+    const start = startOfMonth(now);
+    const end = endOfMonth(now);
+    const daysInMonth = eachDayOfInterval({ start, end });
+    
+    let cumulative = 0;
+    const area = daysInMonth.map(day => {
+      const dayStr = format(day, 'yyyy-MM-dd');
+      const daySpend = expenses
+        .filter(e => format(e.date.toDate(), 'yyyy-MM-dd') === dayStr)
+        .reduce((sum, e) => sum + e.amount, 0);
+      
+      if (day <= now) {
+        cumulative += daySpend;
+      }
+      return {
+        date: format(day, 'MMM dd'),
+        spent: day <= now ? cumulative : null
+      };
+    });
+
+    return {
+      categoryTotals: totals,
+      totalSpent: total,
+      highestCategory: categoriesMap.get(maxCat) || categoriesMap.get(DEFAULT_CATEGORY_ID),
+      pieData: pie,
+      areaData: area
+    };
+  }, [expenses]);
 
   return (
-    <div className="pt-6 pb-6 w-full max-w-5xl mx-auto md:px-8">
-      <div className="px-4 md:px-0 mb-4">
-        <h1 className="text-2xl font-black text-[var(--text-primary)]">Analytics</h1>
+    <div className="bg-[#faf5ee] text-[#3a302a] flex min-h-screen font-body w-full">
+      <ExpensesSidebar />
+      <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-24">
+        <TextEffect as="h1" preset="fade" className="font-display text-[48px] md:text-[64px] font-medium leading-none tracking-tight text-[#3a302a] mb-2">
+          Analytics
+        </TextEffect>
+        <TextEffect as="p" preset="fade" className="text-[18px] text-[#605850] max-w-2xl mb-12">
+          Discover patterns in your spending through our visual insights.
+        </TextEffect>
 
-        {/* Month selector */}
-        <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-none pb-1 -mx-4 px-4">
-          {months.map((m) => (
-            <button
-              key={m.value}
-              onClick={() => setSelectedMonth(m.value)}
-              className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-[transform,background-color,color,box-shadow] duration-150
-                ${selectedMonth === m.value
-                  ? 'bg-violet-600 text-white shadow-md ring-2 ring-violet-600 ring-offset-2 ring-offset-[var(--surface-base)] scale-105'
-                  : 'bg-[var(--surface-primary)] text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-primary)] active:scale-95'
-                }`}
-            >
-              {m.label}
-            </button>
-          ))}
+        {/* Highlight Carousel */}
+        <div className="mb-16">
+          <Carousel className="w-full">
+            <CarouselContent className="px-4">
+              
+              {/* Slide 1: Total Spent */}
+              <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
+                <div className="glass-panel p-8 rounded-3xl border border-[#d8d0c8]/30 h-72 flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-[#c2652a]/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                  <span className="font-medium text-[#605850] uppercase tracking-widest text-sm relative z-10">Total Spent</span>
+                  <div className="relative z-10 h-full flex flex-col justify-end">
+                    <h2 className="font-display text-5xl text-[#3a302a] flex items-baseline">
+                      {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(totalSpent)} />
+                      <span className="text-2xl text-[#78706a]">{(totalSpent % 1 !== 0) ? (totalSpent % 1).toFixed(2).substring(1) : '.00'}</span>
+                    </h2>
+                  </div>
+                </div>
+              </CarouselItem>
+
+              {/* Slide 2: Category Donut Chart */}
+              <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
+                <div className="glass-panel p-6 rounded-3xl border border-[#d8d0c8]/30 h-72 flex flex-col relative overflow-hidden group">
+                  <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-[#c0392b]/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                  <span className="font-medium text-[#605850] uppercase tracking-widest text-sm relative z-10 mb-2">Category Split</span>
+                  <div className="relative z-10 flex-1 w-full h-full">
+                    {pieData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={80}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value: any) => `${CURRENCY_SYMBOL}${Number(value).toFixed(2)}`}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-[#78706a]">No data yet</div>
+                    )}
+                  </div>
+                </div>
+              </CarouselItem>
+
+              {/* Slide 3: Cumulative Spend Trend */}
+              <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
+                <div className="glass-panel p-6 rounded-3xl border border-[#d8d0c8]/30 h-72 flex flex-col relative overflow-hidden group">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#10b981]/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+                  <div className="flex justify-between items-center mb-2 z-10 relative">
+                    <span className="font-medium text-[#605850] uppercase tracking-widest text-sm">Monthly Trend</span>
+                    <span className="text-xs text-[#10b981] font-medium bg-[#10b981]/10 px-2 py-1 rounded-md">{((totalSpent / (Number(budget) > 0 ? Number(budget) : 1)) * 100).toFixed(0)}% used</span>
+                  </div>
+                  <div className="relative z-10 flex-1 w-full h-full -ml-4">
+                    {areaData.some(d => d.spent !== null && d.spent > 0) ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={areaData}>
+                          <defs>
+                            <linearGradient id="colorSpent" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <Tooltip 
+                            formatter={(value: any) => `${CURRENCY_SYMBOL}${Number(value).toFixed(2)}`}
+                            labelStyle={{ color: '#3a302a', fontWeight: 600 }}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                          />
+                          <Area 
+                            type="monotone" 
+                            dataKey="spent" 
+                            stroke="#10b981" 
+                            strokeWidth={3}
+                            fillOpacity={1} 
+                            fill="url(#colorSpent)" 
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-[#78706a] ml-4">No data yet</div>
+                    )}
+                  </div>
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselNavigation className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between -ml-4 -mr-4" />
+            <CarouselIndicator className="mt-8 relative bottom-0" />
+          </Carousel>
         </div>
-      </div>
 
-      <div className="px-4 md:px-0">
-        {/* Summary Stats (Full Width) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card padding="md">
-            <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Total Spent</p>
-            <p className="text-xl font-black text-[var(--text-primary)]">{formatCurrency(totalSpent)}</p>
-          </Card>
-          <Card padding="md">
-            <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Daily Avg</p>
-            <p className="text-xl font-black text-[var(--text-primary)]">{formatCurrency(dailyAverage)}</p>
-          </Card>
-          <Card padding="md">
-            <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Transactions</p>
-            <p className="text-xl font-black text-[var(--text-primary)]">{expenses.length}</p>
-          </Card>
-          <Card padding="md">
-            <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Budget Left</p>
-            <p className="text-xl font-black text-[var(--text-primary)]">
-              {budget ? formatCurrency(budget.budgetAmount - (budget.totalSpent || 0)) : '—'}
-            </p>
-          </Card>
+        {/* Accordion Breakdown */}
+        <div className="mb-16">
+          <h3 className="font-headline text-2xl text-[#3a302a] mb-6 border-b border-[#d8d0c8]/30 pb-4">Category Breakdown</h3>
+          <Accordion
+            className="flex w-full flex-col divide-y divide-[#d8d0c8]/30"
+            transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+            variants={{
+              expanded: { opacity: 1, scale: 1 },
+              collapsed: { opacity: 0, scale: 0.95 },
+            }}
+          >
+            {Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).map(([categoryId, amount]) => {
+              const cat = categoriesMap.get(categoryId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
+              const percentage = totalSpent > 0 ? ((amount / totalSpent) * 100).toFixed(1) : '0';
+              
+              return (
+                <AccordionItem key={categoryId} value={categoryId} className="py-4">
+                  <AccordionTrigger className="w-full text-left focus:outline-none">
+                    <div className="flex items-center justify-between w-full pr-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-[#f2ece4] flex items-center justify-center" style={{ color: cat?.color }}>
+                          <span className="material-symbols-outlined">{getMaterialIcon(cat?.icon)}</span>
+                        </div>
+                        <span className="font-medium text-lg text-[#3a302a]">{cat?.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="block font-medium text-[#3a302a]">{CURRENCY_SYMBOL}{amount.toFixed(2)}</span>
+                        <span className="text-sm text-[#605850]">{percentage}% of total</span>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4 pb-2">
+                    <p className="text-[#605850] text-sm">
+                      You've spent <strong className="text-[#3a302a]">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
+                      This accounts for {percentage}% of your total spending.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         </div>
 
-        {/* Paid to friends (Full Width) */}
-        <div className="mb-6">
-          <Card padding="md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-[var(--text-secondary)] font-medium mb-1">Paid to Friends</p>
-                <p className="text-xl font-black text-[var(--text-primary)]">
-                  {formatCurrency(expenses.filter(e => e.categoryId === 'friend').reduce((sum, e) => sum + e.amount, 0))}
-                </p>
-              </div>
-              <div className="h-10 w-10 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center">
-                <span className="text-lg">🤝</span>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <Card padding="md">
-              <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">
-                Spending by Category
-              </h2>
-              {isExpensesLoading ? (
-                <Skeleton className="h-48 rounded-xl" />
-              ) : (
-                <DonutChart />
-              )}
-            </Card>
-
-            <Card padding="md">
-              <h2 className="text-base font-bold text-[var(--text-primary)] mb-4">
-                Spending Heatmap
-              </h2>
-              {isExpensesLoading ? (
-                <Skeleton className="h-40 rounded-xl" />
-              ) : (
-                <DayHeatmap />
-              )}
-            </Card>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
-            <Card padding="md">
-              <h2 className="text-base font-bold text-[var(--text-primary)] mb-1">
-                6-Month Trend
-              </h2>
-              <MonthComparisonChart />
-            </Card>
-
-            <AIPredictionCard />
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

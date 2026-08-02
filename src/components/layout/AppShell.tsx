@@ -52,22 +52,15 @@ export const AppShell = ({ children }: AppShellProps) => {
 
   return (
     <div className="min-h-screen bg-[var(--surface-base)] flex w-full overflow-hidden relative">
-      {/* Sidebar for Desktop */}
-      {!isDashboard && <Sidebar className="hidden md:flex w-64 flex-col fixed inset-y-0 left-0 z-40" />}
-
       {/* Main Content Area */}
-      <div className={`flex-1 w-full flex flex-col h-screen overflow-y-auto relative ${!isDashboard ? 'md:pl-64' : ''}`}>
-        <main className={`flex-1 w-full ${!isDashboard ? 'pb-28 md:pb-8 max-w-5xl mx-auto' : ''}`} id="main-content">
+      <div className="flex-1 w-full flex flex-col h-screen overflow-y-auto relative">
+        <main className="flex-1 w-full max-w-7xl mx-auto" id="main-content">
           {children}
         </main>
 
         {/* Global UI elements */}
-        {!isDashboard && (
-          <>
-            <BottomNav />
-            <FAB />
-          </>
-        )}
+        <BottomNav />
+        <FAB />
         <PWAInstallPrompt />
         <OfflineIndicator />
       </div>

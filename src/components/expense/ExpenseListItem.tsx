@@ -10,7 +10,6 @@ import { softDeleteExpense, restoreExpense } from '@/lib/expenses/index';
 import { formatCurrency } from '@/lib/utils/format';
 import { formatTime } from '@/lib/utils/date';
 import { UNDO_TOAST_DURATION_MS } from '@/config/constants';
-import { CATEGORIES_MAP } from '@/config/categories';
 import type { ExpenseDocument } from '@/types/firestore';
 
 interface ExpenseListItemProps {
@@ -33,7 +32,7 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
   const storeCategories = useStore((s) => s.categories);
   const category =
     storeCategories.find((c) => c.id === expense.categoryId) ??
-    CATEGORIES_MAP.get(expense.categoryId) ?? {
+    useStore.getState().categoriesMap.get(expense.categoryId) ?? {
       name: 'Misc',
       emoji: '📦',
       icon: 'Package',

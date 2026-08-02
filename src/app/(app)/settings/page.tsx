@@ -1,254 +1,200 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { LogOut, Wallet, FileDown, User, Edit2, PieChart } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Card } from '@/components/ui/Card';
+import React, { useState } from 'react';
 import { useAuthGuard } from '@/hooks/useAuth';
 import { useStore } from '@/store';
 import { signOut } from '@/lib/firebase/auth';
-import { setBudgetAmount } from '@/lib/budget/index';
-import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
-
-const budgetSchema = z.object({
-  budgetAmount: z
-    .number()
-    .min(MIN_BUDGET_AMOUNT, `Must be at least ${CURRENCY_SYMBOL}${MIN_BUDGET_AMOUNT}`)
-    .max(MAX_BUDGET_AMOUNT, 'Amount too large'),
-});
-type BudgetForm = z.infer<typeof budgetSchema>;
-
-import { ThemeToggle } from '@/components/shared/ThemeToggle';
-import { EditProfileForm } from '@/components/shared/EditProfileForm';
-import { BottomSheet } from '@/components/ui/BottomSheet';
-import { CategoryBudgetsSheet } from '@/components/budget/CategoryBudgetsSheet';
-import { SharedBudgetCard } from '@/components/budget/SharedBudgetCard';
+import { useRouter } from 'next/navigation';
+import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
+import { TransitionPanel } from '@/components/ui/motion/transition-panel';
+import { AnimatedBackground } from '@/components/ui/motion/animated-background';
+import { TextEffect } from '@/components/ui/motion/text-effect';
+import { useTheme } from 'next-themes';
+import { CategoryManager } from '@/components/features/settings/CategoryManager';
 
 export default function SettingsPage() {
-  const router = useRouter();
   const { user, isLoading } = useAuthGuard();
-  const householdId = useStore((s) => s.householdId);
+  const { theme, setTheme } = useTheme();
+  const router = useRouter();
   const addToast = useStore((s) => s.addToast);
-  const budget = useStore((s) => s.budget);
-  const setBudgetStore = useStore((s) => s.setBudget);
-  const selectedMonth = useStore((s) => s.selectedMonth);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [isCategoryBudgetsOpen, setIsCategoryBudgetsOpen] = useState(false);
-  const expenses = useStore((s) => s.expenses);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, watch } = useForm<BudgetForm>({
-    resolver: zodResolver(budgetSchema),
-    defaultValues: { budgetAmount: budget?.budgetAmount ?? undefined },
-  });
-
-  const watchBudgetAmount = watch('budgetAmount');
-  const isBudgetUnchanged = watchBudgetAmount === budget?.budgetAmount || !watchBudgetAmount;
-
-  // Format YYYY-MM to "Month YYYY" (e.g., "July 2026")
-  const formattedMonth = useMemo(() => {
-    try {
-      const [year, month] = selectedMonth.split('-');
-      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    } catch {
-      return selectedMonth;
-    }
-  }, [selectedMonth]);
+  const TABS = ['Account', 'Preferences', 'Categories', 'Export'];
 
   const handleSignOut = async () => {
-    setIsSigningOut(true);
     try {
       await signOut();
       router.push('/login');
     } catch {
-      addToast({ type: 'error', message: 'Sign out failed. Try again.' });
-      setIsSigningOut(false);
+      addToast({ type: 'error', message: 'Sign out failed.' });
     }
   };
 
-  const handleBudgetUpdate = async (data: BudgetForm) => {
-    if (!user) return;
-    try {
-      await setBudgetAmount(householdId || user.uid, data.budgetAmount, selectedMonth);
-      if (budget) setBudgetStore({ ...budget, budgetAmount: data.budgetAmount });
-      addToast({ type: 'success', message: 'Budget updated! ✅' });
-    } catch {
-      addToast({ type: 'error', message: 'Failed to update budget.' });
+  const downloadCSV = () => {
+    // Need to import format from date-fns or use native
+    const expensesList = useStore.getState().expenses;
+    if (!expensesList || expensesList.length === 0) {
+      addToast({ type: 'info', message: 'No transactions to export.' });
+      return;
     }
-  };
 
-  const handleExportPDF = async () => {
-    setIsExporting(true);
-    try {
-      // Lazy-load jsPDF per performance rules — only on user action
-      const { jsPDF } = await import('jspdf');
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const autoTable = (await import('jspdf-autotable')).default;
-      const doc = new jsPDF();
+    const headers = ['Date', 'Amount', 'Category', 'Note'];
+    const rows = expensesList.map(e => [
+      e.date.toDate().toLocaleDateString(),
+      e.amount.toString(),
+      e.categoryId,
+      `"${e.note?.replace(/"/g, '""') || ''}"`
+    ]);
 
-      doc.setFontSize(18);
-      doc.text('SpendWise — Expense Report', 14, 20);
-      doc.setFontSize(12);
-      doc.text(`Month: ${selectedMonth}`, 14, 30);
-
-      const tableData = expenses.map((e) => [
-        e.date.toDate().toLocaleDateString('en-IN'),
-        e.categoryId,
-        e.note ?? '',
-        `₹${e.amount.toLocaleString('en-IN')}`,
-      ]);
-
-      autoTable(doc, {
-        head: [['Date', 'Category', 'Note', 'Amount']],
-        body: tableData,
-        startY: 40,
-      });
-
-      doc.save(`SpendWise-${selectedMonth}.pdf`);
-      addToast({ type: 'success', message: 'PDF exported! 📄' });
-    } catch {
-      addToast({ type: 'error', message: 'Export failed. Please try again.' });
-    } finally {
-      setIsExporting(false);
-    }
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `spendwise_export.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    addToast({ type: 'success', message: 'Export generated successfully!' });
   };
 
   if (isLoading) return null;
 
   return (
-    <div className="pt-6 pb-6 w-full max-w-5xl mx-auto px-4 md:px-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-black text-[var(--text-primary)]">Settings</h1>
-        <ThemeToggle />
-      </div>
+    <div className="bg-[#faf5ee] text-[#3a302a] flex min-h-screen font-body w-full">
+      <ExpensesSidebar />
+      <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-24">
+        <TextEffect as="h1" preset="fade" className="font-display text-[48px] font-medium leading-none tracking-tight text-[#3a302a] mb-8">
+          Settings
+        </TextEffect>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column */}
-        <div className="flex flex-col gap-4">
-          {/* Profile */}
-          <Card padding="md" className="relative">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {user?.photoURL ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  ) : (
-                    <User className="w-6 h-6 text-violet-600" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold text-[var(--text-primary)]">{user?.displayName ?? 'User'}</p>
-                  <p className="text-sm text-[var(--text-secondary)]">{user?.email}</p>
+        <div className="glass-panel p-8 rounded-3xl border border-[#d8d0c8]/30 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#c2652a]/5 rounded-full blur-3xl -z-10"></div>
+          
+          <div className="flex space-x-2 mb-8 bg-[#eae2da]/50 p-1.5 rounded-xl w-fit">
+            <AnimatedBackground
+              defaultValue={TABS[0]}
+              className="rounded-lg bg-[#ffffff] shadow-sm"
+              transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+            >
+              {TABS.map((tab, index) => (
+                <button
+                  key={tab}
+                  data-id={tab}
+                  onClick={() => setActiveTab(index)}
+                  className={`px-6 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none ${activeTab === index ? 'text-[#3a302a]' : 'text-[#78706a] hover:text-[#3a302a]'}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </AnimatedBackground>
+          </div>
+
+          <div className="relative">
+            <TransitionPanel
+              activeIndex={activeTab}
+              transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
+              variants={{
+                enter: { opacity: 0, y: 10, filter: 'blur(4px)' },
+                center: { opacity: 1, y: 0, filter: 'blur(0px)' },
+                exit: { opacity: 0, y: -10, filter: 'blur(4px)' },
+              }}
+              className="w-full"
+            >
+              {/* Account Tab */}
+              <div className="py-2">
+                <h3 className="font-headline text-2xl text-[#3a302a] mb-6">Account Details</h3>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-[#78706a] mb-2 uppercase tracking-widest">Email Address</label>
+                    <div className="w-full bg-[#f2ece4] px-4 py-3 rounded-xl text-[#3a302a] font-medium border border-[#d8d0c8]/50">
+                      {user?.email}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#78706a] mb-2 uppercase tracking-widest">Display Name</label>
+                    <div className="w-full bg-[#f2ece4] px-4 py-3 rounded-xl text-[#3a302a] font-medium border border-[#d8d0c8]/50">
+                      {user?.displayName || 'Not set'}
+                    </div>
+                  </div>
+                  <div className="pt-6 border-t border-[#d8d0c8]/30">
+                    <button onClick={handleSignOut} className="px-6 py-3 bg-[#c0392b]/10 text-[#c0392b] font-medium rounded-xl hover:bg-[#c0392b]/20 transition-colors flex items-center gap-2">
+                      <span className="material-symbols-outlined">logout</span>
+                      Sign Out
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button
-                onClick={() => setIsEditProfileOpen(true)}
-                className="p-2 rounded-xl shadow-[var(--shadow-3d-button)] hover:shadow-[var(--shadow-3d-button-active)] text-[var(--text-secondary)] transition-all"
-                aria-label="Edit Profile"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-            </div>
-          </Card>
 
-          <SharedBudgetCard />
+              {/* Preferences Tab */}
+              <div className="py-2">
+                <h3 className="font-headline text-2xl text-[#3a302a] mb-6">Preferences</h3>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-[#f2ece4] rounded-xl border border-[#d8d0c8]/50">
+                    <div>
+                      <h4 className="font-medium text-[#3a302a]">Theme</h4>
+                      <p className="text-sm text-[#78706a]">Choose your preferred appearance</p>
+                    </div>
+                    <div className="flex bg-[#e6e0d6] rounded-lg p-1">
+                      <button 
+                        onClick={() => setTheme('light')}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${theme !== 'dark' ? 'bg-white shadow-sm text-[#3a302a]' : 'text-[#78706a]'}`}
+                      >
+                        Light
+                      </button>
+                      <button 
+                        onClick={() => setTheme('dark')}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'bg-white shadow-sm text-[#3a302a]' : 'text-[#78706a]'}`}
+                      >
+                        Dark
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-[#f2ece4] rounded-xl border border-[#d8d0c8]/50">
+                    <div>
+                      <h4 className="font-medium text-[#3a302a]">Notifications</h4>
+                      <p className="text-sm text-[#78706a]">Budget alerts and summaries</p>
+                    </div>
+                    <button className="w-12 h-6 bg-[#10b981] rounded-full relative transition-colors cursor-pointer">
+                      <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Categories Tab */}
+              <div className="py-2">
+                <h3 className="font-headline text-2xl text-[#3a302a] mb-6">Manage Categories</h3>
+                <CategoryManager />
+              </div>
+
+              {/* Export Tab */}
+              <div className="py-2">
+                <h3 className="font-headline text-2xl text-[#3a302a] mb-6">Data & Privacy</h3>
+                <div className="space-y-6">
+                  <div className="p-6 border border-[#c2652a]/20 bg-[#c2652a]/5 rounded-2xl flex flex-col items-start gap-4">
+                    <div className="w-12 h-12 bg-[#c2652a]/10 text-[#c2652a] rounded-full flex items-center justify-center">
+                      <span className="material-symbols-outlined">download</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-[#3a302a] text-lg">Export Data</h4>
+                      <p className="text-[#605850] text-sm max-w-md mt-1">Download all your transaction history and budget configurations as a CSV file.</p>
+                    </div>
+                    <button 
+                      onClick={downloadCSV}
+                      className="px-6 py-2.5 bg-[#c2652a] text-white font-medium rounded-xl hover:bg-[#c2652a]/90 transition-colors shadow-sm"
+                    >
+                      Generate Export
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </TransitionPanel>
+          </div>
         </div>
-
-        {/* Right Column */}
-        <div className="flex flex-col gap-4">
-          {/* Budget Setting */}
-          <Card padding="md">
-            <h2 className="text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-              <Wallet className="w-5 h-5 text-violet-600" />
-              Monthly Budget
-            </h2>
-            <form onSubmit={handleSubmit(handleBudgetUpdate)} className="space-y-3">
-              <Input
-                prefix={CURRENCY_SYMBOL}
-                type="number"
-                inputMode="numeric"
-                placeholder={String(budget?.budgetAmount ?? 15000)}
-                {...register('budgetAmount', { valueAsNumber: true })}
-                error={errors.budgetAmount?.message}
-                aria-label="Monthly budget amount"
-              />
-              <Button type="submit" variant="secondary" fullWidth isLoading={isSubmitting} disabled={isBudgetUnchanged}>
-                Update Overall Budget
-              </Button>
-            </form>
-            
-            <div className="mt-4 pt-4 border-t border-[var(--surface-secondary)]">
-              <Button 
-                variant="outline" 
-                fullWidth 
-                onClick={() => setIsCategoryBudgetsOpen(true)}
-                className="flex items-center justify-center gap-2"
-              >
-                <PieChart className="w-4 h-4" />
-                Set Category Budgets
-              </Button>
-            </div>
-          </Card>
-
-          {/* Export */}
-          <Card padding="md">
-            <h2 className="text-base font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-              <FileDown className="w-5 h-5 text-violet-600" />
-              Export Data
-            </h2>
-            <Button
-              variant="outline"
-              fullWidth
-              onClick={handleExportPDF}
-              isLoading={isExporting}
-              className="border-violet-500 text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-500/10 shadow-[0_0_15px_rgba(139,92,246,0.2)] dark:text-violet-400"
-              id="export-pdf-btn"
-            >
-              Export as PDF ({formattedMonth})
-            </Button>
-          </Card>
-
-          {/* Sign Out */}
-          <Button
-            variant="danger"
-            fullWidth
-            size="lg"
-            onClick={handleSignOut}
-            isLoading={isSigningOut}
-            id="sign-out-btn"
-            className="mt-auto"
-          >
-            <LogOut className="w-5 h-5" aria-hidden="true" />
-            Sign Out
-          </Button>
-        </div>
-      </div>
-
-      {/* Edit Profile Bottom Sheet */}
-      <BottomSheet
-        isOpen={isEditProfileOpen}
-        onClose={() => setIsEditProfileOpen(false)}
-        title="Edit Profile"
-      >
-        <EditProfileForm onSuccess={() => setIsEditProfileOpen(false)} />
-      </BottomSheet>
-      
-      {/* Category Budgets Bottom Sheet */}
-      <BottomSheet
-        isOpen={isCategoryBudgetsOpen}
-        onClose={() => setIsCategoryBudgetsOpen(false)}
-        title="Category Budgets"
-      >
-        <CategoryBudgetsSheet onClose={() => setIsCategoryBudgetsOpen(false)} />
-      </BottomSheet>
+      </main>
     </div>
   );
 }

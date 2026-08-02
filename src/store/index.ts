@@ -4,8 +4,9 @@ import { createAuthSlice, type AuthSlice } from './auth.slice';
 import { createExpensesSlice, type ExpensesSlice } from './expenses.slice';
 import { createBudgetSlice, type BudgetSlice } from './budget.slice';
 import { createUISlice, type UISlice } from './ui.slice';
+import { createCategoriesSlice, type CategoriesSlice } from './categories.slice';
 
-export type AppStore = AuthSlice & ExpensesSlice & BudgetSlice & UISlice;
+export type AppStore = AuthSlice & ExpensesSlice & BudgetSlice & UISlice & CategoriesSlice;
 
 /**
  * Root Zustand store combining all domain slices.
@@ -18,6 +19,7 @@ export const useStore = create<AppStore>()(
       ...createExpensesSlice(...a),
       ...createBudgetSlice(...a),
       ...createUISlice(...a),
+      ...createCategoriesSlice(...a),
     }),
     { name: 'SpendWiseStore', enabled: process.env.NODE_ENV === 'development' }
   )

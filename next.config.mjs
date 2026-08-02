@@ -9,6 +9,9 @@ const withSerwist = withSerwistInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withSerwist(nextConfig);

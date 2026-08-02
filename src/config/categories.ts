@@ -134,11 +134,6 @@ export const PRESET_CATEGORIES: Omit<CategoryDocument, 'createdAt'>[] = [
   },
 ];
 
-/**
- * Map from category ID to its data for O(1) lookups.
- */
-export const CATEGORIES_MAP = new Map(
-  PRESET_CATEGORIES.map((cat) => [cat.id, cat])
-);
+
 
 export const DEFAULT_CATEGORY_ID = 'misc';

@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useStore } from '@/store';
 import { formatCurrency } from '@/lib/utils/format';
-import { CATEGORIES_MAP } from '@/config/categories';
 import { CategoryIcon } from '@/components/shared/CategoryIcon';
 import type { CategoryBreakdown } from '@/types/ui';
 
@@ -37,6 +36,7 @@ const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payl
 export const DonutChart = () => {
   const expenses = useStore((s) => s.expenses);
   const storeCategories = useStore((s) => s.categories);
+  const categoriesMap = useStore((s) => s.categoriesMap);
   const budget = useStore((s) => s.budget);
 
   const breakdown = useMemo(() => {
@@ -52,7 +52,7 @@ export const DonutChart = () => {
       .map(([categoryId, amount]) => {
         const cat =
           storeCategories.find((c) => c.id === categoryId) ??
-          CATEGORIES_MAP.get(categoryId);
+          categoriesMap.get(categoryId);
         const budgetAmount = budget?.categoryBudgets?.[categoryId];
         return {
           categoryId,

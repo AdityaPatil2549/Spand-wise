@@ -11,40 +11,13 @@ import { PRESET_CATEGORIES } from '@/config/categories';
  * Categories are loaded once per session (not real-time — they rarely change).
  */
 export const useCategoriesLoader = (householdId: string | null): void => {
-  const { setCategories, setCategoriesLoading } = useStore();
+  const { loadCategories } = useStore();
 
   useEffect(() => {
-    if (!householdId) {
-      setCategories([]);
-      setCategoriesLoading(false);
-      return;
+    if (householdId) {
+      loadCategories(householdId);
     }
-
-    let cancelled = false;
-    setCategoriesLoading(true);
-
-    getCategories(householdId)
-      .then((cats) => {
-        if (!cancelled) {
-          if (cats.length === 0) {
-            setCategories(PRESET_CATEGORIES as CategoryDocument[]);
-            // Seed them in the background
-            import('@/lib/categories/index').then(m => m.seedCategories(householdId));
-          } else {
-            setCategories(cats);
-          }
-          setCategoriesLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.error('[useCategoriesLoader]', error);
-        if (!cancelled) setCategoriesLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [householdId, setCategories, setCategoriesLoading]);
+  }, [householdId, loadCategories]);
 };
 
 /**

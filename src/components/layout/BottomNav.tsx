@@ -25,9 +25,9 @@ export const BottomNav = () => {
       aria-label="Main navigation"
     >
       {/* Gradient fade */}
-      <div className="h-6 bg-gradient-to-t from-[var(--surface-base)] to-transparent pointer-events-none" />
+      <div className="h-6 bg-gradient-to-t from-[#faf5ee] to-transparent pointer-events-none" />
 
-      <div className="mx-4 mb-4 rounded-3xl bg-[var(--surface-base)] shadow-[var(--shadow-3d-card)] px-2 py-2">
+      <div className="mx-4 mb-4 rounded-3xl bg-[#faf5ee] border border-[#d8d0c8]/60 shadow-lg px-2 py-2">
         <ul className="flex items-center justify-around">
           {NAV_ITEMS.map(({ id, label, href, Icon }) => {
             const isActive = pathname === href || pathname.startsWith(href + '/');
@@ -39,10 +39,10 @@ export const BottomNav = () => {
                     'flex flex-col items-center gap-1 py-2 px-3 rounded-2xl',
                     'transition-colors duration-150 ease-out active:scale-[0.97]',
                     'min-h-[44px] min-w-[44px]',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c2652a]',
                     isActive
-                      ? 'text-violet-600 bg-violet-100/50 shadow-[var(--shadow-3d-button-active)]'
-                      : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)]'
+                      ? 'text-[#c2652a] bg-[#c2652a]/10 shadow-sm'
+                      : 'text-[#605850] hover:text-[#c2652a] hover:bg-[#eae2da]'
                   )}
                   aria-label={label}
                   aria-current={isActive ? 'page' : undefined}
@@ -57,7 +57,7 @@ export const BottomNav = () => {
                   <span
                     className={clsx(
                       'text-[10px] font-medium tracking-wide',
-                      isActive ? 'text-violet-600' : 'text-[var(--text-tertiary)]'
+                      isActive ? 'text-[#c2652a]' : 'text-[#605850]'
                     )}
                   >
                      {label}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Outfit, EB_Garamond, Hanken_Grotesk } from 'next/font/google';
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
+import { ThemeProvider } from '@/components/shared/ThemeProvider';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -60,9 +61,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className={`${outfit.variable} ${ebGaramond.variable} ${hankenGrotesk.variable} font-sans antialiased`}>
-        <GlobalProviders>
-          {children}
-        </GlobalProviders>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <GlobalProviders>
+            {children}
+          </GlobalProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

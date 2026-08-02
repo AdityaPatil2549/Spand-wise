@@ -11,6 +11,8 @@
     <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
   </p>
+
+  ### 🌐 **Live Demo:** [https://spendwise-458f0.web.app](https://spendwise-458f0.web.app)
   
   ---
 </div>

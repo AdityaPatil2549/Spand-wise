@@ -12,6 +12,9 @@ import { setBudgetAmount } from '@/lib/budget/index';
 import { seedCategories } from '@/lib/categories/index';
 import { markOnboardingComplete } from '@/lib/firebase/auth';
 import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
+import { Spotlight } from '@/components/ui/motion/spotlight';
+import { TextEffect } from '@/components/ui/motion/text-effect';
+import { Tilt } from '@/components/ui/motion/tilt';
 
 const schema = z.object({
   budgetAmount: z
@@ -59,27 +62,32 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-base)] flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#faf5ee] text-[#3a302a] font-body flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <Spotlight className="z-0 from-white/40 via-white/10 to-transparent blur-2xl" size={400} />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#c2652a]/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#10b981]/5 rounded-full blur-3xl"></div>
+      
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-sm"
+        className="w-full max-w-sm relative z-10"
       >
         {/* Icon */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-violet-600 to-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[var(--shadow-fab)]">
+        <div className="text-center mb-10">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#c2652a] to-[#d3763b] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#c2652a]/20">
             <Target className="w-10 h-10 text-white" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-black text-[var(--text-primary)]">
+          <TextEffect as="h1" preset="fade" className="font-display text-3xl font-medium text-[#3a302a] mb-3">
             Set Your Monthly Budget
-          </h1>
-          <p className="mt-2 text-[var(--text-secondary)]">
+          </TextEffect>
+          <TextEffect as="p" preset="fade" className="text-lg text-[#605850]">
             How much do you have to spend this month?
-          </p>
+          </TextEffect>
         </div>
 
-        <div className="bg-[var(--surface-primary)] rounded-2xl p-6 shadow-[var(--shadow-lg)]">
+        <Tilt rotationFactor={4} isRevese>
+          <div className="glass-panel rounded-3xl p-8 border border-[#d8d0c8]/40 shadow-xl space-y-5">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
             {/* Amount input */}
             <div>
@@ -97,12 +105,13 @@ export default function OnboardingPage() {
                   id="budget-amount"
                   type="number"
                   inputMode="numeric"
+                  step="500"
                   placeholder="15000"
                   autoFocus
                   className="w-full pl-10 pr-4 py-4 text-3xl font-bold rounded-2xl border-2
-                    bg-[var(--surface-secondary)] text-[var(--text-primary)]
-                    placeholder:text-[var(--text-tertiary)]
-                    border-transparent focus:border-violet-500 focus:outline-none
+                    bg-[#f2ece4] text-[#3a302a]
+                    placeholder:text-[#78706a]
+                    border-transparent focus:border-[#c2652a] focus:ring-4 focus:ring-[#c2652a]/20 focus:outline-none
                     transition-all duration-150"
                   {...register('budgetAmount', { valueAsNumber: true })}
                   aria-invalid={!!errors.budgetAmount}
@@ -123,7 +132,7 @@ export default function OnboardingPage() {
                   key={amount}
                   type="button"
                   onClick={() => setValue('budgetAmount', amount, { shouldValidate: true })}
-                  className="px-3 py-1.5 text-sm font-medium rounded-full bg-violet-100 text-violet-700 hover:bg-violet-200 transition-colors"
+                  className="px-4 py-2 text-sm font-medium rounded-full bg-[#f2ece4] text-[#605850] hover:bg-[#eae2da] hover:text-[#3a302a] border border-[#d8d0c8]/50 transition-colors"
                 >
                   {CURRENCY_SYMBOL}{(amount / 1000).toFixed(0)}K
                 </button>
@@ -142,8 +151,9 @@ export default function OnboardingPage() {
             </Button>
           </form>
         </div>
+        </Tilt>
 
-        <p className="text-center text-xs text-[var(--text-tertiary)] mt-4">
+        <p className="text-center text-xs text-[#78706a] mt-6">
           You can change this anytime in Settings
         </p>
       </motion.div>

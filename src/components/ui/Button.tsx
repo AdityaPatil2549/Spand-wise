@@ -39,7 +39,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Base styles
           'inline-flex items-center justify-center gap-2 font-semibold rounded-xl',
           'transition-[transform,color,background-color,border-color,box-shadow] duration-150 ease-out active:scale-[0.97]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c2652a] focus-visible:ring-offset-2',
           'min-h-[44px] min-w-[44px]', // Accessibility: minimum touch target
           'select-none',
 
@@ -50,14 +50,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           // Color variants
           variant === 'primary' && [
-            'bg-violet-600 text-white',
-            'hover:bg-violet-500',
-            'shadow-[var(--shadow-3d-button)] hover:shadow-[var(--shadow-3d-button)] active:shadow-[var(--shadow-3d-button-active)] active:translate-y-[2px]',
+            'bg-[#c2652a] text-[#ffffff] font-body',
+            'hover:bg-[#a65624]',
+            'shadow-sm hover:shadow-md active:translate-y-[2px]',
           ],
           variant === 'secondary' && [
-            'bg-violet-100 text-violet-700',
-            'hover:bg-violet-200',
-            'shadow-[var(--shadow-3d-button-secondary)] hover:shadow-[var(--shadow-3d-button-secondary)] active:shadow-[var(--shadow-3d-button-secondary-active)] active:translate-y-[2px]',
+            'bg-[#fbe8d8] text-[#c2652a] font-body',
+            'hover:bg-[#ece6dc]',
+            'shadow-sm hover:shadow-md active:translate-y-[2px]',
           ],
           variant === 'ghost' && [
             'text-[var(--text-secondary)]',
@@ -69,8 +69,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             'shadow-[var(--shadow-3d-button-danger)] active:shadow-[var(--shadow-3d-button-danger-active)] active:translate-y-[2px]',
           ],
           variant === 'outline' && [
-            'border-2 border-violet-300 text-violet-600 bg-transparent',
-            'hover:bg-violet-50 active:scale-[0.97]',
+            'border-2 border-[#d8d0c8] text-[#c2652a] font-body bg-transparent',
+            'hover:bg-[#faf5ee] active:scale-[0.97]',
           ],
 
           // Disabled state

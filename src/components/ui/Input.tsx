@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-[var(--text-secondary)]"
+            className="text-sm font-medium text-[#605850] font-body"
           >
             {label}
           </label>
@@ -31,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         <div className="relative flex items-center">
           {prefix && (
-            <span className="absolute left-4 text-[var(--text-secondary)] font-semibold text-lg select-none pointer-events-none">
+            <span className="absolute left-4 text-[#605850] font-semibold text-lg select-none pointer-events-none">
               {prefix}
             </span>
           )}
@@ -40,16 +40,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={clsx(
-              'w-full rounded-xl bg-[var(--surface-base)] text-[var(--text-primary)] shadow-[var(--shadow-3d-inset)] border-none',
-              'text-base placeholder:text-[var(--text-tertiary)]',
+              'w-full rounded-xl bg-[#eae2da] text-[#3a302a] border-none font-body',
+              'text-base placeholder:text-[#78706a]',
               'transition-[border-color,box-shadow,background-color] duration-150 ease-out',
               'min-h-[44px]',
-              'focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent',
+              'focus:outline-none focus:ring-2 focus:ring-[#c2652a] focus:border-transparent',
               prefix ? 'pl-10 pr-4 py-3' : 'px-4 py-3',
               error
                 ? 'border-red-400 focus:ring-red-400'
-                : 'border-[var(--surface-secondary)] focus:border-violet-500',
-              props.disabled && 'opacity-50 cursor-not-allowed bg-[var(--surface-secondary)]',
+                : 'focus:border-[#c2652a]',
+              props.disabled && 'opacity-50 cursor-not-allowed bg-[#d8d0c8]',
               className
             )}
             aria-invalid={!!error}
@@ -71,7 +71,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {helper && !error && (
           <p
             id={`${inputId}-helper`}
-            className="text-xs text-[var(--text-tertiary)]"
+            className="text-xs text-[#78706a] font-body"
           >
             {helper}
           </p>

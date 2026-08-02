@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/Input';
 import { signInWithGoogle, signInWithEmail, signUpWithEmail } from '@/lib/firebase/auth';
 import { useStore } from '@/store';
 import { APP_NAME, APP_TAGLINE } from '@/config/constants';
+import { Spotlight } from '@/components/ui/motion/spotlight';
+import { TextEffect } from '@/components/ui/motion/text-effect';
+import { Tilt } from '@/components/ui/motion/tilt';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -66,19 +69,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-base)] flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#faf5ee] text-[#3a302a] font-body flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <Spotlight className="z-0 from-white/40 via-white/10 to-transparent blur-2xl" size={400} />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#c2652a]/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#10b981]/5 rounded-full blur-3xl"></div>
+      
       {/* Hero section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center mb-10"
+        className="text-center mb-10 relative z-10"
       >
-        <div className="w-20 h-20 bg-gradient-to-br from-violet-600 to-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[var(--shadow-fab)]">
+        <div className="w-20 h-20 bg-gradient-to-br from-[#c2652a] to-[#d3763b] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#c2652a]/20">
           <Sparkles className="w-10 h-10 text-white" aria-hidden="true" />
         </div>
-        <h1 className="text-3xl font-black text-[var(--text-primary)] mb-2">{APP_NAME}</h1>
-        <p className="text-base text-[var(--text-secondary)]">{APP_TAGLINE}</p>
+        <TextEffect as="h1" preset="fade" className="font-display text-4xl md:text-5xl font-medium text-[#3a302a] mb-3">
+          {APP_NAME}
+        </TextEffect>
+        <TextEffect as="p" preset="fade" className="text-lg text-[#605850]">
+          {APP_TAGLINE}
+        </TextEffect>
       </motion.div>
 
       {/* Auth card */}
@@ -86,9 +97,10 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-sm"
+        className="w-full max-w-sm relative z-10"
       >
-        <div className="bg-[var(--surface-primary)] rounded-2xl p-6 shadow-[var(--shadow-lg)] space-y-4">
+        <Tilt rotationFactor={4} isRevese>
+          <div className="glass-panel rounded-3xl p-8 border border-[#d8d0c8]/40 shadow-xl space-y-5">
 
           {/* Google Sign In */}
           <Button
@@ -170,6 +182,7 @@ export default function LoginPage() {
             </button>
           </p>
         </div>
+        </Tilt>
       </motion.div>
     </div>
   );

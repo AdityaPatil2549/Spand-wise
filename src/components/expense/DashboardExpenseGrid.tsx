@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { useStore } from '@/store';
 import { formatCurrency } from '@/lib/utils/format';
-import { CATEGORIES_MAP } from '@/config/categories';
+
 import { Skeleton } from '@/components/ui/Skeleton';
 import clsx from 'clsx';
 
@@ -11,6 +11,7 @@ export const DashboardExpenseGrid = () => {
   const expenses = useStore((s) => s.expenses);
   const isExpensesLoading = useStore((s) => s.isExpensesLoading);
   const categories = useStore((s) => s.categories);
+  const categoriesMap = useStore((s) => s.categoriesMap);
 
   const recentExpenses = useMemo(() => {
     return [...expenses]
@@ -35,7 +36,7 @@ export const DashboardExpenseGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {recentExpenses.map((expense, i) => {
-        const category = categories.find((c) => c.id === expense.categoryId) ?? CATEGORIES_MAP.get(expense.categoryId);
+        const category = categories.find((c) => c.id === expense.categoryId) ?? categoriesMap.get(expense.categoryId);
         const iconName = category?.emoji ?? 'category';
         
         // Cycle through some colors for the decorative background blur
