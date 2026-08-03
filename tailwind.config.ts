@@ -6,7 +6,7 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
+  darkMode: ['class', ':is(.dark, .ocean, .forest, .cyberpunk)'],
   theme: {
     extend: {
       fontFamily: {
@@ -15,11 +15,23 @@ const config: Config = {
         body: ["var(--font-hanken-grotesk)", "sans-serif"],
       },
       colors: {
-        // Map CSS custom properties to Tailwind classes
-        surface: {
-          base: "var(--surface-base)",
-          primary: "var(--surface-primary)",
-          secondary: "var(--surface-secondary)",
+        theme: {
+          base: "rgb(var(--theme-base) / <alpha-value>)",
+          surface: "rgb(var(--theme-surface) / <alpha-value>)",
+          "surface-hover": "rgb(var(--theme-surface-hover) / <alpha-value>)",
+          elevated: "rgb(var(--theme-elevated) / <alpha-value>)",
+          "elevated-hover": "rgb(var(--theme-elevated-hover) / <alpha-value>)",
+          border: "rgb(var(--theme-border) / <alpha-value>)",
+          primary: "rgb(var(--theme-primary) / <alpha-value>)",
+          secondary: "rgb(var(--theme-secondary) / <alpha-value>)",
+          tertiary: "rgb(var(--theme-tertiary) / <alpha-value>)",
+          accent: "rgb(var(--theme-accent) / <alpha-value>)",
+          "accent-hover": "rgb(var(--theme-accent-hover) / <alpha-value>)",
+          "accent-light": "rgb(var(--theme-accent-light) / <alpha-value>)",
+          danger: "rgb(var(--theme-danger) / <alpha-value>)",
+          "danger-light": "rgb(var(--theme-danger-light) / <alpha-value>)",
+          white: "rgb(var(--theme-white) / <alpha-value>)",
+          inverse: "rgb(var(--theme-inverse) / <alpha-value>)",
         },
       },
       borderRadius: {

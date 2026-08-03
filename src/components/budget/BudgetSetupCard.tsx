@@ -11,10 +11,10 @@ import { setBudgetAmount } from '@/lib/budget/index';
 import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
 
 const budgetSchema = z.object({
-  budgetAmount: z
-    .number()
-    .min(MIN_BUDGET_AMOUNT, `Budget must be at least ${CURRENCY_SYMBOL}${MIN_BUDGET_AMOUNT}`)
-    .max(MAX_BUDGET_AMOUNT, 'Budget amount is too large'),
+ budgetAmount: z
+ .number()
+ .min(MIN_BUDGET_AMOUNT, `Budget must be at least ${CURRENCY_SYMBOL}${MIN_BUDGET_AMOUNT}`)
+ .max(MAX_BUDGET_AMOUNT, 'Budget amount is too large'),
 });
 
 type BudgetFormValues = z.infer<typeof budgetSchema>;
@@ -24,59 +24,59 @@ type BudgetFormValues = z.infer<typeof budgetSchema>;
  * Prompts user to set their monthly allowance.
  */
 export const BudgetSetupCard = () => {
-  const user = useStore((s) => s.user);
-  const householdId = useStore((s) => s.householdId);
-  const setBudget = useStore((s) => s.setBudget);
-  const budget = useStore((s) => s.budget);
-  const addToast = useStore((s) => s.addToast);
+ const user = useStore((s) => s.user);
+ const householdId = useStore((s) => s.householdId);
+ const setBudget = useStore((s) => s.setBudget);
+ const budget = useStore((s) => s.budget);
+ const addToast = useStore((s) => s.addToast);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<BudgetFormValues>({
-    resolver: zodResolver(budgetSchema),
-  });
+ const {
+ register,
+ handleSubmit,
+ formState: { errors, isSubmitting },
+ } = useForm<BudgetFormValues>({
+ resolver: zodResolver(budgetSchema),
+ });
 
-  const onSubmit = async (data: BudgetFormValues) => {
-    if (!user) return;
-    try {
-      await setBudgetAmount(householdId || user.uid, data.budgetAmount);
-      if (budget) {
-        setBudget({ ...budget, budgetAmount: data.budgetAmount });
-      }
-      addToast({ type: 'success', message: 'Budget set! You\'re all set to track expenses 🎯' });
-    } catch {
-      addToast({ type: 'error', message: 'Failed to save budget. Try again.' });
-    }
-  };
+ const onSubmit = async (data: BudgetFormValues) => {
+ if (!user) return;
+ try {
+ await setBudgetAmount(householdId || user.uid, data.budgetAmount);
+ if (budget) {
+ setBudget({ ...budget, budgetAmount: data.budgetAmount });
+ }
+ addToast({ type: 'success', message: 'Budget set! You\'re all set to track expenses 🎯' });
+ } catch {
+ addToast({ type: 'error', message: 'Failed to save budget. Try again.' });
+ }
+ };
 
-  return (
-    <div className="mx-4 bg-[var(--surface-primary)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
-          <Wallet className="w-6 h-6 text-violet-600" />
-        </div>
-        <div>
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">Set Monthly Budget</h2>
-          <p className="text-sm text-[var(--text-secondary)]">How much do you have this month?</p>
-        </div>
-      </div>
+ return (
+ <div className="mx-4 bg-[var(--surface-primary)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
+ <div className="flex items-center gap-3 mb-4">
+ <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
+ <Wallet className="w-6 h-6 text-violet-600" />
+ </div>
+ <div>
+ <h2 className="text-lg font-bold text-[var(--text-primary)]">Set Monthly Budget</h2>
+ <p className="text-sm text-[var(--text-secondary)]">How much do you have this month?</p>
+ </div>
+ </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input
-          prefix={CURRENCY_SYMBOL}
-          type="number"
-          inputMode="numeric"
-          placeholder="15000"
-          {...register('budgetAmount', { valueAsNumber: true })}
-          error={errors.budgetAmount?.message}
-          aria-label="Monthly budget amount"
-        />
-        <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
-          Set Budget
-        </Button>
-      </form>
-    </div>
-  );
+ <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+ <Input
+ prefix={CURRENCY_SYMBOL}
+ type="number"
+ inputMode="numeric"
+ placeholder="15000"
+ {...register('budgetAmount', { valueAsNumber: true })}
+ error={errors.budgetAmount?.message}
+ aria-label="Monthly budget amount"
+ />
+ <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+ Set Budget
+ </Button>
+ </form>
+ </div>
+ );
 };

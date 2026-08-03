@@ -11,13 +11,13 @@ import { PRESET_CATEGORIES } from '@/config/categories';
  * Categories are loaded once per session (not real-time — they rarely change).
  */
 export const useCategoriesLoader = (householdId: string | null): void => {
-  const { loadCategories } = useStore();
+ const { loadCategories } = useStore();
 
-  useEffect(() => {
-    if (householdId) {
-      loadCategories(householdId);
-    }
-  }, [householdId, loadCategories]);
+ useEffect(() => {
+ if (householdId) {
+ loadCategories(householdId);
+ }
+ }, [householdId, loadCategories]);
 };
 
 /**
@@ -25,6 +25,6 @@ export const useCategoriesLoader = (householdId: string | null): void => {
  * Falls back to a default placeholder if the category is not found.
  */
 export const useCategoryById = (categoryId: string): CategoryDocument | undefined => {
-  const categories = useStore((s) => s.categories);
-  return categories.find((c) => c.id === categoryId);
+ const categories = useStore((s) => s.categories);
+ return categories.find((c) => c.id === categoryId);
 };

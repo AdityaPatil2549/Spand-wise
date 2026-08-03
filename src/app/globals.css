@@ -5,10 +5,169 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --theme-base: 250 245 238; /* #faf5ee */
+    --theme-surface: 246 240 232; /* #f6f0e8 */
+    --theme-surface-hover: 236 230 220; /* #ece6dc */
+    --theme-elevated: 234 226 218; /* #eae2da */
+    --theme-elevated-hover: 216 208 200; /* #d8d0c8 */
+    
+    --theme-border: 216 208 200; /* #d8d0c8 */
+    
+    --theme-primary: 58 48 42; /* #3a302a */
+    --theme-secondary: 96 88 80; /* #605850 */
+    --theme-tertiary: 120 112 106; /* #78706a */
+    
+    --theme-accent: 194 101 42; /* #c2652a */
+    --theme-accent-hover: 165 82 31; /* #a5521f */
+    --theme-accent-light: 251 232 216; /* #fbe8d8 */
+    
+    --theme-danger: 192 57 43; /* #c0392b */
+    --theme-danger-light: 252 236 235; /* #fceceb */
+    
+    --theme-white: 255 255 255; /* #ffffff */
+    --theme-inverse: 255 255 255; /* #ffffff */
+  }
+
+  .dark {
+    /* Midnight Dark Mode */
+    --theme-base: 0 0 0; /* #000000 */
+    --theme-surface: 17 17 17; /* #111111 */
+    --theme-surface-hover: 26 26 26; /* #1a1a1a */
+    --theme-elevated: 34 34 34; /* #222222 */
+    --theme-elevated-hover: 51 51 51; /* #333333 */
+    
+    --theme-border: 51 51 51; /* #333333 */
+    
+    --theme-primary: 255 255 255; /* #ffffff */
+    --theme-secondary: 163 163 163; /* #a3a3a3 */
+    --theme-tertiary: 115 115 115; /* #737373 */
+    
+    --theme-accent: 232 134 74; /* #e8864a */
+    --theme-accent-hover: 194 101 42; /* #c2652a */
+    --theme-accent-light: 74 44 22; /* #4a2c16 */
+    
+    --theme-danger: 239 68 68; /* #ef4444 */
+    --theme-danger-light: 63 21 21; /* #3f1515 */
+    
+    --theme-white: 17 17 17; /* #111111 */
+    --theme-inverse: 0 0 0; /* #000000 */
+  }
+
+  .ocean {
+    /* Ocean Breeze */
+    --theme-base: 10 25 47; /* Deep navy blue */
+    --theme-surface: 17 34 64; /* Lighter navy */
+    --theme-surface-hover: 26 51 92;
+    --theme-elevated: 23 42 69;
+    --theme-elevated-hover: 32 58 92;
+    
+    --theme-border: 30 58 138;
+    
+    --theme-primary: 230 241 255; /* Ice white */
+    --theme-secondary: 136 146 176;
+    --theme-tertiary: 100 255 218; /* Bright teal accent */
+    
+    --theme-accent: 100 255 218; /* Electric Cyan */
+    --theme-accent-hover: 50 205 168;
+    --theme-accent-light: 17 34 64; /* Same as surface for subtle */
+    
+    --theme-danger: 239 68 68;
+    --theme-danger-light: 63 21 21;
+    
+    --theme-white: 17 34 64;
+    --theme-inverse: 10 25 47;
+  }
+
+  .forest {
+    /* Pine Forest */
+    --theme-base: 26 36 33; /* Dark olive */
+    --theme-surface: 36 49 45; /* Moss */
+    --theme-surface-hover: 45 61 57;
+    --theme-elevated: 41 56 52;
+    --theme-elevated-hover: 51 70 65;
+    
+    --theme-border: 62 82 75;
+    
+    --theme-primary: 242 245 235; /* Off-white cream */
+    --theme-secondary: 173 189 179;
+    --theme-tertiary: 126 148 135;
+    
+    --theme-accent: 184 227 101; /* Lime / gold */
+    --theme-accent-hover: 153 194 76;
+    --theme-accent-light: 41 56 52;
+    
+    --theme-danger: 239 68 68;
+    --theme-danger-light: 63 21 21;
+    
+    --theme-white: 36 49 45;
+    --theme-inverse: 26 36 33;
+  }
+
+  .cyberpunk {
+    /* Cyberpunk Amethyst */
+    --theme-base: 13 2 33; /* Deepest purple */
+    --theme-surface: 26 5 66; /* Violet */
+    --theme-surface-hover: 38 7 99;
+    --theme-elevated: 32 6 82;
+    --theme-elevated-hover: 44 9 115;
+    
+    --theme-border: 71 18 163;
+    
+    --theme-primary: 255 255 255; /* Glowing white */
+    --theme-secondary: 200 176 250;
+    --theme-tertiary: 147 112 219;
+    
+    --theme-accent: 255 0 128; /* Neon pink */
+    --theme-accent-hover: 219 0 109;
+    --theme-accent-light: 44 9 115;
+    
+    --theme-danger: 255 77 77;
+    --theme-danger-light: 77 15 15;
+    
+    --theme-white: 26 5 66;
+    --theme-inverse: 13 2 33;
+  }
+
+  .arctic {
+    /* Arctic Frost */
+    --theme-base: 248 250 252; /* Crisp snow white */
+    --theme-surface: 236 244 249; /* Pale icy blue */
+    --theme-surface-hover: 224 238 247;
+    --theme-elevated: 241 248 255;
+    --theme-elevated-hover: 226 238 250;
+    
+    --theme-border: 203 213 225;
+    
+    --theme-primary: 30 41 59; /* Dark slate */
+    --theme-secondary: 71 85 105;
+    --theme-tertiary: 100 116 139;
+    
+    --theme-accent: 56 189 248; /* Frosty blue */
+    --theme-accent-hover: 14 165 233;
+    --theme-accent-light: 224 242 254;
+    
+    --theme-danger: 220 38 38;
+    --theme-danger-light: 254 226 226;
+    
+    --theme-white: 255 255 255;
+    --theme-inverse: 248 250 252;
+  }
+}
+
+@layer base {
   html {
     font-family: var(--font-outfit), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  :root, .arctic {
+    color-scheme: light;
+  }
+  
+  .dark, .ocean, .forest, .cyberpunk {
+    color-scheme: dark;
   }
 
   body {

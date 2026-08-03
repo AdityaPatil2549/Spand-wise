@@ -15,38 +15,38 @@ import type { User } from 'firebase/auth';
  * Syncs Firebase auth state to Zustand and reads onboardingComplete from Firestore.
  */
 export const useAuthListener = (): void => {
-  const { setUser, setAuthLoading, setOnboardingComplete, setHouseholdId } = useStore();
+ const { setUser, setAuthLoading, setOnboardingComplete, setHouseholdId } = useStore();
 
-  useEffect(() => {
-    const unsubscribe = onAuthChange(async (user) => {
-      if (user) {
-        setUser(user);
-        // Fetch onboarding status and householdId from Firestore
-        try {
-          const snap = await getDoc(userDocRef(user.uid));
-          if (snap.exists()) {
-            const data = snap.data() as UserDocument;
-            setOnboardingComplete(data.onboardingComplete ?? false);
-            setHouseholdId(data.householdId ?? user.uid); // Fallback to uid if missing
-          } else {
-             // Edge case: User doc not created yet, default household to uid
-             setHouseholdId(user.uid);
-          }
-        } catch {
-          // Non-fatal — default to incomplete and uid
-          setOnboardingComplete(false);
-          setHouseholdId(user.uid);
-        }
-      } else {
-        setUser(null);
-        setOnboardingComplete(false);
-        setHouseholdId(null);
-      }
-      setAuthLoading(false);
-    });
+ useEffect(() => {
+ const unsubscribe = onAuthChange(async (user) => {
+ if (user) {
+ setUser(user);
+ // Fetch onboarding status and householdId from Firestore
+ try {
+ const snap = await getDoc(userDocRef(user.uid));
+ if (snap.exists()) {
+ const data = snap.data() as UserDocument;
+ setOnboardingComplete(data.onboardingComplete ?? false);
+ setHouseholdId(data.householdId ?? user.uid); // Fallback to uid if missing
+ } else {
+ // Edge case: User doc not created yet, default household to uid
+ setHouseholdId(user.uid);
+ }
+ } catch {
+ // Non-fatal — default to incomplete and uid
+ setOnboardingComplete(false);
+ setHouseholdId(user.uid);
+ }
+ } else {
+ setUser(null);
+ setOnboardingComplete(false);
+ setHouseholdId(null);
+ }
+ setAuthLoading(false);
+ });
 
-    return () => unsubscribe();
-  }, [setUser, setAuthLoading, setOnboardingComplete, setHouseholdId]);
+ return () => unsubscribe();
+ }, [setUser, setAuthLoading, setOnboardingComplete, setHouseholdId]);
 };
 
 /**
@@ -54,15 +54,15 @@ export const useAuthListener = (): void => {
  * Use in protected page components.
  */
 export const useAuthGuard = (): { user: User | null; isLoading: boolean } => {
-  const router = useRouter();
-  const user = useStore((s) => s.user);
-  const isAuthLoading = useStore((s) => s.isAuthLoading);
+ const router = useRouter();
+ const user = useStore((s) => s.user);
+ const isAuthLoading = useStore((s) => s.isAuthLoading);
 
-  useEffect(() => {
-    if (!isAuthLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isAuthLoading, router]);
+ useEffect(() => {
+ if (!isAuthLoading && !user) {
+ router.push('/login');
+ }
+ }, [user, isAuthLoading, router]);
 
-  return { user, isLoading: isAuthLoading };
+ return { user, isLoading: isAuthLoading };
 };

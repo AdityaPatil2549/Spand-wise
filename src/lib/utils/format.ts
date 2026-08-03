@@ -5,13 +5,13 @@ import { CURRENCY_SYMBOL, LOCALE } from '@/config/constants';
  * Examples: 15000 → "₹15,000", 1500.50 → "₹1,500.50"
  */
 export const formatCurrency = (amount: number): string => {
-  if (isNaN(amount)) return `${CURRENCY_SYMBOL}0`;
-  return new Intl.NumberFormat(LOCALE, {
-    style: 'currency',
-    currency: 'INR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
+ if (isNaN(amount)) return `${CURRENCY_SYMBOL}0`;
+ return new Intl.NumberFormat(LOCALE, {
+ style: 'currency',
+ currency: 'INR',
+ minimumFractionDigits: 0,
+ maximumFractionDigits: 2,
+ }).format(amount);
 };
 
 /**
@@ -19,13 +19,13 @@ export const formatCurrency = (amount: number): string => {
  * Examples: 15000 → "₹15K", 1500000 → "₹15L"
  */
 export const formatCurrencyCompact = (amount: number): string => {
-  if (amount >= 10_00_000) {
-    return `${CURRENCY_SYMBOL}${(amount / 10_00_000).toFixed(1)}L`;
-  }
-  if (amount >= 1000) {
-    return `${CURRENCY_SYMBOL}${(amount / 1000).toFixed(1)}K`;
-  }
-  return formatCurrency(amount);
+ if (amount >= 10_00_000) {
+ return `${CURRENCY_SYMBOL}${(amount / 10_00_000).toFixed(1)}L`;
+ }
+ if (amount >= 1000) {
+ return `${CURRENCY_SYMBOL}${(amount / 1000).toFixed(1)}K`;
+ }
+ return formatCurrency(amount);
 };
 
 /**
@@ -33,7 +33,7 @@ export const formatCurrencyCompact = (amount: number): string => {
  * Examples: 0.75 → "75%", 1.2 → "120%"
  */
 export const formatPercent = (value: number, decimals = 0): string => {
-  return `${(value * 100).toFixed(decimals)}%`;
+ return `${(value * 100).toFixed(decimals)}%`;
 };
 
 /**
@@ -41,5 +41,5 @@ export const formatPercent = (value: number, decimals = 0): string => {
  * Examples: 15000 → "15,000"
  */
 export const formatNumber = (value: number): string => {
-  return new Intl.NumberFormat(LOCALE).format(value);
+ return new Intl.NumberFormat(LOCALE).format(value);
 };
