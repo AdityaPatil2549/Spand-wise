@@ -1,5 +1,6 @@
 import React from 'react';
 import { AnimatedNumber } from '@/components/ui/motion/animated-number';
+import { CURRENCY_SYMBOL } from '@/config/constants';
 
 export interface TransactionCardProps {
   id: string;
@@ -32,7 +33,7 @@ export function TransactionCard({
       </div>
       <div className="text-right">
         <p className="font-body text-lg font-medium text-[#3a302a] flex justify-end items-center gap-[1px]">
-          -$<AnimatedNumber value={Math.floor(amount)} />
+          -{CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(amount)} />
           {(amount % 1).toFixed(2).substring(1)}
         </p>
         <p className="font-body text-xs text-[#78706a]">{time}</p>
