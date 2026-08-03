@@ -11,6 +11,7 @@ import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { CategoryManager } from '@/components/features/settings/CategoryManager';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
+import { BudgetSetupCard } from '@/components/budget/BudgetSetupCard';
 
 export default function SettingsPage() {
  const { user, isLoading } = useAuthGuard();
@@ -132,20 +133,23 @@ export default function SettingsPage() {
 
  {/* Preferences Tab */}
  <div className="py-2">
- <h3 className="font-headline text-2xl text-theme-primary mb-6">Preferences</h3>
- <div className="space-y-6">
- <ThemeSelector />
- <div className="flex items-center justify-between p-4 bg-theme-surface rounded-xl border border-theme-border/50">
- <div>
- <h4 className="font-medium text-theme-primary">Notifications</h4>
- <p className="text-sm text-theme-tertiary">Budget alerts and summaries</p>
- </div>
- <button className="w-12 h-6 bg-[#10b981] rounded-full relative transition-colors cursor-pointer">
- <div className="absolute right-1 top-1 w-4 h-4 bg-theme-white rounded-full shadow-sm"></div>
- </button>
- </div>
- </div>
- </div>
+    <h3 className="font-headline text-2xl text-theme-primary mb-6">Preferences</h3>
+    <div className="space-y-6">
+      <div className="mb-6 -mx-4">
+        <BudgetSetupCard />
+      </div>
+      <ThemeSelector />
+      <div className="flex items-center justify-between p-4 bg-theme-surface rounded-xl border border-theme-border/50">
+        <div>
+          <h4 className="font-medium text-theme-primary">Notifications</h4>
+          <p className="text-sm text-theme-tertiary">Budget alerts and summaries</p>
+        </div>
+        <button className="w-12 h-6 bg-[#10b981] rounded-full relative transition-colors cursor-pointer">
+          <div className="absolute right-1 top-1 w-4 h-4 bg-theme-white rounded-full shadow-sm"></div>
+        </button>
+      </div>
+    </div>
+  </div>
 
  {/* Categories Tab */}
  <div className="py-2">

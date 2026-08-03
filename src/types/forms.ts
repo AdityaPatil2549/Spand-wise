@@ -8,13 +8,11 @@
  * Input for the Add Expense bottom sheet form.
  */
 export interface AddExpenseInput {
-  /** Transaction type */
-  type: 'expense' | 'income';
-  amount: number;
-  categoryId: string;
-  note?: string;
-  /** ISO date string — defaults to current datetime, can be changed by user */
-  date: string;
+ amount: number;
+ categoryId: string;
+ note?: string;
+ /** ISO date string — defaults to current datetime, can be changed by user */
+ date: string;
 }
 
 /**

@@ -11,13 +11,13 @@ export interface UISlice {
  bottomSheet: BottomSheetState;
  addToast: (toast: Omit<Toast, 'id'>) => string;
  removeToast: (id: string) => void;
- openBottomSheet: (options?: { editingExpenseId?: string; initialCategoryId?: string; transactionType?: 'expense' | 'income' }) => void;
+ openBottomSheet: (options?: { editingExpenseId?: string; initialCategoryId?: string }) => void;
  closeBottomSheet: () => void;
 }
 
 export const createUISlice: StateCreator<AppStore, [], [], UISlice> = (set) => ({
  toasts: [],
- bottomSheet: { isOpen: false, editingExpenseId: null, initialCategoryId: null, transactionType: 'expense' },
+ bottomSheet: { isOpen: false, editingExpenseId: null, initialCategoryId: null },
 
  addToast: (toastData) => {
  const id = `toast-${++toastIdCounter}`;
@@ -40,10 +40,9 @@ export const createUISlice: StateCreator<AppStore, [], [], UISlice> = (set) => (
  isOpen: true,
  editingExpenseId: options?.editingExpenseId ?? null,
  initialCategoryId: options?.initialCategoryId ?? null,
- transactionType: options?.transactionType ?? 'expense',
  },
  }),
 
  closeBottomSheet: () =>
- set({ bottomSheet: { isOpen: false, editingExpenseId: null, initialCategoryId: null, transactionType: 'expense' } }),
+ set({ bottomSheet: { isOpen: false, editingExpenseId: null, initialCategoryId: null } }),
 });

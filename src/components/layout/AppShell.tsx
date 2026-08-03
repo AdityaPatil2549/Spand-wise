@@ -68,16 +68,11 @@ export const AppShell = ({ children }: AppShellProps) => {
  <BottomSheet
  isOpen={bottomSheet.isOpen}
  onClose={closeBottomSheet}
- title={
-   editingExpense
-     ? (editingExpense.type === 'income' ? 'Edit Income' : 'Edit Expense')
-     : (bottomSheet.transactionType === 'income' ? 'Add Income 💰' : 'Add Expense 💸')
- }
+ title={editingExpense ? 'Edit Expense' : 'New Expense'}
  >
  <ExpenseForm
  editingExpense={editingExpense}
  initialCategoryId={bottomSheet.initialCategoryId}
- transactionType={bottomSheet.transactionType ?? 'expense'}
  onSuccess={closeBottomSheet}
  />
  </BottomSheet>

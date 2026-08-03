@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { getCategories, addCustomCategory, updateCustomCategory, deleteCustomCategory } from '@/lib/categories/index';
 import type { CategoryDocument } from '@/types/firestore';
 import type { AppStore } from './index';
-import { PRESET_CATEGORIES, PRESET_INCOME_CATEGORIES } from '@/config/categories';
+import { PRESET_CATEGORIES } from '@/config/categories';
 
 export interface CategoriesSlice {
  categories: CategoryDocument[];
@@ -16,16 +16,14 @@ export interface CategoriesSlice {
  removeCategoryOptimistic: (categoryId: string) => void;
 }
 
-const ALL_PRESETS = [...PRESET_CATEGORIES, ...PRESET_INCOME_CATEGORIES];
-
 export const createCategoriesSlice: StateCreator<
  AppStore,
  [['zustand/devtools', never]],
  [],
  CategoriesSlice
 > = (set, get) => ({
- categories: [...ALL_PRESETS] as CategoryDocument[],
- categoriesMap: new Map((ALL_PRESETS as CategoryDocument[]).map(c => [c.id, c])),
+ categories: [...PRESET_CATEGORIES] as CategoryDocument[],
+ categoriesMap: new Map((PRESET_CATEGORIES as CategoryDocument[]).map(c => [c.id, c])),
  isCategoriesLoading: false,
  categoriesError: null,
 
@@ -36,7 +34,7 @@ export const createCategoriesSlice: StateCreator<
  // Merge fetched categories (which should include seeded presets + any custom ones)
  // We will create a map from fetched, but just in case, we can ensure preset defaults are present.
  const map = new Map<string, CategoryDocument>();
- (ALL_PRESETS as CategoryDocument[]).forEach(c => map.set(c.id, c));
+ (PRESET_CATEGORIES as CategoryDocument[]).forEach(c => map.set(c.id, c));
  fetched.forEach(c => map.set(c.id, c));
 
  const mergedCategories = Array.from(map.values());

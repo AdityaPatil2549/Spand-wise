@@ -47,8 +47,6 @@ export interface BudgetDocument {
  budgetAmount: number;
  /** System-calculated running total of all non-deleted expenses for this month */
  totalSpent: number;
- /** System-calculated running total of all income for this month */
- totalIncome?: number;
  /** Optional map of categoryId to specific budget allowance */
  categoryBudgets?: Record<string, number>;
  createdAt: Timestamp;
@@ -62,8 +60,6 @@ export interface BudgetDocument {
 export interface ExpenseDocument {
  /** Firestore auto-generated document ID */
  id: string;
- /** 'expense' or 'income' (defaults to 'expense' for legacy docs) */
- type?: 'expense' | 'income';
  /** Amount in INR (always positive) */
  amount: number;
  /** Foreign key referencing the category ID in /users/{uid}/categories/ */

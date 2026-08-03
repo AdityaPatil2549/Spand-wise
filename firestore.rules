@@ -34,8 +34,8 @@ service cloud.firestore {
       match /budgets/{monthId} {
         allow read: if isAuthenticated();
         allow write: if isAuthenticated()
-          && request.resource.data.budgetAmount >= 0
-          && request.resource.data.budgetAmount <= 10000000;
+          && (!('budgetAmount' in request.resource.data) || 
+              (request.resource.data.budgetAmount >= 0 && request.resource.data.budgetAmount <= 10000000));
       }
 
       // ── Expense Documents ─────────────────────────────────────
