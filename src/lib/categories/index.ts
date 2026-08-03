@@ -7,7 +7,7 @@ import {
  doc,
 } from 'firebase/firestore';
 import { categoriesColRef, categoryDocRef } from '@/lib/firebase/firestore';
-import { PRESET_CATEGORIES } from '@/config/categories';
+import { PRESET_CATEGORIES, PRESET_INCOME_CATEGORIES } from '@/config/categories';
 import type { CategoryDocument } from '@/types/firestore';
 
 /**
@@ -16,7 +16,8 @@ import type { CategoryDocument } from '@/types/firestore';
  */
 export const seedCategories = async (householdId: string): Promise<void> => {
  const now = serverTimestamp() as Timestamp;
- const promises = PRESET_CATEGORIES.map((cat) =>
+ const allPresets = [...PRESET_CATEGORIES, ...PRESET_INCOME_CATEGORIES];
+ const promises = allPresets.map((cat) =>
  setDoc(
  categoryDocRef(householdId, cat.id),
  { ...cat, createdAt: now },

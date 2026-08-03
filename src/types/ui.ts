@@ -47,6 +47,8 @@ export interface BottomSheetState {
  editingExpenseId: string | null;
  /** The initial category to select when adding a new expense */
  initialCategoryId?: string | null;
+ /** Whether the form should open in income or expense mode */
+ transactionType?: 'expense' | 'income';
 }
 
 /** Analytics category breakdown item */

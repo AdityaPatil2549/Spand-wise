@@ -3,18 +3,26 @@
 import { useStore } from '@/store';
 import { clsx } from 'clsx';
 import type { CategoryDocument } from '@/types/firestore';
+import { PRESET_INCOME_CATEGORIES } from '@/config/categories';
+
+const INCOME_IDS = new Set(PRESET_INCOME_CATEGORIES.map((c) => c.id));
 
 interface CategoryPickerProps {
  selectedId: string;
  onSelect: (categoryId: string) => void;
+ transactionType?: 'expense' | 'income';
 }
 
 /**
  * Horizontal scrollable category chip selector.
- * Used inside the Add/Edit Expense bottom sheet.
+ * Filters categories by transactionType (income vs expense).
  */
-export const CategoryPicker = ({ selectedId, onSelect }: CategoryPickerProps) => {
+export const CategoryPicker = ({ selectedId, onSelect, transactionType = 'expense' }: CategoryPickerProps) => {
  const categories = useStore((s) => s.categories);
+
+ const filtered = categories.filter((c) =>
+   transactionType === 'income' ? INCOME_IDS.has(c.id) : !INCOME_IDS.has(c.id)
+ );
 
  return (
  <div
@@ -22,7 +30,7 @@ export const CategoryPicker = ({ selectedId, onSelect }: CategoryPickerProps) =>
  role="listbox"
  aria-label="Select category"
  >
- {categories.map((cat) => (
+ {filtered.map((cat) => (
  <CategoryChip
  key={cat.id}
  category={cat}

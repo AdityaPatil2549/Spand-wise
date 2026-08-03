@@ -10,6 +10,7 @@ import { BorderTrail } from '@/components/ui/motion/border-trail';
 import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { DashboardExpenseCard } from '@/components/features/dashboard/DashboardExpenseCard';
 import { DEFAULT_CATEGORY_ID } from '@/config/categories';
+import { CURRENCY_SYMBOL } from '@/config/constants';
 import { format, isToday, isYesterday } from 'date-fns';
 import { AddExpenseMorph } from '@/components/features/expenses/AddExpenseMorph';
 import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorph';
@@ -53,9 +54,14 @@ export default function DashboardPage() {
  const { openBottomSheet, expenses, budget, getBudgetState, isExpensesLoading, categoriesMap } = useStore();
  
  const totalSpent = budget?.totalSpent || 0;
+ const totalIncome = budget?.totalIncome || 0;
  const budgetAmount = budget?.budgetAmount || 0;
- const balance = budgetAmount - totalSpent;
- const isOverBudget = balance < 0;
+ // True cash-flow balance: income earned minus money spent this month
+ const cashBalance = totalIncome - totalSpent;
+ const isCashNegative = cashBalance < 0;
+ // Keep old budget overage for the budget pill
+ const budgetRemaining = budgetAmount - totalSpent;
+ const isOverBudget = budgetRemaining < 0;
  
  const recentExpenses = useMemo(() => {
  return expenses.slice(0, 4).map((exp, index) => {
@@ -169,21 +175,18 @@ export default function DashboardPage() {
  <span className="material-symbols-outlined text-theme-secondary">more_horiz</span>
  </div>
  <div className="space-y-2 mt-12">
- <p className="text-[16px] text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
- <h2 className="font-display text-[56px] leading-none text-theme-primary tracking-tight flex items-center">
- {isOverBudget ? '-' : ''}<AnimatedNumber value={Math.abs(balance)} />
+ <p className="text-[16px] text-theme-secondary font-medium">Current Balance</p>
+ <h2 className={`font-display text-[56px] leading-none tracking-tight flex items-center ${isCashNegative ? 'text-theme-danger' : 'text-[#10b981]'}`}>
+ {isCashNegative ? '-' : '+'}{CURRENCY_SYMBOL}<AnimatedNumber value={Math.abs(cashBalance)} />
  </h2>
  </div>
  <div className="mt-12 space-y-4">
  <div className="flex justify-between text-sm">
- <span className="text-theme-secondary flex items-center gap-1">Spent: <strong className="text-theme-primary"><AnimatedNumber value={totalSpent} /></strong></span>
- <span className="text-theme-secondary flex items-center gap-1">Budget: <strong className="text-theme-primary"><AnimatedNumber value={budgetAmount} /></strong></span>
+ <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span><span className="text-theme-secondary">Earned:</span> <strong className="text-emerald-600">{CURRENCY_SYMBOL}<AnimatedNumber value={totalIncome} /></strong></span>
+ <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500"></span><span className="text-theme-secondary">Spent:</span> <strong className="text-rose-600">{CURRENCY_SYMBOL}<AnimatedNumber value={totalSpent} /></strong></span>
  </div>
  <div className="w-full h-2 bg-theme-elevated rounded-full overflow-hidden">
- <div className="h-full bg-transparent w-full rounded-full relative">
- <div className={`absolute top-0 left-0 h-full ${isOverBudget ? 'bg-theme-danger' : 'bg-theme-accent'}`} style={{ width: `${Math.min(100, (totalSpent / (budgetAmount || 1)) * 100)}%` }}></div>
- {isOverBudget && <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgNDBoNDBWMHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-50"></div>}
- </div>
+ <div className={`h-full rounded-full transition-all duration-500 ${isCashNegative ? 'bg-theme-danger' : 'bg-[#10b981]'}`} style={{ width: `${totalIncome > 0 ? Math.min(100, (totalIncome / (totalIncome + totalSpent || 1)) * 100) : 0}%` }}></div>
  </div>
  </div>
  </div>
@@ -192,7 +195,7 @@ export default function DashboardPage() {
  </section>
  <section className="mt-8">
  <div className="flex justify-between items-end mb-8 border-b border-theme-border/30 pb-4">
- <h3 className="font-display text-[32px] font-medium text-theme-primary">Recent Expenses</h3>
+ <h3 className="font-display text-[32px] font-medium text-theme-primary">Recent Transactions</h3>
  <Link href="/expenses" className="text-theme-accent text-[16px] font-medium hover:underline flex items-center gap-1">
  See all <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
  </Link>

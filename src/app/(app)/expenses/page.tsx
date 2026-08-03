@@ -234,6 +234,7 @@ export default function ExpensesPage() {
  icon={getMaterialIcon(cat?.icon)}
  iconColor={cat?.color || '#605850'}
  iconBgClass="bg-theme-base"
+ transactionType={expense.type ?? 'expense'}
  />
  </EditExpenseMorph>
  </InView>

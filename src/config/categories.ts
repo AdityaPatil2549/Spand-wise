@@ -134,6 +134,36 @@ export const PRESET_CATEGORIES: Omit<CategoryDocument, 'createdAt'>[] = [
  },
 ];
 
-
+export const PRESET_INCOME_CATEGORIES: Omit<CategoryDocument, 'createdAt'>[] = [
+  {
+    id: 'salary',
+    name: 'Salary',
+    icon: 'Briefcase',
+    color: '#22c55e', // Green
+    isDefault: true,
+  },
+  {
+    id: 'investments',
+    name: 'Investments',
+    icon: 'TrendingUp',
+    color: '#3b82f6', // Blue
+    isDefault: true,
+  },
+  {
+    id: 'gift_income',
+    name: 'Gift',
+    icon: 'Gift',
+    color: '#ec4899', // Pink
+    isDefault: true,
+  },
+  {
+    id: 'refund',
+    name: 'Refund / Other',
+    icon: 'RefreshCcw',
+    color: '#eab308', // Yellow
+    isDefault: true,
+  },
+];
 
 export const DEFAULT_CATEGORY_ID = 'misc';
+export const DEFAULT_INCOME_CATEGORY_ID = 'salary';

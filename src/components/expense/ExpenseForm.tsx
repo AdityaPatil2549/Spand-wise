@@ -12,216 +12,235 @@ import { useStore } from '@/store';
 import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
 import {
- MAX_EXPENSE_AMOUNT,
- MIN_EXPENSE_AMOUNT,
- MAX_NOTE_LENGTH,
- CURRENCY_SYMBOL,
+  MAX_EXPENSE_AMOUNT,
+  MIN_EXPENSE_AMOUNT,
+  MAX_NOTE_LENGTH,
+  CURRENCY_SYMBOL,
 } from '@/config/constants';
-import { DEFAULT_CATEGORY_ID } from '@/config/categories';
+import { DEFAULT_CATEGORY_ID, DEFAULT_INCOME_CATEGORY_ID } from '@/config/categories';
 import type { ExpenseDocument } from '@/types/firestore';
 
 const expenseSchema = z.object({
- amount: z
- .number()
- .min(MIN_EXPENSE_AMOUNT, 'Amount must be greater than 0')
- .max(MAX_EXPENSE_AMOUNT, `Amount cannot exceed ${CURRENCY_SYMBOL}10,00,000`),
- categoryId: z.string().min(1, 'Select a category'),
- note: z.string().max(MAX_NOTE_LENGTH, `Max ${MAX_NOTE_LENGTH} characters`).optional(),
- date: z.string().min(1, 'Date is required'),
+  amount: z
+    .number()
+    .min(MIN_EXPENSE_AMOUNT, 'Amount must be greater than 0')
+    .max(MAX_EXPENSE_AMOUNT, `Amount cannot exceed ${CURRENCY_SYMBOL}10,00,000`),
+  categoryId: z.string().min(1, 'Select a category'),
+  note: z.string().max(MAX_NOTE_LENGTH, `Max ${MAX_NOTE_LENGTH} characters`).optional(),
+  date: z.string().min(1, 'Date is required'),
 });
 
 type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
 interface ExpenseFormProps {
- editingExpense?: ExpenseDocument | null;
- initialCategoryId?: string | null;
- onSuccess: () => void;
+  /** If provided, opens in edit mode */
+  editingExpense?: ExpenseDocument | null;
+  initialCategoryId?: string | null;
+  /** Controls whether the form is in expense or income mode */
+  transactionType?: 'expense' | 'income';
+  onSuccess: () => void;
 }
 
 /**
- * Add / Edit Expense form.
- * Handles both create and update flows via a single form.
- * Validates with Zod, submits with optimistic UI.
+ * Unified Add / Edit Transaction form (supports both Expense and Income).
+ * The transactionType prop drives the colour scheme, category list, and button label.
  */
-export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: ExpenseFormProps) => {
- const user = useStore((s) => s.user);
- const householdId = useStore((s) => s.householdId);
- const addToast = useStore((s) => s.addToast);
- const addExpenseOptimistic = useStore((s) => s.addExpenseOptimistic);
- const updateExpenseOptimistic = useStore((s) => s.updateExpenseOptimistic);
- const removeExpenseOptimistic = useStore((s) => s.removeExpenseOptimistic);
- const adjustTotalSpentOptimistic = useStore((s) => s.adjustTotalSpentOptimistic);
+export const ExpenseForm = ({ editingExpense, initialCategoryId, transactionType = 'expense', onSuccess }: ExpenseFormProps) => {
+  const user = useStore((s) => s.user);
+  const householdId = useStore((s) => s.householdId);
+  const addToast = useStore((s) => s.addToast);
+  const addExpenseOptimistic = useStore((s) => s.addExpenseOptimistic);
+  const updateExpenseOptimistic = useStore((s) => s.updateExpenseOptimistic);
+  const removeExpenseOptimistic = useStore((s) => s.removeExpenseOptimistic);
+  const adjustTotalSpentOptimistic = useStore((s) => s.adjustTotalSpentOptimistic);
 
- const isEdit = !!editingExpense;
+  // If editing, infer the type from the existing record
+  const effectiveType = editingExpense?.type ?? transactionType;
+  const isIncome = effectiveType === 'income';
+  const isEdit = !!editingExpense;
 
- const {
- register,
- handleSubmit,
- control,
- reset,
- setValue,
- watch,
- formState: { errors, isSubmitting },
- } = useForm<ExpenseFormValues>({
- resolver: zodResolver(expenseSchema),
- defaultValues: {
- amount: editingExpense?.amount ?? undefined,
- categoryId: editingExpense?.categoryId ?? initialCategoryId ?? DEFAULT_CATEGORY_ID,
- note: editingExpense?.note ?? '',
- date: editingExpense
- ? dateToInputValue(editingExpense.date.toDate())
- : dateToInputValue(),
- },
- });
+  const defaultCategoryId = isIncome ? DEFAULT_INCOME_CATEGORY_ID : (initialCategoryId ?? DEFAULT_CATEGORY_ID);
 
- const currentDateTime = watch('date') || '';
- const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
- const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<ExpenseFormValues>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      amount: editingExpense?.amount ?? undefined,
+      categoryId: editingExpense?.categoryId ?? defaultCategoryId,
+      note: editingExpense?.note ?? '',
+      date: editingExpense
+        ? dateToInputValue(editingExpense.date.toDate())
+        : dateToInputValue(),
+    },
+  });
 
- const onSubmit = async (data: ExpenseFormValues) => {
- if (!user) return;
- try {
- if (isEdit && editingExpense) {
- // Optimistic update
- updateExpenseOptimistic({ id: editingExpense.id, amount: data.amount, categoryId: data.categoryId, note: data.note ?? null });
- const delta = data.amount - editingExpense.amount;
- adjustTotalSpentOptimistic(delta);
- await editExpense(householdId || user.uid, { ...data, id: editingExpense.id }, editingExpense.amount);
- addToast({ type: 'success', message: 'Expense updated!' });
- } else {
- // Optimistic add — create a temporary ID
- adjustTotalSpentOptimistic(data.amount);
- const newExpense = await addExpense(householdId || user.uid, user.uid, data);
- addExpenseOptimistic(newExpense);
- addToast({ type: 'success', message: 'Expense added! 💸' });
- }
- reset();
- onSuccess();
- } catch (error: any) {
- console.error('Failed to save expense:', error);
- addToast({ type: 'error', message: error.message || 'Failed to save expense' });
- }
- };
+  const currentDateTime = watch('date') || '';
+  const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
+  const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
 
- const handleDelete = async () => {
- if (!editingExpense || !householdId || !user) return;
- try {
- await softDeleteExpense(householdId, editingExpense.id, editingExpense.amount, editingExpense.month);
- removeExpenseOptimistic(editingExpense.id);
- adjustTotalSpentOptimistic(-editingExpense.amount);
- addToast({ type: 'success', message: 'Expense deleted' });
- onSuccess();
- } catch (error: any) {
- console.error('Failed to delete expense:', error);
- addToast({ type: 'error', message: error.message || 'Failed to delete expense' });
- }
- };
+  const onSubmit = async (data: ExpenseFormValues) => {
+    if (!user) return;
+    try {
+      if (isEdit && editingExpense) {
+        updateExpenseOptimistic({ id: editingExpense.id, amount: data.amount, categoryId: data.categoryId, note: data.note ?? null });
+        // Adjust the budget optimistically (only applies to expenses)
+        if (!isIncome) {
+          const delta = data.amount - editingExpense.amount;
+          adjustTotalSpentOptimistic(delta);
+        }
+        await editExpense(householdId || user.uid, { ...data, id: editingExpense.id, type: effectiveType }, editingExpense.amount, editingExpense.type);
+        addToast({ type: 'success', message: isIncome ? 'Income updated!' : 'Expense updated!' });
+      } else {
+        if (!isIncome) adjustTotalSpentOptimistic(data.amount);
+        const newExpense = await addExpense(householdId || user.uid, user.uid, { ...data, type: effectiveType });
+        addExpenseOptimistic(newExpense);
+        addToast({ type: 'success', message: isIncome ? 'Income added! 💰' : 'Expense added! 💸' });
+      }
+      reset();
+      onSuccess();
+    } catch (error: any) {
+      console.error('Failed to save transaction:', error);
+      addToast({ type: 'error', message: error.message || 'Failed to save transaction' });
+    }
+  };
 
- return (
- <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
- {/* Amount Input */}
- <div>
- <label className="text-sm font-medium text-theme-secondary mb-1.5 block font-body">
- Amount
- </label>
- <div className="relative flex items-center">
- <span className="absolute left-4 text-theme-secondary font-bold text-xl pointer-events-none select-none">
- {CURRENCY_SYMBOL}
- </span>
- <input
- type="number"
- inputMode="numeric"
- step="1"
- placeholder="0"
- autoFocus
- className="w-full pl-10 pr-4 py-4 text-4xl font-bold rounded-2xl border-2
- bg-theme-elevated text-theme-primary
- placeholder:text-theme-tertiary
- border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent
- transition-all duration-150"
- {...register('amount', { valueAsNumber: true })}
- aria-label="Expense amount in rupees"
- aria-invalid={!!errors.amount}
- />
- </div>
- {errors.amount && (
- <p className="mt-1 text-xs text-red-500" role="alert">
- {errors.amount.message}
- </p>
- )}
- </div>
+  const handleDelete = async () => {
+    if (!editingExpense || !householdId || !user) return;
+    try {
+      await softDeleteExpense(householdId, editingExpense.id, editingExpense.amount, editingExpense.month, editingExpense.type);
+      removeExpenseOptimistic(editingExpense.id);
+      if (!isIncome) adjustTotalSpentOptimistic(-editingExpense.amount);
+      addToast({ type: 'success', message: isIncome ? 'Income deleted' : 'Expense deleted' });
+      onSuccess();
+    } catch (error: any) {
+      console.error('Failed to delete transaction:', error);
+      addToast({ type: 'error', message: error.message || 'Failed to delete transaction' });
+    }
+  };
 
- {/* Category Picker */}
- <div>
- <label className="text-sm font-medium text-theme-secondary mb-2 block font-body">
- Category
- </label>
- <Controller
- name="categoryId"
- control={control}
- render={({ field }) => (
- <CategoryPicker selectedId={field.value} onSelect={field.onChange} />
- )}
- />
- {errors.categoryId && (
- <p className="mt-1 text-xs text-red-500" role="alert">
- {errors.categoryId.message}
- </p>
- )}
- </div>
+  // Dynamic accent colour
+  const accentRing = isIncome
+    ? 'focus:border-emerald-500 focus:ring-emerald-500'
+    : 'focus:border-theme-accent focus:ring-theme-accent';
 
- {/* Note Input */}
- <Input
- label="Note (optional)"
- placeholder="What was this for?"
- {...register('note')}
- error={errors.note?.message}
- maxLength={MAX_NOTE_LENGTH}
- />
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
+      {/* Amount Input */}
+      <div>
+        <label className="text-sm font-medium text-theme-secondary mb-1.5 block font-body">
+          Amount
+        </label>
+        <div className="relative flex items-center">
+          <span className={`absolute left-4 font-bold text-xl pointer-events-none select-none ${isIncome ? 'text-emerald-500' : 'text-theme-secondary'}`}>
+            {CURRENCY_SYMBOL}
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            step="1"
+            placeholder="0"
+            autoFocus
+            className={`w-full pl-10 pr-4 py-4 text-4xl font-bold rounded-2xl border-2
+              bg-theme-elevated text-theme-primary
+              placeholder:text-theme-tertiary
+              border-transparent ${accentRing} focus:outline-none focus:ring-2
+              transition-all duration-150`}
+            {...register('amount', { valueAsNumber: true })}
+            aria-label="Transaction amount in rupees"
+            aria-invalid={!!errors.amount}
+          />
+        </div>
+        {errors.amount && (
+          <p className="mt-1 text-xs text-red-500" role="alert">
+            {errors.amount.message}
+          </p>
+        )}
+      </div>
 
- {/* Date and Time */}
- <div className="flex gap-4">
- <div className="flex-1">
- <AnimatedDatePicker
- label="Date"
- value={datePart}
- onChange={(newDate) => setValue('date', `${newDate}T${timePart}`, { shouldValidate: true })}
- />
- </div>
- <div className="flex-1">
- <AnimatedTimePicker
- label="Time"
- value={timePart}
- onChange={(newTime) => setValue('date', `${datePart}T${newTime}`, { shouldValidate: true })}
- />
- </div>
- </div>
+      {/* Category Picker */}
+      <div>
+        <label className="text-sm font-medium text-theme-secondary mb-2 block font-body">
+          Category
+        </label>
+        <Controller
+          name="categoryId"
+          control={control}
+          render={({ field }) => (
+            <CategoryPicker
+              selectedId={field.value}
+              onSelect={field.onChange}
+              transactionType={effectiveType}
+            />
+          )}
+        />
+        {errors.categoryId && (
+          <p className="mt-1 text-xs text-red-500" role="alert">
+            {errors.categoryId.message}
+          </p>
+        )}
+      </div>
 
- {/* Submit / Actions */}
- <div className="flex gap-3">
- <Button
- type="submit"
- variant="primary"
- size="lg"
- className="flex-1"
- isLoading={isSubmitting}
- >
- {isEdit ? 'Update Expense' : 'Add Expense'}
- </Button>
- {isEdit && (
- <Button
- type="button"
- variant="outline"
- size="lg"
- onClick={handleDelete}
- className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors px-4 flex-shrink-0"
- disabled={isSubmitting}
- title="Delete Expense"
- >
- <span className="material-symbols-outlined text-[20px]">delete</span>
- </Button>
- )}
- </div>
- </form>
- );
+      {/* Note Input */}
+      <Input
+        label="Note (optional)"
+        placeholder="What was this for?"
+        {...register('note')}
+        error={errors.note?.message}
+        maxLength={MAX_NOTE_LENGTH}
+      />
+
+      {/* Date and Time */}
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <AnimatedDatePicker
+            label="Date"
+            value={datePart}
+            onChange={(newDate) => setValue('date', `${newDate}T${timePart}`, { shouldValidate: true })}
+          />
+        </div>
+        <div className="flex-1">
+          <AnimatedTimePicker
+            label="Time"
+            value={timePart}
+            onChange={(newTime) => setValue('date', `${datePart}T${newTime}`, { shouldValidate: true })}
+          />
+        </div>
+      </div>
+
+      {/* Submit / Actions */}
+      <div className="flex gap-3">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className={`flex-1 ${isIncome ? '!bg-emerald-500 hover:!bg-emerald-400 !shadow-emerald-500/30' : ''}`}
+          isLoading={isSubmitting}
+        >
+          {isEdit
+            ? (isIncome ? 'Update Income' : 'Update Expense')
+            : (isIncome ? 'Add Income 💰' : 'Add Expense 💸')}
+        </Button>
+        {isEdit && (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={handleDelete}
+            className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors px-4 flex-shrink-0"
+            disabled={isSubmitting}
+            title="Delete Transaction"
+          >
+            <span className="material-symbols-outlined text-[20px]">delete</span>
+          </Button>
+        )}
+      </div>
+    </form>
+  );
 };
