@@ -75,21 +75,21 @@ export const BottomSheet = ({ isOpen, onClose, title, children }: BottomSheetPro
             aria-modal="true"
             aria-label={title ?? 'Bottom sheet'}
           >
-            <div className="bg-[var(--surface-primary)] rounded-t-3xl shadow-[var(--shadow-xl)] pb-safe">
+            <div className="bg-[#faf5ee] rounded-t-3xl shadow-[var(--shadow-xl)] pb-safe">
               {/* Handle + Header */}
               <div className="flex flex-col items-center pt-3 pb-2 px-4">
-                <div className="sheet-handle" />
+                <div className="w-9 h-1 rounded-full bg-[#d8d0c8]" />
                 {title && (
                   <div className="flex items-center justify-between w-full mt-4 mb-1">
-                    <h2 className="text-lg font-bold text-[var(--text-primary)]">
+                    <h2 className="text-lg font-bold text-[#3a302a]">
                       {title}
                     </h2>
                     <button
                       onClick={onClose}
-                      className="p-2 rounded-full hover:bg-[var(--surface-secondary)] transition-colors touch-target"
+                      className="p-2 rounded-full hover:bg-[#eae2da] transition-colors touch-target"
                       aria-label="Close"
                     >
-                      <X className="w-5 h-5 text-[var(--text-secondary)]" />
+                      <X className="w-5 h-5 text-[#605850]" />
                     </button>
                   </div>
                 )}

@@ -5,6 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { AnimatedTimePicker } from '@/components/ui/AnimatedTimePicker';
+import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { useStore } from '@/store';
 import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
@@ -57,6 +59,8 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
     handleSubmit,
     control,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
@@ -69,6 +73,10 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         : dateToInputValue(),
     },
   });
+
+  const currentDateTime = watch('date') || '';
+  const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
+  const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
 
   const onSubmit = async (data: ExpenseFormValues) => {
     if (!user) return;
@@ -171,13 +179,23 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         maxLength={MAX_NOTE_LENGTH}
       />
 
-      {/* Date/Time */}
-      <Input
-        label="Date & Time"
-        type="datetime-local"
-        {...register('date')}
-        error={errors.date?.message}
-      />
+      {/* Date and Time */}
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <AnimatedDatePicker
+            label="Date"
+            value={datePart}
+            onChange={(newDate) => setValue('date', `${newDate}T${timePart}`, { shouldValidate: true })}
+          />
+        </div>
+        <div className="flex-1">
+          <AnimatedTimePicker
+            label="Time"
+            value={timePart}
+            onChange={(newTime) => setValue('date', `${datePart}T${newTime}`, { shouldValidate: true })}
+          />
+        </div>
+      </div>
 
       {/* Submit / Actions */}
       <div className="flex gap-3">

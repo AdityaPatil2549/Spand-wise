@@ -7,7 +7,7 @@ import { useExpensesListener } from '@/hooks/useExpenses';
 import { useBudgetListener } from '@/hooks/useBudget';
 import { useCategoriesLoader } from '@/hooks/useCategories';
 import { BottomNav } from './BottomNav';
-import { FAB } from './FAB';
+
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { ExpenseForm } from '@/components/expense/ExpenseForm';
 import type { ExpenseDocument } from '@/types/firestore';
@@ -60,7 +60,6 @@ export const AppShell = ({ children }: AppShellProps) => {
 
         {/* Global UI elements */}
         <BottomNav />
-        <FAB />
         <PWAInstallPrompt />
         <OfflineIndicator />
       </div>

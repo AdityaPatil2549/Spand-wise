@@ -9,12 +9,10 @@ import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { TransitionPanel } from '@/components/ui/motion/transition-panel';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { TextEffect } from '@/components/ui/motion/text-effect';
-import { useTheme } from 'next-themes';
 import { CategoryManager } from '@/components/features/settings/CategoryManager';
 
 export default function SettingsPage() {
   const { user, isLoading } = useAuthGuard();
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const addToast = useStore((s) => s.addToast);
   const [activeTab, setActiveTab] = useState(0);
@@ -138,16 +136,9 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex bg-[#e6e0d6] rounded-lg p-1">
                       <button 
-                        onClick={() => setTheme('light')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${theme !== 'dark' ? 'bg-white shadow-sm text-[#3a302a]' : 'text-[#78706a]'}`}
+                        className="px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-white shadow-sm text-[#3a302a] cursor-default"
                       >
-                        Light
-                      </button>
-                      <button 
-                        onClick={() => setTheme('dark')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${theme === 'dark' ? 'bg-white shadow-sm text-[#3a302a]' : 'text-[#78706a]'}`}
-                      >
-                        Dark
+                        Earthy
                       </button>
                     </div>
                   </div>

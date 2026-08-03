@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Outfit, EB_Garamond, Hanken_Grotesk } from 'next/font/google';
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
-import { ThemeProvider } from '@/components/shared/ThemeProvider';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -44,10 +43,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#7c3aed' },
-    { media: '(prefers-color-scheme: dark)', color: '#4c1d95' },
-  ],
+  themeColor: '#faf5ee',
 };
 
 export default function RootLayout({
@@ -56,16 +52,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="light">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className={`${outfit.variable} ${ebGaramond.variable} ${hankenGrotesk.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <GlobalProviders>
-            {children}
-          </GlobalProviders>
-        </ThemeProvider>
+        <GlobalProviders>
+          {children}
+        </GlobalProviders>
       </body>
     </html>
   );
