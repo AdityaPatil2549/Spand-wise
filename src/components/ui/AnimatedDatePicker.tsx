@@ -123,6 +123,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
  {/* Calendar Header */}
  <div className="flex items-center justify-between w-full mb-6 px-2">
  <button
+ type="button"
  onClick={handlePrevMonth}
  className="p-3 rounded-full hover:bg-theme-elevated transition-colors text-theme-secondary"
  >
@@ -132,6 +133,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
  {format(viewDate, 'MMMM yyyy')}
  </h3>
  <button
+ type="button"
  onClick={handleNextMonth}
  className="p-3 rounded-full hover:bg-theme-elevated transition-colors text-theme-secondary"
  >
@@ -169,6 +171,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
  return (
  <div key={i} className="flex items-center justify-center h-10">
  <button
+ type="button"
  onClick={() => handleDateSelect(day)}
  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200
  ${isSelected 
@@ -191,6 +194,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
 
  <div className="w-full mt-2">
  <button
+ type="button"
  onClick={handleConfirm}
  className="w-full py-4 bg-theme-accent text-theme-inverse font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
  >
