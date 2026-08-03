@@ -52,31 +52,31 @@ export const BudgetSetupCard = () => {
  };
 
  return (
- <div className="mx-4 bg-[var(--surface-primary)] rounded-2xl p-6 shadow-[var(--shadow-card)]">
- <div className="flex items-center gap-3 mb-4">
- <div className="w-12 h-12 rounded-2xl bg-violet-100 flex items-center justify-center">
- <Wallet className="w-6 h-6 text-violet-600" />
- </div>
- <div>
- <h2 className="text-lg font-bold text-[var(--text-primary)]">Set Monthly Budget</h2>
- <p className="text-sm text-[var(--text-secondary)]">How much do you have this month?</p>
- </div>
- </div>
+    <div className="mx-4 bg-theme-surface rounded-2xl p-6 shadow-sm border border-theme-border/50">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-12 h-12 rounded-2xl bg-theme-accent/10 flex items-center justify-center">
+          <Wallet className="w-6 h-6 text-theme-accent" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-theme-primary">Set Monthly Budget</h2>
+          <p className="text-sm text-theme-secondary">How much do you have this month?</p>
+        </div>
+      </div>
 
- <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
- <Input
- prefix={CURRENCY_SYMBOL}
- type="number"
- inputMode="numeric"
- placeholder="15000"
- {...register('budgetAmount', { valueAsNumber: true })}
- error={errors.budgetAmount?.message}
- aria-label="Monthly budget amount"
- />
- <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
- Set Budget
- </Button>
- </form>
- </div>
- );
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <Input
+          prefix={CURRENCY_SYMBOL}
+          type="number"
+          inputMode="numeric"
+          placeholder="15000"
+          {...register('budgetAmount', { valueAsNumber: true })}
+          error={errors.budgetAmount?.message}
+          aria-label="Monthly budget amount"
+        />
+        <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+          Set Budget
+        </Button>
+      </form>
+    </div>
+  );
 };

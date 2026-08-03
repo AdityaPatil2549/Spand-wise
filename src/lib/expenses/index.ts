@@ -61,35 +61,54 @@ export const addExpense = async (
  * Calculates the delta between old and new amounts to correctly update totalSpent.
  */
 export const editExpense = async (
- householdId: string,
- input: EditExpenseInput,
- previousAmount: number
+  householdId: string,
+  input: EditExpenseInput,
+  previousAmount: number,
+  previousMonth: string
 ): Promise<void> => {
- const month = input.date.slice(0, 7);
- const expenseRef = expenseDocRef(householdId, input.id);
- const budgetRef = budgetDocRef(householdId, month);
- const amountDelta = input.amount - previousAmount;
+  const newMonth = input.date.slice(0, 7);
+  const expenseRef = expenseDocRef(householdId, input.id);
+  const batch = writeBatch(db);
 
- const batch = writeBatch(db);
- batch.update(expenseRef, {
- amount: input.amount,
- categoryId: input.categoryId,
- note: input.note?.trim() || null,
- date: Timestamp.fromDate(new Date(input.date)),
- month,
- updatedAt: serverTimestamp(),
- });
- if (amountDelta !== 0) {
- batch.set(
- budgetRef,
- {
- totalSpent: increment(amountDelta),
- updatedAt: serverTimestamp(),
- },
- { merge: true }
- );
- }
- await batch.commit();
+  batch.update(expenseRef, {
+    amount: input.amount,
+    categoryId: input.categoryId,
+    note: input.note?.trim() || null,
+    date: Timestamp.fromDate(new Date(input.date)),
+    month: newMonth,
+    updatedAt: serverTimestamp(),
+  });
+
+  if (newMonth !== previousMonth) {
+    // If the month changed, remove the old amount from the old month, and add the new amount to the new month
+    const oldBudgetRef = budgetDocRef(householdId, previousMonth);
+    const newBudgetRef = budgetDocRef(householdId, newMonth);
+    
+    batch.set(
+      oldBudgetRef,
+      { totalSpent: increment(-previousAmount), updatedAt: serverTimestamp() },
+      { merge: true }
+    );
+    
+    batch.set(
+      newBudgetRef,
+      { totalSpent: increment(input.amount), updatedAt: serverTimestamp() },
+      { merge: true }
+    );
+  } else {
+    // If the month is the same, just apply the delta to the current month
+    const amountDelta = input.amount - previousAmount;
+    if (amountDelta !== 0) {
+      const budgetRef = budgetDocRef(householdId, newMonth);
+      batch.set(
+        budgetRef,
+        { totalSpent: increment(amountDelta), updatedAt: serverTimestamp() },
+        { merge: true }
+      );
+    }
+  }
+
+  await batch.commit();
 };
 
 /**

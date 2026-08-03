@@ -1,5 +1,5 @@
 'use client';
-
+import { Timestamp } from 'firebase/firestore';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -83,10 +83,18 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
  try {
  if (isEdit && editingExpense) {
  // Optimistic update
- updateExpenseOptimistic({ id: editingExpense.id, amount: data.amount, categoryId: data.categoryId, note: data.note ?? null });
+ const newMonth = data.date.slice(0, 7);
+ updateExpenseOptimistic({ 
+  id: editingExpense.id, 
+  amount: data.amount, 
+  categoryId: data.categoryId, 
+  note: data.note ?? null,
+  date: Timestamp.fromDate(new Date(data.date)),
+  month: newMonth
+ });
  const delta = data.amount - editingExpense.amount;
  adjustTotalSpentOptimistic(delta);
- await editExpense(householdId || user.uid, { ...data, id: editingExpense.id }, editingExpense.amount);
+ await editExpense(householdId || user.uid, { ...data, id: editingExpense.id }, editingExpense.amount, editingExpense.month);
  addToast({ type: 'success', message: 'Expense updated!' });
  } else {
  // Optimistic add — create a temporary ID
