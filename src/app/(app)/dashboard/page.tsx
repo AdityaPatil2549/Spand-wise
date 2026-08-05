@@ -91,10 +91,10 @@ export default function DashboardPage() {
     <div className="relative flex min-h-screen w-full bg-theme-base text-theme-primary font-body">
       <style dangerouslySetInnerHTML={{__html: `
         .glass-panel {
-          background: rgba(var(--theme-surface), 0.7);
+          background: rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(var(--theme-border), 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.5);
         }
         .hover-elevate {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -113,9 +113,9 @@ export default function DashboardPage() {
               
               {isOverBudget ? (
                 <>
-                  <h1 className="font-display font-thin text-[64px] md:text-[88px] leading-[0.9] text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-[64px] md:text-[88px] leading-[0.9] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
                     <TextEffect per="word" preset="blur" as="span">You're</TextEffect>
-                    <TextEffect per="word" preset="blur" as="span" className="text-theme-danger" delay={0.1}>over budget.</TextEffect>
+                    <TextEffect per="word" preset="blur" as="span" className="text-theme-danger italic" delay={0.1}>over budget.</TextEffect>
                   </h1>
                   <TextEffect per="line" preset="fade" as="p" className="text-[18px] text-theme-secondary max-w-lg mt-8" delay={0.2}>
                     You've gone past your planned spending limit this month. Let's review recent expenses and pull back where possible.
@@ -123,9 +123,9 @@ export default function DashboardPage() {
                 </>
               ) : (
                 <>
-                  <h1 className="font-display font-thin text-[64px] md:text-[88px] leading-[0.9] text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-[64px] md:text-[88px] leading-[0.9] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
                     <TextEffect per="word" preset="blur" as="span">You're on</TextEffect>
-                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent-light" delay={0.1}>track.</TextEffect>
+                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent italic" delay={0.1}>track.</TextEffect>
                   </h1>
                   <TextEffect per="line" preset="fade" as="p" className="text-[18px] text-theme-secondary max-w-lg mt-8" delay={0.2}>
                     Your spending is well within the allocated budget limits for this period. Keep it up.
@@ -138,7 +138,7 @@ export default function DashboardPage() {
               <AddExpenseMorph>
                 <div className="mt-12 inline-block">
                   <Magnetic intensity={0.2} springOptions={{ bounce: 0.1 }} actionArea="global">
-                    <span className="bg-theme-accent text-theme-white px-8 py-4 rounded-sm flex items-center justify-center gap-3 hover-elevate active:scale-[0.98] transition-all font-medium text-[20px] cursor-pointer">
+                    <span className="bg-theme-accent text-theme-white px-8 py-4 rounded-full flex items-center justify-center gap-3 hover-elevate active:scale-[0.98] transition-all font-medium text-[20px] shadow-lg shadow-theme-accent/20 cursor-pointer">
                       <span className="material-symbols-outlined text-[24px]">add</span>
                       Add Transaction
                     </span>
@@ -147,8 +147,8 @@ export default function DashboardPage() {
               </AddExpenseMorph>
             </div>
             <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-4 mt-8">
-              <Link href="/analytics" className="hover-elevate bg-theme-surface p-6 rounded-sm flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-12 h-12 rounded-sm bg-theme-elevated flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
+              <Link href="/analytics" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
                   <span className="material-symbols-outlined">analytics</span>
                 </div>
                 <div>
@@ -156,8 +156,8 @@ export default function DashboardPage() {
                   <p className="text-sm text-theme-secondary">Deep dive into spending</p>
                 </div>
               </Link>
-              <Link href="/settings" className="hover-elevate bg-theme-surface p-6 rounded-sm flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-12 h-12 rounded-sm bg-theme-elevated flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
+              <Link href="/settings" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
                   <span className="material-symbols-outlined">edit_note</span>
                 </div>
                 <div>
@@ -168,17 +168,23 @@ export default function DashboardPage() {
             </AnimatedGroup>
           </div>
           <div className="lg:col-span-5 w-full mt-12 lg:mt-0">
-            <div className={`relative w-full rounded-sm overflow-hidden bg-theme-surface border ${isOverBudget ? 'border-theme-danger' : 'border-theme-border/50'}`}>
+            <div className={`relative w-full rounded-[32px] overflow-hidden hover-elevate group ${isOverBudget ? 'ring-1 ring-theme-danger/30 shadow-[0_0_40px_rgba(192,57,43,0.15)]' : ''}`}>
               {isOverBudget && <BorderTrail size={120} transition={{ ease: 'linear', duration: 4, repeat: Infinity }} />}
+              <div className="absolute inset-0 bg-gradient-to-br from-theme-danger/20 via-theme-surface-hover to-theme-base opacity-90 z-0"></div>
+              {isOverBudget ? (
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-theme-danger opacity-10 rounded-full blur-3xl"></div>
+              ) : (
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-theme-accent opacity-10 rounded-full blur-3xl"></div>
+              )}
               <div className="relative z-10 p-8 md:p-12 h-full flex flex-col justify-between min-h-[400px]">
                 <div className="flex justify-between items-center">
                   {isOverBudget ? (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-theme-danger/10 text-theme-danger text-sm font-medium rounded-xs">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-danger/10 text-theme-danger text-sm font-medium">
                       <span className="material-symbols-outlined text-[16px]">warning</span>
                       Over budget
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-theme-accent-light/10 text-theme-accent-light text-sm font-medium rounded-xs">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-accent/10 text-theme-accent text-sm font-medium">
                       <span className="material-symbols-outlined text-[16px]">check_circle</span>
                       On Track
                     </span>
@@ -186,8 +192,8 @@ export default function DashboardPage() {
                   <span className="material-symbols-outlined text-theme-secondary">more_horiz</span>
                 </div>
                 <div className="space-y-2 mt-12">
-                  <p className="text-[16px] text-theme-secondary font-medium font-mono uppercase tracking-widest">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
-                  <h2 className="font-display font-light text-[64px] leading-none text-theme-primary tracking-tight flex items-center">
+                  <p className="text-[16px] text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
+                  <h2 className="font-display text-[56px] leading-none text-theme-primary tracking-tight flex items-center glow-text">
                     {isOverBudget ? '-' : ''}<AnimatedNumber value={Math.abs(balance)} />
                   </h2>
                 </div>

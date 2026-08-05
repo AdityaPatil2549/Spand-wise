@@ -6,14 +6,13 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: ['class', ':is(.dark, .ocean, .forest, .cyberpunk, .neo-kinpaku-pro)'],
+  darkMode: ['class', ':is(.dark, .ocean, .forest, .cyberpunk)'],
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-albert)", "system-ui", "-apple-system", "sans-serif"],
-        display: ["var(--font-alumni)", "sans-serif"],
-        body: ["var(--font-albert)", "sans-serif"],
-        mono: ["SFMono-Regular", "Roboto Mono", "Consolas", "monospace"],
+        sans: ["var(--font-quicksand)", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-caveat)", "cursive"],
+        body: ["var(--font-quicksand)", "sans-serif"],
       },
       colors: {
         theme: {
@@ -36,19 +35,8 @@ const config: Config = {
         },
       },
       borderRadius: {
-        none: "0",
-        xs: "2px",
-        code: "3px",
-        sm: "4px",
-        "control-sm": "5px",
-        md: "6px",
-        "control-md": "7px",
-        lg: "8px",
-        xl: "10px",
-        "2xl": "12px",
-        "3xl": "14px",
-        "4xl": "16px",
-        pill: "999px",
+        "3xl": "1.5rem",
+        "4xl": "2rem",
       },
       boxShadow: {
         fab: "0 8px 16px -4px rgba(139, 92, 246, 0.45)",

@@ -127,10 +127,10 @@ export function TopAppBar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-4 w-80 bg-theme-surface border border-theme-border/50 shadow-none rounded-sm overflow-hidden origin-top-right"
+                className="absolute right-0 mt-4 w-80 bg-theme-white border border-theme-border/50 shadow-2xl rounded-2xl overflow-hidden origin-top-right"
               >
-                <div className="p-4 border-b border-theme-border/30 flex justify-between items-center bg-theme-elevated/30">
-                  <h4 className="font-body font-medium text-theme-primary">Notifications</h4>
+                <div className="p-4 border-b border-theme-border/30 flex justify-between items-center bg-theme-surface/30">
+                  <h4 className="font-headline font-medium text-theme-primary">Notifications</h4>
                   <button 
                     onClick={() => {
                       const allIds = allNotifications.map(a => a.id);
@@ -148,8 +148,8 @@ export function TopAppBar() {
                 </div>
                 <div className="max-h-[300px] overflow-y-auto p-2">
                   {visibleNotifications.map((alert) => (
-                    <div key={alert.id} className="p-3 hover:bg-theme-surface-hover rounded-sm transition-colors cursor-pointer flex gap-3">
-                      <div className={`w-8 h-8 rounded-sm bg-${alert.color}/10 flex items-center justify-center text-${alert.color} shrink-0`}>
+                    <div key={alert.id} className="p-3 hover:bg-theme-surface-hover rounded-xl transition-colors cursor-pointer flex gap-3">
+                      <div className={`w-8 h-8 rounded-full bg-${alert.color}/10 flex items-center justify-center text-${alert.color} shrink-0`}>
                         <span className="material-symbols-outlined text-sm">{alert.icon}</span>
                       </div>
                       <div>
@@ -180,10 +180,10 @@ export function TopAppBar() {
             className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center"
           >
             {user?.photoURL ? (
-              <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-8 h-8 rounded-sm border border-theme-border/50 object-cover" />
+              <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-theme-border/50 object-cover" />
             ) : (
-              <div className="w-8 h-8 rounded-sm bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
-                <span className="material-symbols-outlined text-theme-accent text-[20px]">account_circle</span>
+              <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
+                <span className="material-symbols-outlined text-theme-accent text-xl">account_circle</span>
               </div>
             )}
           </button>
@@ -195,25 +195,25 @@ export function TopAppBar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-4 w-72 bg-theme-surface border border-theme-border/50 shadow-none rounded-sm overflow-hidden origin-top-right"
+                className="absolute right-0 mt-4 w-72 bg-theme-white border border-theme-border/50 shadow-2xl rounded-2xl overflow-hidden origin-top-right"
               >
                 {/* ID Card Header */}
-                <div className="p-5 border-b border-theme-border/30 bg-theme-elevated/30">
+                <div className="p-5 border-b border-theme-border/30 bg-theme-surface/30">
                   <div className="flex items-center gap-3">
                     {user?.photoURL ? (
-                      <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-10 h-10 rounded-sm border border-theme-border/50 object-cover" />
+                      <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full border border-theme-border/50 object-cover" />
                     ) : (
-                      <div className="w-10 h-10 rounded-sm bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
-                        <span className="font-display text-lg text-theme-accent">
+                      <div className="w-12 h-12 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
+                        <span className="font-headline text-lg text-theme-accent">
                           {user?.displayName ? user.displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
                         </span>
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-body text-sm text-theme-primary font-medium truncate">
+                      <p className="font-headline text-theme-primary font-medium truncate">
                         {user?.displayName || 'Welcome back'}
                       </p>
-                      <p className="font-mono text-[11px] text-theme-secondary truncate mt-0.5">
+                      <p className="font-body text-xs text-theme-secondary truncate">
                         {user?.email}
                       </p>
                     </div>
@@ -223,18 +223,18 @@ export function TopAppBar() {
                 {/* Financial Snapshot */}
                 {budget && budget.budgetAmount > 0 && (
                   <div className="p-4 border-b border-theme-border/30">
-                    <p className="text-[11px] font-mono text-theme-secondary uppercase tracking-widest mb-2">Monthly Budget</p>
+                    <p className="text-xs font-medium text-theme-secondary uppercase tracking-widest mb-2">Monthly Budget</p>
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="font-mono font-medium text-[15px] text-theme-primary tabular-nums">
+                      <span className="font-headline text-sm text-theme-primary">
                         {CURRENCY_SYMBOL}{budget.totalSpent.toLocaleString()}
                       </span>
-                      <span className="font-mono text-[11px] text-theme-tertiary tabular-nums">
+                      <span className="text-xs text-theme-tertiary">
                         of {CURRENCY_SYMBOL}{budget.budgetAmount.toLocaleString()}
                       </span>
                     </div>
-                    <div className="w-full bg-theme-base rounded-sm h-1.5 overflow-hidden">
+                    <div className="w-full bg-theme-surface rounded-full h-1.5 overflow-hidden">
                       <div 
-                        className={`h-full rounded-sm transition-all duration-700 ${(budget.totalSpent / budget.budgetAmount) > 0.85 ? 'bg-theme-danger' : 'bg-theme-accent'}`} 
+                        className={`h-full rounded-full transition-all duration-700 ${(budget.totalSpent / budget.budgetAmount) > 0.85 ? 'bg-theme-danger' : 'bg-theme-accent'}`} 
                         style={{ width: `${Math.min(100, (budget.totalSpent / budget.budgetAmount) * 100)}%` }}
                       ></div>
                     </div>
@@ -246,9 +246,9 @@ export function TopAppBar() {
                   <Link 
                     href="/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-sm hover:bg-theme-surface-hover text-theme-primary transition-colors text-sm font-medium"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-surface-hover text-theme-primary transition-colors text-sm font-medium"
                   >
-                    <span className="material-symbols-outlined text-[18px] text-theme-tertiary">settings</span>
+                    <span className="material-symbols-outlined text-[20px] text-theme-tertiary">settings</span>
                     Account Settings
                   </Link>
                   <button 
@@ -261,9 +261,9 @@ export function TopAppBar() {
                         addToast({ type: 'error', message: 'Failed to sign out.' });
                       }
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-sm hover:bg-theme-danger/10 hover:text-theme-danger text-theme-primary transition-colors text-sm font-medium"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-danger/10 hover:text-theme-danger text-theme-primary transition-colors text-sm font-medium"
                   >
-                    <span className="material-symbols-outlined text-[18px] text-theme-danger/70">logout</span>
+                    <span className="material-symbols-outlined text-[20px] text-theme-danger/70">logout</span>
                     Sign Out
                   </button>
                 </div>

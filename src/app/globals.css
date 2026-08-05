@@ -180,31 +180,6 @@
     --theme-white: 16 26 52;
     --theme-inverse: 15 23 42;
   }
-
-  .neo-kinpaku-pro {
-    /* Impeccable Neo Kinpaku */
-    --theme-base: 19 18 16; /* Lacquer Black */
-    --theme-surface: 32 30 27; /* Raised Lacquer */
-    --theme-surface-hover: 43 40 37; /* Graphite */
-    --theme-elevated: 9 8 7; /* Lacquer Deep */
-    --theme-elevated-hover: 19 18 16;
-    
-    --theme-border: 199 199 199; /* Neutral Hairline Base */
-    
-    --theme-primary: 222 222 222; /* Text Warm */
-    --theme-secondary: 175 175 175; /* Text Muted */
-    --theme-tertiary: 140 140 140; /* Text Faint */
-    
-    --theme-accent: 212 175 55; /* Kinpaku Gold */
-    --theme-accent-hover: 232 205 105; /* Kinpaku Pale */
-    --theme-accent-light: 52 168 166; /* Verdigris Patina */
-    
-    --theme-danger: 227 66 52; /* Vermilion */
-    --theme-danger-light: 100 30 20;
-    
-    --theme-white: 41 37 32; /* Dark Ink */
-    --theme-inverse: 240 240 240; /* Champagne */
-  }
 }
 
 @layer base {
@@ -218,17 +193,21 @@
     color-scheme: light;
   }
   
-  .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neo-kinpaku-pro {
+  .dark, .ocean, .forest, .cyberpunk, .oled-pro {
     color-scheme: dark;
   }
 
   body {
-    background-color: rgb(var(--theme-base));
-    color: rgb(var(--theme-primary));
+    background-color: var(--surface-base);
+    background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+    color: var(--text-primary);
+    transition: background-color var(--duration-normal) var(--ease-in-out),
+                color var(--duration-normal) var(--ease-in-out);
     min-height: 100vh;
   }
   
   .dark body {
+    background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
   }
 
   * {
