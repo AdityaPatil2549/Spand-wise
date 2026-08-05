@@ -10,6 +10,7 @@ import { CURRENCY_SYMBOL } from '@/config/constants';
 export function TopAppBar() {
   const { addToast, expenses, budget, categoriesMap } = useStore();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   // Close notifications on click outside
@@ -70,7 +71,24 @@ export function TopAppBar() {
     return newAlerts;
   }, [budget, expenses, categoriesMap]);
 
-  // If we have actual alerts, show the red dot
+  const allNotifications = useMemo(() => {
+    return [
+      ...alerts,
+      {
+        id: 'static-feature',
+        title: 'New Feature',
+        message: 'Try our new analytics dashboard to spot trends!',
+        icon: 'tips_and_updates',
+        color: 'theme-accent'
+      }
+    ];
+  }, [alerts]);
+
+  const visibleNotifications = showAllNotifications 
+    ? allNotifications 
+    : allNotifications.slice(0, 3);
+
+  // If we have actual dynamic alerts, show the red dot
   const hasUnread = alerts.length > 0;
 
   return (
@@ -116,7 +134,7 @@ export function TopAppBar() {
                   </button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto p-2">
-                  {alerts.map((alert) => (
+                  {visibleNotifications.map((alert) => (
                     <div key={alert.id} className="p-3 hover:bg-theme-surface-hover rounded-xl transition-colors cursor-pointer flex gap-3">
                       <div className={`w-8 h-8 rounded-full bg-${alert.color}/10 flex items-center justify-center text-${alert.color} shrink-0`}>
                         <span className="material-symbols-outlined text-sm">{alert.icon}</span>
@@ -128,15 +146,14 @@ export function TopAppBar() {
                     </div>
                   ))}
 
-                  <div className="p-3 hover:bg-theme-surface-hover rounded-xl transition-colors cursor-pointer flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center text-theme-accent shrink-0">
-                      <span className="material-symbols-outlined text-sm">tips_and_updates</span>
-                    </div>
-                    <div>
-                      <p className="font-body text-sm text-theme-primary font-medium">New Feature</p>
-                      <p className="font-body text-xs text-theme-secondary mt-0.5">Try our new analytics dashboard to spot trends!</p>
-                    </div>
-                  </div>
+                  {allNotifications.length > 3 && (
+                    <button 
+                      onClick={() => setShowAllNotifications(!showAllNotifications)}
+                      className="w-full mt-2 py-2 text-center text-sm font-medium text-theme-accent hover:bg-theme-accent/5 rounded-lg transition-colors"
+                    >
+                      {showAllNotifications ? 'Show less' : `Show ${allNotifications.length - 3} more`}
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}
