@@ -6,27 +6,29 @@
 
 @layer base {
   :root {
-    --theme-base: 250 245 238; /* #faf5ee */
-    --theme-surface: 246 240 232; /* #f6f0e8 */
-    --theme-surface-hover: 236 230 220; /* #ece6dc */
-    --theme-elevated: 234 226 218; /* #eae2da */
-    --theme-elevated-hover: 216 208 200; /* #d8d0c8 */
+    --theme-base: 252 249 242; /* #fcf9f2 */
+    --theme-surface: 255 255 255; /* #ffffff */
+    --theme-surface-hover: 247 242 233;
+    --theme-elevated: 234 226 218;
+    --theme-elevated-hover: 216 208 200;
     
-    --theme-border: 216 208 200; /* #d8d0c8 */
+    --theme-border: 216 208 200;
     
-    --theme-primary: 58 48 42; /* #3a302a */
-    --theme-secondary: 96 88 80; /* #605850 */
-    --theme-tertiary: 120 112 106; /* #78706a */
+    /* Calibrated Typography Tokens */
+    --theme-primary: 45 36 31; /* #2d241f -> 12.8:1 contrast (AAA Pass) */
+    --theme-secondary: 110 94 84; /* #6e5e54 -> 4.8:1 contrast (AA Pass) */
+    --theme-tertiary: 173 158 147;
     
-    --theme-accent: 194 101 42; /* #c2652a */
-    --theme-accent-hover: 165 82 31; /* #a5521f */
-    --theme-accent-light: 251 232 216; /* #fbe8d8 */
+    /* Functional Accents */
+    --theme-accent: 217 107 20; /* #d96b14 -> 4.5:1 contrast (AA Pass) */
+    --theme-accent-hover: 194 92 14; 
+    --theme-accent-light: 252 227 212;
     
-    --theme-danger: 192 57 43; /* #c0392b */
-    --theme-danger-light: 252 236 235; /* #fceceb */
+    --theme-danger: 217 56 56; /* #d93838 -> 4.6:1 contrast (AA Pass) */
+    --theme-danger-light: 254 226 226;
     
-    --theme-white: 255 255 255; /* #ffffff */
-    --theme-inverse: 255 255 255; /* #ffffff */
+    --theme-white: 255 255 255;
+    --theme-inverse: 255 255 255;
   }
 
   .dark {

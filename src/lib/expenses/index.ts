@@ -174,16 +174,24 @@ export const restoreExpense = async (
  * Ordered by date descending (most recent first).
  */
 export const getMonthlyExpenses = async (
- householdId: string,
- month: string
+  householdId: string,
+  month: string,
+  signal?: AbortSignal
 ): Promise<ExpenseDocument[]> => {
- const q = query(
- expensesColRef(householdId),
- where('month', '==', month),
- where('isDeleted', '==', false),
- orderBy('date', 'desc'),
- limit(EXPENSES_PAGE_SIZE)
- );
- const snap = await getDocs(q);
- return snap.docs.map((d) => ({ ...d.data(), id: d.id } as ExpenseDocument));
+  const q = query(
+    expensesColRef(householdId),
+    where('month', '==', month),
+    where('isDeleted', '==', false),
+    orderBy('date', 'desc'),
+    limit(EXPENSES_PAGE_SIZE)
+  );
+  
+  const snap = await getDocs(q);
+  
+  // Throw abort error if the request was cancelled during fetch
+  if (signal?.aborted) {
+    throw new DOMException('Aborted', 'AbortError');
+  }
+  
+  return snap.docs.map((d) => ({ ...d.data(), id: d.id } as ExpenseDocument));
 };

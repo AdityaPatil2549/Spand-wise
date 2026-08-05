@@ -10,6 +10,15 @@ import { Timestamp } from 'firebase/firestore';
  * /users/{uid}
  * User profile document. Created on first Google OAuth login.
  */
+export interface QuickAddPreset {
+  id: string;
+  amount: number;
+  categoryId: string;
+  note: string;
+  icon?: string;
+  color?: string;
+}
+
 export interface UserDocument {
  uid: string;
  email: string;
@@ -21,6 +30,8 @@ export interface UserDocument {
  onboardingComplete: boolean;
  /** Household ID this user belongs to */
  householdId: string;
+ /** Custom Quick Add presets configured by the user */
+ quickAddPresets?: QuickAddPreset[];
 }
 
 /**

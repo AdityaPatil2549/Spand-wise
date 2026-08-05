@@ -114,31 +114,30 @@ export default function AnalyticsPage() {
  <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-theme-danger/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
  <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm relative z-10 mb-2">Category Split</span>
  <div className="relative z-10 flex-1 w-full h-full">
- {pieData.length > 0 ? (
  <ResponsiveContainer width="100%" height="100%">
- <PieChart>
- <Pie
- data={pieData}
- cx="50%"
- cy="50%"
- innerRadius={50}
- outerRadius={80}
- paddingAngle={5}
- dataKey="value"
- >
- {pieData.map((entry, index) => (
- <Cell key={`cell-${index}`} fill={entry.color} />
- ))}
- </Pie>
- <Tooltip 
- formatter={(value: any) => `${CURRENCY_SYMBOL}${Number(value).toFixed(2)}`}
- contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
- />
- </PieChart>
- </ResponsiveContainer>
- ) : (
- <div className="flex items-center justify-center h-full text-theme-tertiary">No data yet</div>
- )}
+  <PieChart>
+    <Pie
+      data={pieData.length > 0 ? pieData : [{ name: 'No Expenses Yet', value: 100, color: '#e2dbce' }]}
+      cx="50%"
+      cy="50%"
+      innerRadius={50}
+      outerRadius={80}
+      paddingAngle={pieData.length > 0 ? 5 : 0}
+      dataKey="value"
+      stroke="none"
+    >
+      {(pieData.length > 0 ? pieData : [{ name: 'No Expenses Yet', value: 100, color: '#e2dbce' }]).map((entry, index) => (
+        <Cell key={`cell-${index}`} fill={entry.color} opacity={pieData.length > 0 ? 1 : 0.4} />
+      ))}
+    </Pie>
+    {pieData.length > 0 && (
+      <Tooltip 
+        formatter={(value: any) => `${CURRENCY_SYMBOL}${Number(value).toFixed(2)}`}
+        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+      />
+    )}
+  </PieChart>
+</ResponsiveContainer>
  </div>
  </div>
  </CarouselItem>
@@ -223,16 +222,31 @@ export default function AnalyticsPage() {
  </div>
  </AccordionTrigger>
  <AccordionContent className="pt-4 pb-2">
-  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div className="flex flex-col gap-1">
-      <p className="text-theme-secondary text-sm">
-        You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
-        This represents {percentage}% of your total overall expenses.
-      </p>
+  <div className="flex flex-col md:flex-row justify-between gap-6">
+    <div className="flex flex-col gap-4 flex-1">
+      
+      {/* Total Spend Progress Bar */}
+      <div>
+        <div className="flex justify-between text-xs text-theme-secondary mb-1">
+          <span>% of Total Monthly Spend</span>
+          <span>{percentage}%</span>
+        </div>
+        <div className="w-full h-1.5 bg-theme-elevated rounded-full overflow-hidden">
+          <div className="h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: cat?.color }}></div>
+        </div>
+      </div>
+
+      {/* Category Limit Progress Bar */}
       {categoryLimit && (
-        <p className={`text-sm font-medium ${isOverLimit ? 'text-theme-danger' : 'text-theme-accent'}`}>
-          You used {categoryLimitPercent}% of your {CURRENCY_SYMBOL}{categoryLimit} limit.
-        </p>
+        <div>
+          <div className="flex justify-between text-xs text-theme-secondary mb-1">
+            <span>% of Category Limit ({CURRENCY_SYMBOL}{categoryLimit})</span>
+            <span className={isOverLimit ? 'text-theme-danger font-medium' : ''}>{categoryLimitPercent}%</span>
+          </div>
+          <div className="w-full h-1.5 bg-theme-elevated rounded-full overflow-hidden">
+            <div className={`h-full rounded-full ${isOverLimit ? 'bg-theme-danger' : 'bg-theme-accent'}`} style={{ width: `${Math.min(Number(categoryLimitPercent), 100)}%` }}></div>
+          </div>
+        </div>
       )}
     </div>
     

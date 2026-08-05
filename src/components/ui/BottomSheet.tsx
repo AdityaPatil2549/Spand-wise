@@ -3,12 +3,13 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useViewport } from '@/hooks/useViewport';
 
 interface BottomSheetProps {
- isOpen: boolean;
- onClose: () => void;
- title?: string;
- children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
 }
 
 /**
@@ -18,7 +19,8 @@ interface BottomSheetProps {
  * Traps focus when open, restores on close.
  */
 export const BottomSheet = ({ isOpen, onClose, title, children }: BottomSheetProps) => {
- const sheetRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const { viewportHeight } = useViewport();
 
  // Close on Escape key
  useEffect(() => {
@@ -75,8 +77,11 @@ export const BottomSheet = ({ isOpen, onClose, title, children }: BottomSheetPro
  aria-modal="true"
  aria-label={title ?? 'Bottom sheet'}
  >
- <div className="bg-theme-base rounded-t-3xl shadow-[var(--shadow-xl)] pb-safe">
- {/* Handle + Header */}
+      <div 
+        className="bg-theme-base rounded-t-3xl shadow-[var(--shadow-xl)] pb-safe overflow-y-auto"
+        style={{ maxHeight: viewportHeight ? `${viewportHeight * 0.9}px` : '90dvh' }}
+      >
+        {/* Handle + Header */}
  <div className="flex flex-col items-center pt-3 pb-2 px-4">
  <div className="w-9 h-1 rounded-full bg-theme-border" />
  {title && (

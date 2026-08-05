@@ -12,6 +12,7 @@ import { TextEffect } from '@/components/ui/motion/text-effect';
 import { CategoryManager } from '@/components/features/settings/CategoryManager';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
 import { BudgetSetupCard } from '@/components/budget/BudgetSetupCard';
+import { QuickAddManager } from '@/components/features/settings/QuickAddManager';
 
 export default function SettingsPage() {
   const { user, isLoading } = useAuthGuard();
@@ -139,6 +140,9 @@ export default function SettingsPage() {
                     <BudgetSetupCard />
                   </div>
                   <ThemeSelector />
+                  <div className="pt-4">
+                    <QuickAddManager />
+                  </div>
                   <div className="flex items-center justify-between p-4 bg-theme-surface rounded-xl border border-theme-border/50">
                     <div>
                       <h4 className="font-medium text-theme-primary">Notifications</h4>
@@ -157,7 +161,7 @@ export default function SettingsPage() {
                 <CategoryManager />
               </div>
 
-              {/* Export Tab */}
+              {/* Export & Data Tab */}
               <div className="py-2">
                 <h3 className="font-headline text-2xl text-theme-primary mb-6">Data & Privacy</h3>
                 <div className="space-y-6">
@@ -174,6 +178,50 @@ export default function SettingsPage() {
                       className="px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 transition-colors shadow-sm"
                     >
                       Generate Export
+                    </button>
+                  </div>
+
+                  <div className="p-6 border border-theme-border/50 bg-theme-surface rounded-2xl flex flex-col items-start gap-4">
+                    <div className="w-12 h-12 bg-theme-border/30 text-theme-primary rounded-full flex items-center justify-center">
+                      <span className="material-symbols-outlined">science</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-theme-primary text-lg">Developer Tools</h4>
+                      <p className="text-theme-secondary text-sm max-w-md mt-1">Inject realistic demo data for the current month to preview UI density and analytics.</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const { getLocalMonthString } = await import('@/lib/date-sharding');
+                        const { addExpense } = await import('@/lib/expenses/index');
+                        const { DEFAULT_CATEGORY_ID } = await import('@/config/categories');
+                        
+                        if (!user) return;
+                        const householdId = useStore.getState().householdId || user.uid;
+                        const categories = Array.from(useStore.getState().categoriesMap.keys());
+                        
+                        addToast({ type: 'info', message: 'Seeding demo data...' });
+                        
+                        try {
+                          const today = new Date();
+                          for (let i = 0; i < 15; i++) {
+                            const pastDate = new Date();
+                            pastDate.setDate(today.getDate() - Math.floor(Math.random() * 28));
+                            
+                            await addExpense(householdId, user.uid, {
+                              amount: Math.floor(Math.random() * 3000) + 100,
+                              categoryId: categories[Math.floor(Math.random() * categories.length)] || DEFAULT_CATEGORY_ID,
+                              note: 'Demo expense',
+                              date: pastDate.toISOString(),
+                            });
+                          }
+                          addToast({ type: 'success', message: 'Successfully seeded 15 expenses!' });
+                        } catch (e: any) {
+                          addToast({ type: 'error', message: 'Failed to seed data: ' + e.message });
+                        }
+                      }}
+                      className="px-6 py-2.5 bg-theme-elevated text-theme-primary font-medium rounded-xl hover:bg-theme-border transition-colors border border-theme-border/50"
+                    >
+                      Seed Demo Data
                     </button>
                   </div>
                 </div>

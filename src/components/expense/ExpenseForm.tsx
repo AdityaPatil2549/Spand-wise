@@ -11,6 +11,7 @@ import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { useStore } from '@/store';
 import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
+import { getLocalMonthString } from '@/lib/date-sharding';
 import {
  MAX_EXPENSE_AMOUNT,
  MIN_EXPENSE_AMOUNT,
@@ -78,52 +79,95 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
  const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
  const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
 
- const onSubmit = async (data: ExpenseFormValues) => {
- if (!user) return;
- try {
- if (isEdit && editingExpense) {
- // Optimistic update
- const newMonth = data.date.slice(0, 7);
- updateExpenseOptimistic({ 
-  id: editingExpense.id, 
-  amount: data.amount, 
-  categoryId: data.categoryId, 
-  note: data.note ?? null,
-  date: Timestamp.fromDate(new Date(data.date)),
-  month: newMonth
- });
- const delta = data.amount - editingExpense.amount;
- adjustTotalSpentOptimistic(delta);
- await editExpense(householdId || user.uid, { ...data, id: editingExpense.id }, editingExpense.amount, editingExpense.month);
- addToast({ type: 'success', message: 'Expense updated!' });
- } else {
- // Optimistic add — create a temporary ID
- adjustTotalSpentOptimistic(data.amount);
- const newExpense = await addExpense(householdId || user.uid, user.uid, data);
- addExpenseOptimistic(newExpense);
- addToast({ type: 'success', message: 'Expense added! 💸' });
- }
- reset();
- onSuccess();
- } catch (error: any) {
- console.error('Failed to save expense:', error);
- addToast({ type: 'error', message: error.message || 'Failed to save expense' });
- }
- };
+  const onSubmit = async (data: ExpenseFormValues) => {
+    if (!user) return;
+    const previousState = isEdit ? editingExpense : null;
+    let tempId = '';
 
- const handleDelete = async () => {
- if (!editingExpense || !householdId || !user) return;
- try {
- await softDeleteExpense(householdId, editingExpense.id, editingExpense.amount, editingExpense.month);
- removeExpenseOptimistic(editingExpense.id);
- adjustTotalSpentOptimistic(-editingExpense.amount);
- addToast({ type: 'success', message: 'Expense deleted' });
- onSuccess();
- } catch (error: any) {
- console.error('Failed to delete expense:', error);
- addToast({ type: 'error', message: error.message || 'Failed to delete expense' });
- }
- };
+    try {
+      if (isEdit && editingExpense) {
+        // Optimistic update
+        const newMonth = getLocalMonthString(new Date(data.date));
+        updateExpenseOptimistic({ 
+          id: editingExpense.id, 
+          amount: data.amount, 
+          categoryId: data.categoryId, 
+          note: data.note ?? null,
+          date: Timestamp.fromDate(new Date(data.date)),
+          month: newMonth
+        });
+        const delta = data.amount - editingExpense.amount;
+        adjustTotalSpentOptimistic(delta);
+        
+        await editExpense(householdId || user.uid, { ...data, id: editingExpense.id }, editingExpense.amount, editingExpense.month);
+        addToast({ type: 'success', message: 'Expense updated!' });
+      } else {
+        // Optimistic add — create a temporary ID
+        tempId = `temp-${Date.now()}`;
+        const newMonth = getLocalMonthString(new Date(data.date));
+        const tempExpense: ExpenseDocument = {
+          id: tempId,
+          amount: data.amount,
+          categoryId: data.categoryId,
+          note: data.note ?? null,
+          date: Timestamp.fromDate(new Date(data.date)),
+          month: newMonth,
+          isDeleted: false,
+          createdAt: Timestamp.now(),
+          createdBy: user.uid,
+          updatedAt: Timestamp.now(),
+        };
+        
+        addExpenseOptimistic(tempExpense);
+        adjustTotalSpentOptimistic(data.amount);
+        
+        const newExpense = await addExpense(householdId || user.uid, user.uid, data);
+        // Replace temp expense with real one
+        removeExpenseOptimistic(tempId);
+        addExpenseOptimistic(newExpense);
+        addToast({ type: 'success', message: 'Expense added! 💸' });
+      }
+      reset();
+      onSuccess();
+    } catch (error: any) {
+      console.error('Failed to save expense:', error);
+      
+      // ATOMIC ROLLBACK
+      if (isEdit && previousState) {
+        // Rollback update
+        updateExpenseOptimistic(previousState);
+        adjustTotalSpentOptimistic(previousState.amount - data.amount);
+      } else if (!isEdit && tempId) {
+        // Rollback add
+        removeExpenseOptimistic(tempId);
+        adjustTotalSpentOptimistic(-data.amount);
+      }
+      
+      addToast({ type: 'error', message: error.message || 'Failed to save expense' });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingExpense || !householdId || !user) return;
+    try {
+      // Optimistic delete
+      removeExpenseOptimistic(editingExpense.id);
+      adjustTotalSpentOptimistic(-editingExpense.amount);
+      
+      await softDeleteExpense(householdId, editingExpense.id, editingExpense.amount, editingExpense.month);
+      addToast({ type: 'success', message: 'Expense deleted' });
+      onSuccess();
+    } catch (error: any) {
+      console.error('Failed to delete expense:', error);
+      
+      // ATOMIC ROLLBACK
+      const { restoreExpenseOptimistic } = useStore.getState();
+      restoreExpenseOptimistic(editingExpense);
+      adjustTotalSpentOptimistic(editingExpense.amount);
+      
+      addToast({ type: 'error', message: error.message || 'Failed to delete expense' });
+    }
+  };
 
  return (
  <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
@@ -142,7 +186,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
  step="1"
  placeholder="0"
  autoFocus
- className="w-full pl-10 pr-4 py-4 text-4xl font-bold rounded-2xl border-2
+ className="w-full pl-10 pr-4 py-4 text-4xl font-manrope tabular-nums font-semibold rounded-2xl border-2
  bg-theme-elevated text-theme-primary
  placeholder:text-theme-tertiary
  border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent

@@ -125,14 +125,16 @@ export type CarouselNavigationProps = {
 };
 
 function CarouselNavigation({
- className,
- classNameButton,
- alwaysShow,
+  className,
+  classNameButton,
+  alwaysShow,
 }: CarouselNavigationProps) {
- const { index, setIndex, itemsCount, visibleItemsCount } = useCarousel();
- const maxIndex = Math.max(0, itemsCount - visibleItemsCount);
+  const { index, setIndex, itemsCount, visibleItemsCount } = useCarousel();
+  const maxIndex = Math.max(0, itemsCount - visibleItemsCount);
 
- return (
+  if (maxIndex === 0) return null;
+
+  return (
  <div
  className={cn(
  'pointer-events-none absolute left-[-12.5%] top-1/2 flex w-[125%] -translate-y-1/2 justify-between px-2',
@@ -207,7 +209,6 @@ function CarouselIndicator({
   // The maximum index we can scroll to without showing empty space
   const maxIndex = Math.max(0, itemsCount - visibleItemsCount);
 
-  // If there's nothing to scroll, don't show dots
   if (maxIndex === 0) return null;
 
   return (

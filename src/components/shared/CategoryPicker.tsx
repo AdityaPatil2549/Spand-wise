@@ -67,10 +67,10 @@ const CategoryChip = ({ category, isSelected, onSelect }: CategoryChipProps) => 
  {category.icon ? <CategoryIcon iconName={category.icon} size={24} /> : category.emoji}
  </div>
  <span
- className="text-[10px] font-medium leading-tight text-center font-body"
+ className="text-[10px] font-medium leading-tight text-center font-body truncate max-w-[70px]"
  style={{ color: isSelected ? category.color : '#605850' }}
  >
- {category.name.split(' ')[0]}
+ {category.name}
  </span>
  </button>
 );

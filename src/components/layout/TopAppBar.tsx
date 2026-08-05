@@ -14,9 +14,17 @@ export function TopAppBar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [readAlerts, setReadAlerts] = useState<string[]>([]);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('spendwise_read_alerts');
+      if (stored) setReadAlerts(JSON.parse(stored));
+    } catch (e) {}
+  }, []);
 
   // Close notifications and profile on click outside
   useEffect(() => {
@@ -96,8 +104,8 @@ export function TopAppBar() {
     ? allNotifications 
     : allNotifications.slice(0, 3);
 
-  // If we have actual dynamic alerts, show the red dot
-  const hasUnread = alerts.length > 0;
+  // If we have actual dynamic alerts that haven't been read, show the red dot
+  const hasUnread = allNotifications.some((a) => !readAlerts.includes(a.id));
 
   return (
     <header className="fixed top-0 right-0 z-40 flex items-center px-6 md:px-12 h-20">
@@ -125,6 +133,11 @@ export function TopAppBar() {
                   <h4 className="font-headline font-medium text-theme-primary">Notifications</h4>
                   <button 
                     onClick={() => {
+                      const allIds = allNotifications.map(a => a.id);
+                      setReadAlerts(allIds);
+                      try {
+                        localStorage.setItem('spendwise_read_alerts', JSON.stringify(allIds));
+                      } catch(e) {}
                       setIsNotificationsOpen(false);
                       addToast({ type: 'success', message: 'All notifications marked as read' });
                     }}

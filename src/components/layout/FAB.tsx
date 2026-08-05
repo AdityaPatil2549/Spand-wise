@@ -40,16 +40,16 @@ export const FAB = () => {
  )}
  aria-label="Add new expense"
  >
- <motion.div
+ <motion.span
  whileTap={{ scale: 0.9 }}
  transition={{ duration: 0.2, type: 'spring' }}
+ className="flex items-center justify-center"
  >
  <Plus className="w-8 h-8" aria-hidden="true" />
- </motion.div>
+ </motion.span>
  </motion.button>
  </div>
  </div>
  </div>
  );
 };
-

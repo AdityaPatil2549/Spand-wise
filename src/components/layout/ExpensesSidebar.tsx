@@ -55,10 +55,10 @@ export function ExpensesSidebar() {
  
  <div className="mt-auto mb-6">
  <AddExpenseMorph>
- <div className="w-full bg-theme-accent text-theme-white py-3 px-4 rounded-lg font-body text-sm font-medium hover:bg-theme-accent/90 transition-colors shadow-sm flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+ <span className="w-full bg-theme-accent text-theme-white py-3 px-4 rounded-lg font-body text-sm font-medium hover:bg-theme-accent/90 transition-colors shadow-sm flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
  <Plus className="w-5 h-5" strokeWidth={2.5} />
  <span>Add Expense</span>
- </div>
+ </span>
  </AddExpenseMorph>
  </div>
  

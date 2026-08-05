@@ -14,6 +14,9 @@ import { ScrollProgress } from '@/components/ui/motion/scroll-progress';
 import { InView } from '@/components/ui/motion/in-view';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorph';
+import { EmptyMonthState } from '@/components/ui/EmptyMonthState';
+import { calculateFinancialSummary } from '@/lib/finance-math';
+import { FormattedCurrency } from '@/components/ui/FormattedCurrency';
 import type { ExpenseDocument } from '@/types/firestore';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 
@@ -70,6 +73,14 @@ export default function ExpensesPage() {
  const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap, setSelectedMonth, selectedMonth } = useStore();
  
  const totalSpent = budget?.totalSpent || 0;
+ const budgetAmount = budget?.budgetAmount || 0;
+ 
+ const financialSummary = useMemo(() => {
+   return calculateFinancialSummary(
+     expenses.map(e => ({ amount: e.amount, date: e.date.toDate() })),
+     budgetAmount
+   );
+ }, [expenses, budgetAmount]);
  
  // Filter expenses locally if needed
  const displayExpenses = useMemo(() => {
@@ -169,10 +180,18 @@ export default function ExpensesPage() {
  </div>
  </div>
  
- {/* Aesthetic Image Block */}
- <div className="rounded-2xl p-8 bg-cover bg-center shadow-ultra-soft relative overflow-hidden min-h-[200px] flex items-end" style={{backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuACrBq3mzB3KNbIhNfjJxMjvPG1Um8git0W7hb2Flj45gHRWfuQb1cHJysssenPSQUQRy0XaYiZ4y0Pc3FxrIyvLR_plgQcjvCsveiQrpRo6l0_Ej6tLu71vNYS4XksDCEvgFp7JHxqqDtijfqBEZ_X8uDtdzRL2_-Lw-8ubtxj5KpY1sYpkDtcfLKGFYgZibWy-dDQoEXVrwgRPdbtu-k-ljEbnxNIAfhPQX_EPVVDdL9lJE4G9g')"}}>
- <div className="absolute inset-0 bg-gradient-to-t from-theme-primary/80 to-transparent"></div>
- <p className="relative font-headline text-xl text-theme-white italic z-10">"Discipline is the bridge between goals and accomplishment."</p>
+ {/* Safe-Spend Odometer */}
+ <div className="glass-card rounded-2xl p-8 flex flex-col justify-between shadow-ultra-soft relative overflow-hidden group">
+ <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#10b981]/20 rounded-full blur-3xl group-hover:bg-[#10b981]/40 transition-all duration-700"></div>
+ <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Safe Daily Spend</span>
+ <span className="font-headline text-5xl text-theme-primary flex items-baseline">
+ <FormattedCurrency amount={financialSummary.safeDailySpend} />
+ </span>
+ <div className="mt-auto pt-6 flex items-center justify-between">
+ <p className="font-body text-xs text-theme-secondary">
+ Recommended daily limit to stay under budget by end of month.
+ </p>
+ </div>
  </div>
  </AnimatedGroup>
 
@@ -244,7 +263,12 @@ export default function ExpensesPage() {
  ))}
  
  {expenses.length === 0 && (
- <p className="text-center text-theme-secondary py-8">No expenses yet for this month.</p>
+ <div className="mt-8">
+ <EmptyMonthState 
+ monthName={format(new Date(), 'MMMM')} 
+ onAddClick={() => openBottomSheet()} 
+ />
+ </div>
  )}
   {/* Load More */}
   {expenses.length > 0 && (
