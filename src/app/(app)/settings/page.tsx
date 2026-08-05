@@ -65,7 +65,7 @@ export default function SettingsPage() {
   return (
     <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
       <ExpensesSidebar />
-      <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-24">
+      <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-32 md:pb-24">
         <TextEffect as="h1" preset="fade" className="font-display text-[48px] font-medium leading-none tracking-tight text-theme-primary mb-8">
           Settings
         </TextEffect>

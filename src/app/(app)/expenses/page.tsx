@@ -134,7 +134,7 @@ export default function ExpensesPage() {
  <ExpensesSidebar />
 
  {/* Main Content Canvas */}
- <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-20 overflow-y-auto">
+ <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
  {/* Page Header & Filters */}
  <div className="max-w-6xl mx-auto mb-12">
  <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
