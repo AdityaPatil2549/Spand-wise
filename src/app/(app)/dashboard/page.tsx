@@ -181,7 +181,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="space-y-2 mt-12">
                   <p className="text-[16px] text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
-                  <h2 className="font-display text-[56px] leading-none text-theme-primary tracking-tight flex items-center">
+                  <h2 className="font-display text-[56px] leading-none text-theme-primary tracking-tight flex items-center glow-text">
                     {isOverBudget ? '-' : ''}<AnimatedNumber value={Math.abs(balance)} />
                   </h2>
                 </div>

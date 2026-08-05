@@ -1,12 +1,13 @@
 'use client';
 
-import { Moon, Sun, Waves, TreePine, Zap, Snowflake } from 'lucide-react';
+import { Moon, Sun, Waves, TreePine, Zap, Snowflake, Sparkles } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 const THEMES = [
   { id: 'light', name: 'Earthy', icon: Sun, color: 'bg-orange-500/10 text-orange-500' },
   { id: 'dark', name: 'Midnight', icon: Moon, color: 'bg-slate-800 text-slate-200' },
+  { id: 'oled-pro', name: 'OLED Pro', icon: Sparkles, color: 'bg-emerald-500/10 text-emerald-500' },
   { id: 'ocean', name: 'Ocean', icon: Waves, color: 'bg-blue-500/10 text-blue-500' },
   { id: 'forest', name: 'Forest', icon: TreePine, color: 'bg-green-500/10 text-green-500' },
   { id: 'cyberpunk', name: 'Cyberpunk', icon: Zap, color: 'bg-fuchsia-500/10 text-fuchsia-500' },

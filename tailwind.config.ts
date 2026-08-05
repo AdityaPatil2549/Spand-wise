@@ -10,9 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "-apple-system", "sans-serif"],
-        display: ["var(--font-eb-garamond)", "serif"],
-        body: ["var(--font-hanken-grotesk)", "sans-serif"],
+        sans: ["var(--font-quicksand)", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-caveat)", "cursive"],
+        body: ["var(--font-quicksand)", "sans-serif"],
       },
       colors: {
         theme: {

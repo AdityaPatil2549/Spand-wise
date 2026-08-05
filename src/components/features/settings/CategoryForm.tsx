@@ -10,27 +10,23 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { addCustomCategory, updateCustomCategory } from '@/lib/categories/index';
 import type { CategoryDocument } from '@/types/firestore';
-import { X } from 'lucide-react';
+import { X, Tag, Utensils, BusFront, Home, ShoppingCart, Coffee, Plane, Heart, Star, Briefcase, Book, Music, Camera, Gamepad2, Package } from 'lucide-react';
 
 const COLORS = [
- '#ef4444', // red
- '#f97316', // orange
- '#f59e0b', // amber
- '#eab308', // yellow
- '#84cc16', // lime
- '#22c55e', // green
- '#10b981', // emerald
- '#06b6d4', // cyan
- '#3b82f6', // blue
- '#6366f1', // indigo
- '#8b5cf6', // violet
- '#d946ef', // fuchsia
- '#f43f5e', // rose
+ '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', 
+ '#22c55e', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', 
+ '#8b5cf6', '#d946ef', '#f43f5e',
 ];
+
+const ICONS_MAP: Record<string, React.ElementType> = {
+  Tag, Utensils, BusFront, Home, ShoppingCart, Coffee, Plane, 
+  Heart, Star, Briefcase, Book, Music, Camera, Gamepad2, Package
+};
+const ICON_NAMES = Object.keys(ICONS_MAP);
 
 const categorySchema = z.object({
  name: z.string().min(1, 'Name is required').max(20, 'Max 20 characters'),
- emoji: z.string().min(1, 'Emoji is required').max(2, 'Only 1 emoji allowed'),
+ icon: z.string().min(1, 'Icon is required'),
  color: z.string().min(1, 'Color is required'),
 });
 
@@ -54,12 +50,13 @@ export const CategoryForm = ({ editingCategory, onClose }: CategoryFormProps) =>
  resolver: zodResolver(categorySchema),
  defaultValues: {
  name: editingCategory?.name || '',
- emoji: editingCategory?.emoji || '🏷️',
+ icon: editingCategory?.icon || 'Tag',
  color: editingCategory?.color || COLORS[0],
  },
  });
 
  const selectedColor = watch('color');
+ const selectedIcon = watch('icon');
 
  const onSubmit = async (data: CategoryFormValues) => {
  if (!householdId || !user) return;
@@ -67,7 +64,7 @@ export const CategoryForm = ({ editingCategory, onClose }: CategoryFormProps) =>
  try {
  if (editingCategory) {
  await updateCustomCategory(householdId, editingCategory.id, data);
- updateCategoryOptimistic({ ...editingCategory, ...data });
+ updateCategoryOptimistic({ ...editingCategory, ...data, emoji: undefined });
  addToast({ type: 'success', message: 'Category updated' });
  } else {
  const newCat = await addCustomCategory(householdId, data);
@@ -107,12 +104,33 @@ export const CategoryForm = ({ editingCategory, onClose }: CategoryFormProps) =>
  error={errors.name?.message}
  />
 
- <Input
- label="Emoji Icon"
- placeholder="e.g. 🍿"
- {...register('emoji')}
- error={errors.emoji?.message}
- />
+ <div>
+ <label className="block text-sm font-medium text-theme-tertiary mb-3 uppercase tracking-widest">
+ Icon
+ </label>
+ <div className="grid grid-cols-5 gap-3">
+ {ICON_NAMES.map((iconName) => {
+   const Icon = ICONS_MAP[iconName];
+   const isSelected = selectedIcon === iconName;
+   return (
+     <button
+       key={iconName}
+       type="button"
+       onClick={() => setValue('icon', iconName)}
+       className={`h-10 rounded-xl flex items-center justify-center transition-all ${
+         isSelected ? 'bg-theme-accent text-theme-inverse scale-105 shadow-sm' : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:bg-theme-elevated hover:text-theme-primary'
+       }`}
+       aria-label={`Select icon ${iconName}`}
+     >
+       <Icon className="w-5 h-5" />
+     </button>
+   );
+ })}
+ </div>
+ {errors.icon && (
+ <p className="mt-2 text-sm text-red-500">{errors.icon.message}</p>
+ )}
+ </div>
 
  <div>
  <label className="block text-sm font-medium text-theme-tertiary mb-3 uppercase tracking-widest">

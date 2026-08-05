@@ -1,24 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, EB_Garamond, Hanken_Grotesk } from 'next/font/google';
+import { Quicksand, Caveat } from 'next/font/google';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
 
-const outfit = Outfit({
+const quicksand = Quicksand({
  subsets: ['latin'],
- variable: '--font-outfit',
+ variable: '--font-quicksand',
  display: 'swap',
 });
 
-const ebGaramond = EB_Garamond({
+const caveat = Caveat({
  subsets: ['latin'],
- variable: '--font-eb-garamond',
- display: 'swap',
-});
-
-const hankenGrotesk = Hanken_Grotesk({
- subsets: ['latin'],
- variable: '--font-hanken-grotesk',
+ variable: '--font-caveat',
  display: 'swap',
 });
 
@@ -57,12 +51,12 @@ export default function RootLayout({
  <head>
  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
  </head>
- <body className={`${outfit.variable} ${ebGaramond.variable} ${hankenGrotesk.variable} font-sans antialiased`}>
+ <body className={`${quicksand.variable} ${caveat.variable} font-sans antialiased`}>
  <ThemeProvider 
   attribute="class" 
-  defaultTheme="light" 
+  defaultTheme="oled-pro" 
   enableSystem={false}
-  themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic']}
+  themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro']}
  >
  <GlobalProviders>
  {children}

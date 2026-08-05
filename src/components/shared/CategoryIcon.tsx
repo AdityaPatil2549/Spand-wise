@@ -19,10 +19,12 @@ import {
  Package,
  Users,
  CircleDashed,
+ Tag, Heart, Star, Briefcase, Book, Music, Camera
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
+ Tag, Heart, Star, Briefcase, Book, Music, Camera,
  Utensils,
  BusFront,
  Home,

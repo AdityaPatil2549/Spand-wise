@@ -155,6 +155,31 @@
     --theme-white: 255 255 255;
     --theme-inverse: 248 250 252;
   }
+
+  .oled-pro {
+    /* OLED Pro Max */
+    --theme-base: 15 23 42; /* #0F172A */
+    --theme-surface: 16 26 52; /* Slightly lighter than base */
+    --theme-surface-hover: 21 34 68;
+    --theme-elevated: 18 30 60;
+    --theme-elevated-hover: 24 40 80;
+    
+    --theme-border: 255 255 255; /* rgba(255,255,255,0.08) applied via opacity classes where needed */
+    
+    --theme-primary: 255 255 255; /* #FFFFFF */
+    --theme-secondary: 163 175 194; /* Muted blue-grey */
+    --theme-tertiary: 100 116 139;
+    
+    --theme-accent: 5 150 105; /* #059669 Profit Green */
+    --theme-accent-hover: 4 120 87; 
+    --theme-accent-light: 15 23 42;
+    
+    --theme-danger: 220 38 38; /* #DC2626 */
+    --theme-danger-light: 63 21 21;
+    
+    --theme-white: 16 26 52;
+    --theme-inverse: 15 23 42;
+  }
 }
 
 @layer base {
@@ -168,7 +193,7 @@
     color-scheme: light;
   }
   
-  .dark, .ocean, .forest, .cyberpunk {
+  .dark, .ocean, .forest, .cyberpunk, .oled-pro {
     color-scheme: dark;
   }
 
@@ -277,6 +302,11 @@
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
+  }
+
+  /* Minimal glow text */
+  .glow-text {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
   }
 }
 
