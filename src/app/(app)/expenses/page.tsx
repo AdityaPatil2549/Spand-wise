@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useStore } from '@/store';
 import { AnimatedNumber } from '@/components/ui/motion/animated-number';
 import { AnimatedGroup } from '@/components/ui/motion/animated-group';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { TransactionCard } from '@/components/features/expenses/TransactionCard';
 import { DEFAULT_CATEGORY_ID } from '@/config/categories';
-import { format, isToday, isYesterday } from 'date-fns';
+import { format, isToday, isYesterday, isThisWeek, subMonths, isSameMonth } from 'date-fns';
 import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { ScrollProgress } from '@/components/ui/motion/scroll-progress';
 import { InView } from '@/components/ui/motion/in-view';
@@ -66,16 +66,28 @@ const groupExpensesByDate = (expenses: ExpenseDocument[]) => {
 };
 
 export default function ExpensesPage() {
- const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap } = useStore();
+ const [timeFilter, setTimeFilter] = useState<string>('All');
+ const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap, setSelectedMonth, selectedMonth } = useStore();
  
  const totalSpent = budget?.totalSpent || 0;
  
- // Calculate top category
+ // Filter expenses locally if needed
+ const displayExpenses = useMemo(() => {
+   if (timeFilter === 'This Week') {
+     return expenses.filter(e => isThisWeek(e.date.toDate(), { weekStartsOn: 1 }));
+   }
+   return expenses;
+ }, [expenses, timeFilter]);
+
+ // Group the filtered expenses
+ const groupedExpenses = useMemo(() => groupExpensesByDate(displayExpenses), [displayExpenses]);
+
+ // Calculate top category from displayExpenses
  const topCategory = useMemo(() => {
- if (!expenses.length) return { name: 'None', amount: 0, percent: 0 };
+ if (!displayExpenses.length) return { name: 'None', amount: 0, percent: 0 };
  
  const catTotals: Record<string, number> = {};
- expenses.forEach(e => {
+ displayExpenses.forEach(e => {
  catTotals[e.categoryId] = (catTotals[e.categoryId] || 0) + e.amount;
  });
  
@@ -190,21 +202,31 @@ export default function ExpensesPage() {
  <div className="flex items-center justify-between mb-8">
  <h3 className="font-headline text-2xl text-theme-primary">Activity</h3>
  <div className="flex space-x-1 p-1 bg-theme-elevated/50 rounded-lg">
- <AnimatedBackground
- defaultValue="All"
- className="rounded-md bg-theme-white shadow-sm"
- transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
- >
- {['All', 'This Week', 'Last Month'].map((label) => (
- <button
- key={label}
- data-id={label}
- className="px-4 py-1.5 text-sm font-medium text-theme-secondary transition-colors focus-visible:outline-none"
- >
- {label}
- </button>
- ))}
- </AnimatedBackground>
+    <AnimatedBackground
+      defaultValue={timeFilter}
+      className="rounded-md bg-theme-white shadow-sm"
+      transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+      onValueChange={(val) => {
+        if (!val) return;
+        setTimeFilter(val);
+        if (val === 'Last Month') {
+          const lastMonthDate = subMonths(new Date(), 1);
+          setSelectedMonth(format(lastMonthDate, 'yyyy-MM'));
+        } else {
+          setSelectedMonth(format(new Date(), 'yyyy-MM'));
+        }
+      }}
+    >
+      {['All', 'This Week', 'Last Month'].map((label) => (
+        <button
+          key={label}
+          data-id={label}
+          className={`px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none ${timeFilter === label ? 'text-theme-primary' : 'text-theme-secondary hover:text-theme-primary'}`}
+        >
+          {label}
+        </button>
+      ))}
+    </AnimatedBackground>
  </div>
  </div>
  
