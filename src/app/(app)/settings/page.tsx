@@ -73,7 +73,7 @@ export default function SettingsPage() {
         <div className="glass-panel p-8 rounded-3xl border border-theme-border/30 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-theme-accent/5 rounded-full blur-3xl -z-10"></div>
 
-          <div className="flex space-x-2 mb-8 bg-theme-elevated/50 p-1.5 rounded-xl w-fit">
+          <div className="flex space-x-2 mb-8 bg-theme-elevated/50 p-1.5 rounded-xl w-fit max-w-full overflow-x-auto hide-scrollbar">
             <AnimatedBackground
               defaultValue={TABS[0]}
               className="rounded-lg bg-theme-white shadow-sm"
@@ -88,7 +88,7 @@ export default function SettingsPage() {
                 <button
                   key={tab}
                   data-id={tab}
-                  className={`px-6 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none ${activeTab === index ? 'text-theme-primary' : 'text-theme-tertiary hover:text-theme-primary'}`}
+                  className={`whitespace-nowrap px-6 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none ${activeTab === index ? 'text-theme-primary' : 'text-theme-tertiary hover:text-theme-primary'}`}
                 >
                   {tab}
                 </button>
