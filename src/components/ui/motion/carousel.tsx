@@ -17,6 +17,8 @@ export type CarouselContextType = {
  setIndex: (newIndex: number) => void;
  itemsCount: number;
  setItemsCount: (newItemsCount: number) => void;
+ visibleItemsCount: number;
+ setVisibleItemsCount: (newVisible: number) => void;
  disableDrag: boolean;
 };
 
@@ -47,6 +49,7 @@ function CarouselProvider({
 }: CarouselProviderProps) {
  const [index, setIndex] = useState<number>(initialIndex);
  const [itemsCount, setItemsCount] = useState<number>(0);
+ const [visibleItemsCount, setVisibleItemsCount] = useState<number>(1);
 
  const handleSetIndex = (newIndex: number) => {
  setIndex(newIndex);
@@ -64,6 +67,8 @@ function CarouselProvider({
  setIndex: handleSetIndex,
  itemsCount,
  setItemsCount,
+ visibleItemsCount,
+ setVisibleItemsCount,
  disableDrag,
  }}
  >
@@ -124,7 +129,8 @@ function CarouselNavigation({
  classNameButton,
  alwaysShow,
 }: CarouselNavigationProps) {
- const { index, setIndex, itemsCount } = useCarousel();
+ const { index, setIndex, itemsCount, visibleItemsCount } = useCarousel();
+ const maxIndex = Math.max(0, itemsCount - visibleItemsCount);
 
  return (
  <div
@@ -171,9 +177,9 @@ function CarouselNavigation({
  classNameButton
  )}
  aria-label='Next slide'
- disabled={index + 1 === itemsCount}
+ disabled={index >= maxIndex}
  onClick={() => {
- if (index < itemsCount - 1) {
+ if (index < maxIndex) {
  setIndex(index + 1);
  }
  }}
@@ -188,42 +194,48 @@ function CarouselNavigation({
 }
 
 export type CarouselIndicatorProps = {
- className?: string;
- classNameButton?: string;
+  className?: string;
+  classNameButton?: string;
 };
 
 function CarouselIndicator({
- className,
- classNameButton,
+  className,
+  classNameButton,
 }: CarouselIndicatorProps) {
- const { index, itemsCount, setIndex } = useCarousel();
+  const { index, itemsCount, setIndex, visibleItemsCount } = useCarousel();
 
- return (
- <div
- className={cn(
- 'absolute bottom-0 z-10 flex w-full items-center justify-center',
- className
- )}
- >
- <div className='flex space-x-2'>
- {Array.from({ length: itemsCount }, (_, i) => (
- <button
- key={i}
- type='button'
- aria-label={`Go to slide ${i + 1}`}
- onClick={() => setIndex(i)}
- className={cn(
- 'h-2 w-2 rounded-full transition-opacity duration-300',
- index === i
- ? 'bg-zinc-950 dark:bg-zinc-50'
- : 'bg-zinc-900/50 dark:bg-zinc-100/50',
- classNameButton
- )}
- />
- ))}
- </div>
- </div>
- );
+  // The maximum index we can scroll to without showing empty space
+  const maxIndex = Math.max(0, itemsCount - visibleItemsCount);
+
+  // If there's nothing to scroll, don't show dots
+  if (maxIndex === 0) return null;
+
+  return (
+    <div
+      className={cn(
+        'absolute bottom-0 z-10 flex w-full items-center justify-center',
+        className
+      )}
+    >
+      <div className='flex space-x-2'>
+        {Array.from({ length: maxIndex + 1 }, (_, i) => (
+          <button
+            key={i}
+            type='button'
+            aria-label={`Go to slide ${i + 1}`}
+            onClick={() => setIndex(i)}
+            className={cn(
+              'h-2 w-2 rounded-full transition-all duration-300',
+              index === i
+                ? 'bg-theme-accent w-4'
+                : 'bg-theme-secondary/30 hover:bg-theme-secondary/50',
+              classNameButton
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export type CarouselContentProps = {
@@ -237,8 +249,7 @@ function CarouselContent({
  className,
  transition,
 }: CarouselContentProps) {
- const { index, setIndex, setItemsCount, disableDrag } = useCarousel();
- const [visibleItemsCount, setVisibleItemsCount] = useState(1);
+ const { index, setIndex, setItemsCount, visibleItemsCount, setVisibleItemsCount, disableDrag } = useCarousel();
  const dragX = useMotionValue(0);
  const containerRef = useRef<HTMLDivElement>(null);
  const itemsLength = Children.count(children);
@@ -264,7 +275,7 @@ function CarouselContent({
  Array.from(childNodes).forEach((child) => observer.observe(child));
 
  return () => observer.disconnect();
- }, [children, setItemsCount]);
+ }, [children, setItemsCount, setVisibleItemsCount]);
 
  useEffect(() => {
  if (!itemsLength) {
@@ -276,8 +287,9 @@ function CarouselContent({
 
  const onDragEnd = () => {
  const x = dragX.get();
+ const maxIndex = Math.max(0, itemsLength - visibleItemsCount);
 
- if (x <= -10 && index < itemsLength - 1) {
+ if (x <= -10 && index < maxIndex) {
  setIndex(index + 1);
  } else if (x >= 10 && index > 0) {
  setIndex(index - 1);
