@@ -167,7 +167,7 @@ export function TopAppBar() {
             className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center"
           >
             {user?.photoURL ? (
-              <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-theme-border/50" />
+              <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-theme-border/50 object-cover" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
                 <span className="material-symbols-outlined text-theme-accent text-xl">account_circle</span>
@@ -188,7 +188,7 @@ export function TopAppBar() {
                 <div className="p-5 border-b border-theme-border/30 bg-theme-surface/30">
                   <div className="flex items-center gap-3">
                     {user?.photoURL ? (
-                      <img src={user.photoURL} alt="Profile" className="w-12 h-12 rounded-full border border-theme-border/50" />
+                      <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full border border-theme-border/50 object-cover" />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
                         <span className="font-headline text-lg text-theme-accent">
