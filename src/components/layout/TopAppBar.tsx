@@ -92,8 +92,8 @@ export function TopAppBar() {
   const hasUnread = alerts.length > 0;
 
   return (
-    <header className="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 flex justify-end items-center px-6 md:px-12 h-20 pointer-events-none">
-      <div className="flex items-center gap-4 md:gap-6 pointer-events-auto">
+    <header className="fixed top-0 right-0 z-40 flex items-center px-6 md:px-12 h-20">
+      <div className="flex items-center gap-4 md:gap-6">
         {/* Notifications */}
         <div className="relative" ref={notificationsRef}>
           <button 
