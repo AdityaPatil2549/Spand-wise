@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
  </div>
  <div className="text-right">
  <span className="block font-medium text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</span>
- <span className="text-sm text-theme-secondary">{percentage}% of all expenses</span>
+ <span className="text-sm text-theme-secondary">{percentage}% Of Total Monthly Expenses</span>
  </div>
  </div>
  </AccordionTrigger>
