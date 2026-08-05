@@ -9,9 +9,7 @@ import { CategoryIcon } from '@/components/shared/CategoryIcon';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
 import type { ExpenseDocument, QuickAddPreset } from '@/types/firestore';
-
-
-
+import { AnimatedGroup } from '@/components/ui/motion/animated-group';
 const PRESETS: QuickAddPreset[] = [
   { id: 'chai', amount: 15, categoryId: 'food', note: 'Chai', icon: 'Coffee', color: '#e67e22' },
   { id: 'snacks', amount: 20, categoryId: 'food', note: 'Snacks', icon: 'Utensils', color: '#e67e22' },
@@ -81,7 +79,7 @@ export const QuickAddWidgets: React.FC = () => {
   };
 
   return (
-    <div className="mt-8 flex flex-wrap gap-3">
+    <AnimatedGroup preset="fade" className="mt-8 flex flex-wrap gap-3">
       {activePresets.map((preset) => {
         const cat = categoriesMap.get(preset.categoryId);
         const iconName = cat?.icon || preset.icon;
@@ -92,21 +90,21 @@ export const QuickAddWidgets: React.FC = () => {
             key={preset.id}
             onClick={() => handleQuickAdd(preset)}
             disabled={loadingId !== null}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-theme-surface border border-theme-primary/10 hover:border-theme-accent/30 hover:bg-theme-accent/5 hover:-translate-y-[1px] transition-all shadow-sm active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
+            className="flex items-center gap-3 px-4 py-3 rounded-sm bg-theme-surface border border-theme-border/50 hover:border-theme-accent hover:-translate-y-[1px] transition-all active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
           >
             <span 
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+              className="w-8 h-8 rounded-sm flex items-center justify-center flex-shrink-0"
               style={{ backgroundColor: `${color}15`, color: color }}
             >
               <CategoryIcon iconName={cat?.name || preset.categoryId} className="w-3.5 h-3.5" />
             </span>
-            <span className="font-manrope font-medium text-sm text-theme-primary">{preset.note}</span>
-            <span className="font-manrope font-semibold text-sm text-theme-secondary tabular-nums ml-1">
+            <span className="font-body font-medium text-[15px] text-theme-primary">{preset.note}</span>
+            <span className="font-mono font-medium text-sm text-theme-secondary ml-1">
               {formatCurrency(preset.amount)}
             </span>
           </button>
         );
       })}
-    </div>
+    </AnimatedGroup>
   );
 };

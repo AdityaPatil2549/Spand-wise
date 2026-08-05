@@ -96,11 +96,10 @@ export default function AnalyticsPage() {
  
  {/* Slide 1: Total Spent */}
  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
- <div className="glass-panel p-8 rounded-3xl border border-theme-border/30 h-72 flex flex-col justify-between relative overflow-hidden group">
- <div className="absolute -right-8 -top-8 w-32 h-32 bg-theme-accent/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
- <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm relative z-10">Total Spent</span>
+ <div className="bg-theme-surface p-8 rounded-sm border border-theme-border/30 h-72 flex flex-col justify-between relative overflow-hidden group">
+ <span className="font-mono font-medium text-theme-secondary uppercase tracking-widest text-[11px] relative z-10">Total Spent</span>
  <div className="relative z-10 h-full flex flex-col justify-end">
- <h2 className="font-display text-5xl text-theme-primary flex items-baseline">
+ <h2 className="font-display font-light text-[64px] text-theme-primary flex items-baseline leading-none">
  {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(totalSpent)} />
  <span className="text-2xl text-theme-tertiary">{(totalSpent % 1 !== 0) ? (totalSpent % 1).toFixed(2).substring(1) : '.00'}</span>
  </h2>
@@ -110,9 +109,8 @@ export default function AnalyticsPage() {
 
  {/* Slide 2: Category Donut Chart */}
  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
- <div className="glass-panel p-6 rounded-3xl border border-theme-border/30 h-72 flex flex-col relative overflow-hidden group">
- <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-theme-danger/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
- <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm relative z-10 mb-2">Category Split</span>
+ <div className="bg-theme-surface p-6 rounded-sm border border-theme-border/30 h-72 flex flex-col relative overflow-hidden group">
+ <span className="font-mono font-medium text-theme-secondary uppercase tracking-widest text-[11px] relative z-10 mb-2">Category Split</span>
  <div className="relative z-10 flex-1 w-full h-full">
  <ResponsiveContainer width="100%" height="100%">
   <PieChart>
@@ -144,11 +142,10 @@ export default function AnalyticsPage() {
 
  {/* Slide 3: Cumulative Spend Trend */}
  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
- <div className="glass-panel p-6 rounded-3xl border border-theme-border/30 h-72 flex flex-col relative overflow-hidden group">
- <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#10b981]/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+ <div className="bg-theme-surface p-6 rounded-sm border border-theme-border/30 h-72 flex flex-col relative overflow-hidden group">
  <div className="flex justify-between items-center mb-2 z-10 relative">
- <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm">Monthly Trend</span>
- <span className="text-xs text-[#10b981] font-medium bg-[#10b981]/10 px-2 py-1 rounded-md">{((totalSpent / (Number(budget) > 0 ? Number(budget) : 1)) * 100).toFixed(0)}% used</span>
+ <span className="font-mono font-medium text-theme-secondary uppercase tracking-widest text-[11px]">Monthly Trend</span>
+ <span className="text-xs text-theme-accent font-medium bg-theme-accent/10 px-2 py-1 rounded-sm">{((totalSpent / (Number(budget?.budgetAmount) > 0 ? Number(budget?.budgetAmount) : 1)) * 100).toFixed(0)}% used</span>
  </div>
  <div className="relative z-10 flex-1 w-full h-full -ml-4">
  {areaData.some(d => d.spent !== null && d.spent > 0) ? (
@@ -168,8 +165,8 @@ export default function AnalyticsPage() {
  <Area 
  type="monotone" 
  dataKey="spent" 
- stroke="#10b981" 
- strokeWidth={3}
+ stroke="#D4AF37" 
+ strokeWidth={2}
  fillOpacity={1} 
  fill="url(#colorSpent)" 
  />
@@ -189,7 +186,7 @@ export default function AnalyticsPage() {
 
  {/* Accordion Breakdown */}
  <div className="mb-16">
- <h3 className="font-headline text-2xl text-theme-primary mb-6 border-b border-theme-border/30 pb-4">Category Breakdown</h3>
+ <h3 className="font-display font-light text-3xl text-theme-primary mb-6 border-b border-theme-border/30 pb-4">Category Breakdown</h3>
  <Accordion
  className="flex w-full flex-col divide-y divide-theme-border/30"
  transition={{ type: 'spring', stiffness: 120, damping: 20 }}
@@ -210,14 +207,14 @@ export default function AnalyticsPage() {
  <AccordionTrigger className="w-full text-left focus:outline-none">
  <div className="flex items-center justify-between w-full pr-4">
  <div className="flex items-center gap-4">
- <div className="w-10 h-10 rounded-full bg-theme-surface flex items-center justify-center" style={{ color: cat?.color }}>
+ <div className="w-10 h-10 rounded-sm bg-theme-surface flex items-center justify-center" style={{ color: cat?.color }}>
  <span className="material-symbols-outlined">{getMaterialIcon(cat?.icon)}</span>
  </div>
- <span className="font-medium text-lg text-theme-primary">{cat?.name}</span>
+ <span className="font-body font-medium text-[15px] text-theme-primary">{cat?.name}</span>
  </div>
  <div className="text-right">
- <span className="block font-medium text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</span>
- <span className="text-sm text-theme-secondary">{percentage}% Of Total Monthly Expenses</span>
+ <span className="block font-mono font-medium text-theme-primary tabular-nums">{CURRENCY_SYMBOL}{amount.toFixed(2)}</span>
+ <span className="font-mono text-[11px] text-theme-secondary">{percentage}% Of Total Monthly Expenses</span>
  </div>
  </div>
  </AccordionTrigger>
@@ -227,30 +224,30 @@ export default function AnalyticsPage() {
       
       {/* Total Spend Progress Bar */}
       <div>
-        <div className="flex justify-between text-xs text-theme-secondary mb-1">
+        <div className="flex justify-between font-mono text-[11px] text-theme-secondary uppercase tracking-widest mb-1">
           <span>% of Total Monthly Spend</span>
           <span>{percentage}%</span>
         </div>
-        <div className="w-full h-1.5 bg-theme-elevated rounded-full overflow-hidden">
-          <div className="h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: cat?.color }}></div>
+        <div className="w-full h-1 bg-theme-elevated rounded-sm overflow-hidden">
+          <div className="h-full rounded-sm" style={{ width: `${percentage}%`, backgroundColor: cat?.color }}></div>
         </div>
       </div>
 
       {/* Category Limit Progress Bar */}
       {categoryLimit && (
         <div>
-          <div className="flex justify-between text-xs text-theme-secondary mb-1">
+          <div className="flex justify-between font-mono text-[11px] text-theme-secondary uppercase tracking-widest mb-1">
             <span>% of Category Limit ({CURRENCY_SYMBOL}{categoryLimit})</span>
             <span className={isOverLimit ? 'text-theme-danger font-medium' : ''}>{categoryLimitPercent}%</span>
           </div>
-          <div className="w-full h-1.5 bg-theme-elevated rounded-full overflow-hidden">
-            <div className={`h-full rounded-full ${isOverLimit ? 'bg-theme-danger' : 'bg-theme-accent'}`} style={{ width: `${Math.min(Number(categoryLimitPercent), 100)}%` }}></div>
+          <div className="w-full h-1 bg-theme-elevated rounded-sm overflow-hidden">
+            <div className={`h-full rounded-sm ${isOverLimit ? 'bg-theme-danger' : 'bg-theme-accent'}`} style={{ width: `${Math.min(Number(categoryLimitPercent), 100)}%` }}></div>
           </div>
         </div>
       )}
     </div>
     
-    <div className="bg-theme-surface/50 rounded-xl p-3 border border-theme-border/30">
+    <div className="bg-theme-surface/50 rounded-sm p-4 border border-theme-border/30">
       {editingLimit === categoryId ? (
         <div className="flex items-center gap-2">
           <span className="text-theme-secondary">{CURRENCY_SYMBOL}</span>
@@ -299,13 +296,13 @@ export default function AnalyticsPage() {
       ) : (
         <div className="flex items-center justify-between gap-4">
           <div className="text-sm">
-            <span className="text-theme-secondary">Current Limit: </span>
-            <span className="text-theme-primary font-medium">
+            <span className="text-theme-secondary font-body">Current Limit: </span>
+            <span className="text-theme-primary font-mono font-medium">
               {budget?.categoryBudgets?.[categoryId] ? `${CURRENCY_SYMBOL}${budget.categoryBudgets[categoryId]}` : 'None'}
             </span>
           </div>
           <button 
-            className="text-xs font-medium text-theme-accent bg-theme-accent/10 px-3 py-1.5 rounded-lg hover:bg-theme-accent/20 active:scale-[0.98] transition-all"
+            className="text-[11px] font-mono font-medium text-theme-accent bg-theme-accent/10 px-3 py-1.5 rounded-sm hover:bg-theme-accent/20 active:scale-[0.98] transition-all uppercase tracking-widest"
             onClick={() => {
               setLimitInput(budget?.categoryBudgets?.[categoryId]?.toString() || '');
               setEditingLimit(categoryId);

@@ -29,9 +29,9 @@ export function AddExpenseMorph({ children, className }: AddExpenseMorphProps) {
  </MorphingDialogTrigger>
  
  <MorphingDialogContainer>
- <MorphingDialogContent className="bg-theme-white rounded-3xl p-6 shadow-2xl w-full max-w-md border border-theme-border/30">
+ <MorphingDialogContent className="bg-theme-surface rounded-sm p-6 shadow-none border border-theme-border/30 w-full max-w-md">
  <div className="flex justify-between items-center mb-6">
- <MorphingDialogTitle className="text-2xl font-display font-medium text-theme-primary ">
+ <MorphingDialogTitle className="text-2xl font-display font-medium text-theme-primary tracking-tight">
  Add Transaction
  </MorphingDialogTitle>
  <MorphingDialogClose />

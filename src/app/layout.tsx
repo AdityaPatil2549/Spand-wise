@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { Quicksand, Caveat } from 'next/font/google';
+import { Alumni_Sans, Albert_Sans } from 'next/font/google';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
 
-const quicksand = Quicksand({
- subsets: ['latin'],
- variable: '--font-quicksand',
- display: 'swap',
+const alumniSans = Alumni_Sans({
+  subsets: ['latin'],
+  variable: '--font-alumni',
+  display: 'swap',
 });
 
-const caveat = Caveat({
- subsets: ['latin'],
- variable: '--font-caveat',
- display: 'swap',
+const albertSans = Albert_Sans({
+  subsets: ['latin'],
+  variable: '--font-albert',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -51,12 +51,12 @@ export default function RootLayout({
  <head>
  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
  </head>
- <body className={`${quicksand.variable} ${caveat.variable} font-sans antialiased`}>
+ <body className={`${alumniSans.variable} ${albertSans.variable} font-sans antialiased bg-theme-base text-theme-primary`}>
  <ThemeProvider 
   attribute="class" 
-  defaultTheme="oled-pro" 
+  defaultTheme="neo-kinpaku-pro" 
   enableSystem={false}
-  themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro']}
+  themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro', 'neo-kinpaku-pro']}
  >
  <GlobalProviders>
  {children}

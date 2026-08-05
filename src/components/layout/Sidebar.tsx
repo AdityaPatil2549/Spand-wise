@@ -23,15 +23,15 @@ export const Sidebar = ({ className }: SidebarProps) => {
  const openBottomSheet = useStore((s) => s.openBottomSheet);
 
  return (
- <aside className={clsx("flex flex-col bg-[var(--surface-base)] shadow-[var(--shadow-3d-card)] z-10 relative rounded-r-3xl my-4 ml-4", className)}>
+ <aside className={clsx("flex flex-col bg-theme-surface shadow-none z-10 relative rounded-sm border border-theme-border/30 my-4 ml-4", className)}>
  {/* Brand / Logo Area */}
  <div className="p-6 flex items-center gap-3">
- <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-theme-inverse shadow-[var(--shadow-3d-button)]">
+ <div className="w-10 h-10 rounded-sm bg-theme-accent flex items-center justify-center text-theme-base">
  <Wallet className="w-6 h-6" aria-hidden="true" />
  </div>
  <div>
- <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">SpendWise</h1>
- <p className="text-xs text-[var(--text-tertiary)] font-medium uppercase tracking-wider">Tracker</p>
+ <h1 className="text-xl font-bold tracking-tight text-theme-primary font-display">SpendWise</h1>
+ <p className="text-xs text-theme-secondary font-medium font-mono uppercase tracking-widest">Tracker</p>
  </div>
  </div>
 
@@ -57,10 +57,10 @@ export const Sidebar = ({ className }: SidebarProps) => {
  key={id}
  href={href}
  className={clsx(
- 'flex items-center gap-4 px-4 py-3 rounded-2xl font-medium transition-[box-shadow,color] duration-150 ease-out active:scale-[0.97]',
+ 'flex items-center gap-4 px-4 py-3 rounded-sm font-medium transition-all duration-150 ease-out active:scale-[0.98]',
  isActive
- ? 'text-violet-700 shadow-[var(--shadow-3d-inset)] dark:text-violet-300'
- : 'text-[var(--text-secondary)] hover:shadow-[var(--shadow-3d-card-hover)] hover:text-[var(--text-primary)]'
+ ? 'text-theme-accent bg-theme-accent/10 border-l-2 border-theme-accent'
+ : 'text-theme-secondary hover:bg-theme-surface-hover hover:text-theme-primary border-l-2 border-transparent'
  )}
  >
  <Icon 
@@ -76,8 +76,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
  </nav>
  
  {/* Footer Area (Optional User info etc) */}
- <div className="p-4 border-t border-[var(--surface-secondary)]/30">
- <p className="text-xs text-center text-[var(--text-tertiary)]">
+ <div className="p-4 border-t border-theme-border/30">
+ <p className="text-[11px] font-mono text-center text-theme-tertiary">
  &copy; {new Date().getFullYear()} SpendWise
  </p>
  </div>

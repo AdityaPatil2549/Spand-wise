@@ -186,10 +186,10 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
  step="1"
  placeholder="0"
  autoFocus
- className="w-full pl-10 pr-4 py-4 text-4xl font-manrope tabular-nums font-semibold rounded-2xl border-2
- bg-theme-elevated text-theme-primary
+ className="w-full pl-10 pr-4 py-4 text-4xl font-mono tabular-nums font-semibold rounded-sm border
+ bg-theme-surface hover:bg-theme-surface-hover text-theme-primary
  placeholder:text-theme-tertiary
- border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent
+ border-theme-border/30 focus:border-theme-accent focus:outline-none focus:ring-1 focus:ring-theme-accent
  transition-all duration-150"
  {...register('amount', { valueAsNumber: true })}
  aria-label="Expense amount in rupees"
@@ -266,11 +266,11 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
  variant="outline"
  size="lg"
  onClick={handleDelete}
- className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors px-4 flex-shrink-0"
+ className="text-theme-danger border-theme-danger/30 hover:bg-theme-danger/10 hover:border-theme-danger transition-colors px-4 flex-shrink-0"
  disabled={isSubmitting}
  title="Delete Expense"
  >
- <span className="material-symbols-outlined text-[20px]">delete</span>
+ <span className="material-symbols-outlined text-[18px]">delete</span>
  </Button>
  )}
  </div>
