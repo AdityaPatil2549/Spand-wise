@@ -6,18 +6,26 @@ import { useMemo } from 'react';
 import { useStore } from '@/store';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CURRENCY_SYMBOL } from '@/config/constants';
+import { signOut } from '@/lib/firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export function TopAppBar() {
-  const { addToast, expenses, budget, categoriesMap } = useStore();
+  const { addToast, expenses, budget, categoriesMap, user } = useStore();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [showAllNotifications, setShowAllNotifications] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
-  // Close notifications on click outside
+  // Close notifications and profile on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
         setIsNotificationsOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -153,9 +161,103 @@ export function TopAppBar() {
         </div>
 
         {/* Profile */}
-        <Link href="/settings" className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center">
-          <span className="material-symbols-outlined text-3xl text-theme-accent">account_circle</span>
-        </Link>
+        <div className="relative" ref={profileRef}>
+          <button 
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center"
+          >
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-theme-border/50" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
+                <span className="material-symbols-outlined text-theme-accent text-xl">account_circle</span>
+              </div>
+            )}
+          </button>
+
+          <AnimatePresence>
+            {isProfileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-4 w-72 bg-theme-white border border-theme-border/50 shadow-2xl rounded-2xl overflow-hidden origin-top-right"
+              >
+                {/* ID Card Header */}
+                <div className="p-5 border-b border-theme-border/30 bg-theme-surface/30">
+                  <div className="flex items-center gap-3">
+                    {user?.photoURL ? (
+                      <img src={user.photoURL} alt="Profile" className="w-12 h-12 rounded-full border border-theme-border/50" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
+                        <span className="font-headline text-lg text-theme-accent">
+                          {user?.displayName ? user.displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-headline text-theme-primary font-medium truncate">
+                        {user?.displayName || 'Welcome back'}
+                      </p>
+                      <p className="font-body text-xs text-theme-secondary truncate">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Financial Snapshot */}
+                {budget && budget.budgetAmount > 0 && (
+                  <div className="p-4 border-b border-theme-border/30">
+                    <p className="text-xs font-medium text-theme-secondary uppercase tracking-widest mb-2">Monthly Budget</p>
+                    <div className="flex justify-between items-baseline mb-1">
+                      <span className="font-headline text-sm text-theme-primary">
+                        {CURRENCY_SYMBOL}{budget.totalSpent.toLocaleString()}
+                      </span>
+                      <span className="text-xs text-theme-tertiary">
+                        of {CURRENCY_SYMBOL}{budget.budgetAmount.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="w-full bg-theme-surface rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-700 ${(budget.totalSpent / budget.budgetAmount) > 0.85 ? 'bg-theme-danger' : 'bg-theme-accent'}`} 
+                        style={{ width: `${Math.min(100, (budget.totalSpent / budget.budgetAmount) * 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick Actions */}
+                <div className="p-2 space-y-1">
+                  <Link 
+                    href="/settings"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-surface-hover text-theme-primary transition-colors text-sm font-medium"
+                  >
+                    <span className="material-symbols-outlined text-[20px] text-theme-tertiary">settings</span>
+                    Account Settings
+                  </Link>
+                  <button 
+                    onClick={async () => {
+                      setIsProfileOpen(false);
+                      try {
+                        await signOut();
+                        router.push('/login');
+                      } catch {
+                        addToast({ type: 'error', message: 'Failed to sign out.' });
+                      }
+                    }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-danger/10 hover:text-theme-danger text-theme-primary transition-colors text-sm font-medium"
+                  >
+                    <span className="material-symbols-outlined text-[20px] text-theme-danger/70">logout</span>
+                    Sign Out
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </header>
   );
