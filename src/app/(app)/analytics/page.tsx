@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStore } from '@/store';
 import { Carousel, CarouselContent, CarouselNavigation, CarouselItem, CarouselIndicator } from '@/components/ui/motion/carousel';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/motion/accordion';
@@ -12,9 +12,13 @@ import { TextEffect } from '@/components/ui/motion/text-effect';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns';
 import { CURRENCY_SYMBOL } from '@/config/constants';
+import { setDoc } from 'firebase/firestore';
+import { budgetDocRef } from '@/lib/firebase/firestore';
 
 export default function AnalyticsPage() {
- const { expenses, budget, categoriesMap } = useStore();
+ const { expenses, budget, categoriesMap, householdId, selectedMonth, setCategoryBudgetOptimistic, addToast } = useStore();
+ const [editingLimit, setEditingLimit] = useState<string | null>(null);
+ const [limitInput, setLimitInput] = useState('');
 
  const { categoryTotals, totalSpent, highestCategory, pieData, areaData } = useMemo(() => {
  let total = 0;
@@ -72,7 +76,7 @@ export default function AnalyticsPage() {
  pieData: pie,
  areaData: area
  };
- }, [expenses]);
+ }, [expenses, categoriesMap]);
 
  return (
  <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
@@ -216,10 +220,79 @@ export default function AnalyticsPage() {
  </div>
  </AccordionTrigger>
  <AccordionContent className="pt-4 pb-2">
- <p className="text-theme-secondary text-sm">
- You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
- This accounts for {percentage}% of your total spending.
- </p>
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <p className="text-theme-secondary text-sm">
+      You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
+      This accounts for {percentage}% of your total spending.
+    </p>
+    
+    <div className="bg-theme-surface/50 rounded-xl p-3 border border-theme-border/30">
+      {editingLimit === categoryId ? (
+        <div className="flex items-center gap-2">
+          <span className="text-theme-secondary">{CURRENCY_SYMBOL}</span>
+          <input 
+            type="number" 
+            value={limitInput}
+            onChange={(e) => setLimitInput(e.target.value)}
+            className="bg-transparent w-24 text-theme-primary font-medium outline-none border-b border-theme-accent focus:border-b-2"
+            placeholder="Limit"
+            autoFocus
+          />
+          <button 
+            className="text-theme-accent hover:opacity-80 text-sm font-medium ml-2"
+            onClick={async () => {
+              if (!householdId || !selectedMonth) return;
+              const newLimit = Number(limitInput);
+              if (isNaN(newLimit) || newLimit < 0) return;
+              
+              // Optimistic update
+              setCategoryBudgetOptimistic(categoryId, newLimit);
+              setEditingLimit(null);
+              
+              // Firestore update
+              try {
+                await setDoc(budgetDocRef(householdId, selectedMonth), {
+                  categoryBudgets: {
+                    [categoryId]: newLimit
+                  }
+                }, { merge: true });
+                addToast({ type: 'success', message: `${cat?.name} limit updated!` });
+              } catch (error) {
+                console.error("Failed to update limit:", error);
+                addToast({ type: 'error', message: "Failed to save limit." });
+              }
+            }}
+          >
+            Save
+          </button>
+          <button 
+            className="text-theme-secondary hover:opacity-80 text-sm ml-2"
+            onClick={() => setEditingLimit(null)}
+          >
+            Cancel
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-4">
+          <div className="text-sm">
+            <span className="text-theme-secondary">Current Limit: </span>
+            <span className="text-theme-primary font-medium">
+              {budget?.categoryBudgets?.[categoryId] ? `${CURRENCY_SYMBOL}${budget.categoryBudgets[categoryId]}` : 'None'}
+            </span>
+          </div>
+          <button 
+            className="text-xs font-medium text-theme-accent bg-theme-accent/10 px-3 py-1.5 rounded-lg hover:bg-theme-accent/20 transition-colors"
+            onClick={() => {
+              setLimitInput(budget?.categoryBudgets?.[categoryId]?.toString() || '');
+              setEditingLimit(categoryId);
+            }}
+          >
+            {budget?.categoryBudgets?.[categoryId] ? 'Edit Limit' : 'Set Limit'}
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
  </AccordionContent>
  </AccordionItem>
  );
