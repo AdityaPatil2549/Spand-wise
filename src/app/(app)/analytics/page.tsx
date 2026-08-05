@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
  </div>
  <div className="text-right">
  <span className="block font-medium text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</span>
- <span className="text-sm text-theme-secondary">{percentage}% of total</span>
+ <span className="text-sm text-theme-secondary">{percentage}% of all expenses</span>
  </div>
  </div>
  </AccordionTrigger>
@@ -227,7 +227,7 @@ export default function AnalyticsPage() {
     <div className="flex flex-col gap-1">
       <p className="text-theme-secondary text-sm">
         You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
-        This accounts for {percentage}% of your total spending.
+        This represents {percentage}% of your total overall expenses.
       </p>
       {categoryLimit && (
         <p className={`text-sm font-medium ${isOverLimit ? 'text-theme-danger' : 'text-theme-accent'}`}>
