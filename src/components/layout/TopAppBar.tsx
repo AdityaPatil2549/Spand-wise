@@ -26,7 +26,7 @@ export function TopAppBar() {
   }, []);
 
   const alerts = useMemo(() => {
-    const newAlerts = [];
+    const newAlerts: Array<{ id: string, title: string, message: string, icon: string, color: string }> = [];
     if (!budget) return newAlerts;
 
     // Check overall budget
