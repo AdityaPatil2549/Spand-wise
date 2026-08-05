@@ -14,6 +14,9 @@
     
     --theme-border: 216 208 200;
     
+    --theme-font-sans: var(--font-quicksand);
+    --theme-font-display: var(--font-caveat);
+    
     /* Calibrated Typography Tokens */
     --theme-primary: 45 36 31; /* #2d241f -> 12.8:1 contrast (AAA Pass) */
     --theme-secondary: 110 94 84; /* #6e5e54 -> 4.8:1 contrast (AA Pass) */
@@ -41,6 +44,9 @@
     
     --theme-border: 51 51 51; /* #333333 */
     
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    
     --theme-primary: 255 255 255; /* #ffffff */
     --theme-secondary: 163 163 163; /* #a3a3a3 */
     --theme-tertiary: 115 115 115; /* #737373 */
@@ -65,6 +71,9 @@
     --theme-elevated-hover: 32 58 92;
     
     --theme-border: 30 58 138;
+    
+    --theme-font-sans: var(--font-quicksand);
+    --theme-font-display: var(--font-caveat);
     
     --theme-primary: 230 241 255; /* Ice white */
     --theme-secondary: 136 146 176;
@@ -91,6 +100,9 @@
     
     --theme-border: 62 82 75;
     
+    --theme-font-sans: var(--font-quicksand);
+    --theme-font-display: var(--font-caveat);
+    
     --theme-primary: 242 245 235; /* Off-white cream */
     --theme-secondary: 173 189 179;
     --theme-tertiary: 126 148 135;
@@ -115,6 +127,9 @@
     --theme-elevated-hover: 44 9 115;
     
     --theme-border: 71 18 163;
+    
+    --theme-font-sans: var(--font-space-mono);
+    --theme-font-display: var(--font-orbitron);
     
     --theme-primary: 255 255 255; /* Glowing white */
     --theme-secondary: 200 176 250;
@@ -141,6 +156,9 @@
     
     --theme-border: 203 213 225;
     
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    
     --theme-primary: 30 41 59; /* Dark slate */
     --theme-secondary: 71 85 105;
     --theme-tertiary: 100 116 139;
@@ -165,6 +183,9 @@
     --theme-elevated-hover: 24 40 80;
     
     --theme-border: 255 255 255; /* rgba(255,255,255,0.08) applied via opacity classes where needed */
+    
+    --theme-font-sans: var(--font-space-grotesk);
+    --theme-font-display: var(--font-syne);
     
     --theme-primary: 255 255 255; /* #FFFFFF */
     --theme-secondary: 163 175 194; /* Muted blue-grey */
@@ -191,6 +212,9 @@
     
     --theme-border: 85 43 128;
     
+    --theme-font-sans: var(--font-space-mono);
+    --theme-font-display: var(--font-orbitron);
+    
     --theme-primary: 255 240 245; /* Lavender blush */
     --theme-secondary: 219 195 227;
     --theme-tertiary: 176 148 186;
@@ -216,6 +240,9 @@
     
     --theme-border: 60 60 60;
     
+    --theme-font-sans: var(--font-space-grotesk);
+    --theme-font-display: var(--font-syne);
+    
     --theme-primary: 240 240 240;
     --theme-secondary: 160 160 160;
     --theme-tertiary: 100 100 100;
@@ -234,7 +261,7 @@
 
 @layer base {
   html {
-    font-family: var(--font-outfit), system-ui, -apple-system, sans-serif;
+    font-family: var(--theme-font-sans), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
