@@ -1,6 +1,6 @@
 'use client';
 
-import { Moon, Sun, Waves, TreePine, Zap, Snowflake, Sparkles } from 'lucide-react';
+import { Moon, Sun, Waves, TreePine, Zap, Snowflake, Sparkles, Sunset, Hexagon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +12,8 @@ const THEMES = [
   { id: 'forest', name: 'Forest', icon: TreePine, color: 'bg-green-500/10 text-green-500' },
   { id: 'cyberpunk', name: 'Cyberpunk', icon: Zap, color: 'bg-fuchsia-500/10 text-fuchsia-500' },
   { id: 'arctic', name: 'Arctic', icon: Snowflake, color: 'bg-cyan-500/10 text-cyan-500' },
+  { id: 'neon-sunset', name: 'Neon Sunset', icon: Sunset, color: 'bg-rose-500/10 text-rose-500' },
+  { id: 'graphite', name: 'Graphite', icon: Hexagon, color: 'bg-gray-500/10 text-gray-400' },
 ];
 
 export const ThemeSelector = () => {

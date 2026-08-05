@@ -11,7 +11,7 @@ import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { CategoryManager } from '@/components/features/settings/CategoryManager';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
-import { BudgetSetupCard } from '@/components/budget/BudgetSetupCard';
+import { BudgetSetupCard } from '@/components/features/budget/BudgetSetupCard';
 import { QuickAddManager } from '@/components/features/settings/QuickAddManager';
 
 export default function SettingsPage() {

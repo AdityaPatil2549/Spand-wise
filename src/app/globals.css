@@ -180,6 +180,56 @@
     --theme-white: 16 26 52;
     --theme-inverse: 15 23 42;
   }
+
+  .neon-sunset {
+    /* Synthwave / Neon Sunset */
+    --theme-base: 18 9 28; /* #12091c */
+    --theme-surface: 34 17 51; /* #221133 */
+    --theme-surface-hover: 49 25 76;
+    --theme-elevated: 42 21 64;
+    --theme-elevated-hover: 60 30 89;
+    
+    --theme-border: 85 43 128;
+    
+    --theme-primary: 255 240 245; /* Lavender blush */
+    --theme-secondary: 219 195 227;
+    --theme-tertiary: 176 148 186;
+    
+    --theme-accent: 255 107 107; /* Neon Coral */
+    --theme-accent-hover: 255 71 87;
+    --theme-accent-light: 49 25 76;
+    
+    --theme-danger: 220 38 38;
+    --theme-danger-light: 63 21 21;
+    
+    --theme-white: 34 17 51;
+    --theme-inverse: 18 9 28;
+  }
+
+  .graphite {
+    /* Minimalist Mono / Graphite */
+    --theme-base: 10 10 10;
+    --theme-surface: 20 20 20;
+    --theme-surface-hover: 30 30 30;
+    --theme-elevated: 25 25 25;
+    --theme-elevated-hover: 35 35 35;
+    
+    --theme-border: 60 60 60;
+    
+    --theme-primary: 240 240 240;
+    --theme-secondary: 160 160 160;
+    --theme-tertiary: 100 100 100;
+    
+    --theme-accent: 255 255 255; /* Pure white accent */
+    --theme-accent-hover: 200 200 200;
+    --theme-accent-light: 40 40 40;
+    
+    --theme-danger: 255 100 100;
+    --theme-danger-light: 50 20 20;
+    
+    --theme-white: 20 20 20;
+    --theme-inverse: 10 10 10;
+  }
 }
 
 @layer base {
@@ -193,7 +243,7 @@
     color-scheme: light;
   }
   
-  .dark, .ocean, .forest, .cyberpunk, .oled-pro {
+  .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite {
     color-scheme: dark;
   }
 

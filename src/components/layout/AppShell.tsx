@@ -6,10 +6,11 @@ import { useStore } from '@/store';
 import { useExpensesListener } from '@/hooks/useExpenses';
 import { useBudgetListener } from '@/hooks/useBudget';
 import { useCategoriesLoader } from '@/hooks/useCategories';
+import { useHydrated } from '@/hooks/useHydrated';
 import { BottomNav } from './BottomNav';
 
 import { BottomSheet } from '@/components/ui/BottomSheet';
-import { ExpenseForm } from '@/components/expense/ExpenseForm';
+import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
 import type { ExpenseDocument } from '@/types/firestore';
 
 interface AppShellProps {
@@ -41,6 +42,7 @@ export const AppShell = ({ children }: AppShellProps) => {
  const expenses = useStore((s) => s.expenses);
  const pathname = usePathname();
  const isDashboard = pathname === '/dashboard' || pathname === '/expenses';
+ const isHydrated = useHydrated();
 
  // Initialize real-time listeners
  useExpensesListener(householdId, loadedMonths);
@@ -51,6 +53,14 @@ export const AppShell = ({ children }: AppShellProps) => {
  const editingExpense: ExpenseDocument | null = bottomSheet.editingExpenseId
  ? (expenses.find((e) => e.id === bottomSheet.editingExpenseId) ?? null)
  : null;
+
+ if (!isHydrated) {
+  return (
+    <div className="flex h-screen w-full items-center justify-center bg-theme-base">
+      <div className="w-8 h-8 rounded-full border-4 border-theme-border border-t-theme-accent animate-spin" />
+    </div>
+  );
+ }
 
  return (
  <div className="min-h-screen bg-[var(--surface-base)] flex w-full overflow-hidden relative">

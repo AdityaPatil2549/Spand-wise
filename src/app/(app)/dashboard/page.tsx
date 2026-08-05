@@ -16,7 +16,7 @@ import { AddExpenseMorph } from '@/components/features/expenses/AddExpenseMorph'
 import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorph';
 
 import { QuickAddWidgets } from '@/components/features/dashboard/QuickAddWidgets';
-import { TransactionRow } from '@/components/ledger/TransactionRow';
+import { TransactionRow } from '@/components/features/ledger/TransactionRow';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -136,14 +136,14 @@ export default function DashboardPage() {
               <QuickAddWidgets />
               
               <AddExpenseMorph>
-                <div className="mt-12 inline-block">
+                <span className="mt-12 inline-block">
                   <Magnetic intensity={0.2} springOptions={{ bounce: 0.1 }} actionArea="global">
                     <span className="bg-theme-accent text-theme-white px-8 py-4 rounded-full flex items-center justify-center gap-3 hover-elevate active:scale-[0.98] transition-all font-medium text-[20px] shadow-lg shadow-theme-accent/20 cursor-pointer">
                       <span className="material-symbols-outlined text-[24px]">add</span>
                       Add Transaction
                     </span>
                   </Magnetic>
-                </div>
+                </span>
               </AddExpenseMorph>
             </div>
             <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-4 mt-8">

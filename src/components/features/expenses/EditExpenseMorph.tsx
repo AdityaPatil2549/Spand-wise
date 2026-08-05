@@ -9,7 +9,7 @@ import {
  MorphingDialogTitle,
  MorphingDialogClose,
 } from '@/components/ui/motion/morphing-dialog';
-import { ExpenseForm } from '@/components/expense/ExpenseForm';
+import { ExpenseForm } from '@/components/features/expenses/ExpenseForm';
 import type { ExpenseDocument } from '@/types/firestore';
 
 interface EditExpenseMorphProps {
