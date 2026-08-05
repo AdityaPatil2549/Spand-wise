@@ -1,18 +1,19 @@
 <div align="center">
-  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuACrBq3mzB3KNbIhNfjJxMjvPG1Um8git0W7hb2Flj45gHRWfuQb1cHJysssenPSQUQRy0XaYiZ4y0Pc3FxrIyvLR_plgQcjvCsveiQrpRo6l0_Ej6tLu71vNYS4XksDCEvgFp7JHxqqDtijfqBEZ_X8uDtdzRL2_-Lw-8ubtxj5KpY1sYpkDtcfLKGFYgZibWy-dDQoEXVrwgRPdbtu-k-ljEbnxNIAfhPQX_EPVVDdL9lJE4G9g" alt="SpendWise Premium Aesthetic" width="100%" style="border-radius: 12px; margin-bottom: 20px; object-fit: cover; height: 300px;"/>
+  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuACrBq3mzB3KNbIhNfjJxMjvPG1Um8git0W7hb2Flj45gHRWfuQb1cHJysssenPSQUQRy0XaYiZ4y0Pc3FxrIyvLR_plgQcjvCsveiQrpRo6l0_Ej6tLu71vNYS4XksDCEvgFp7JHxqqDtijfqBEZ_X8uDtdzRL2_-Lw-8ubtxj5KpY1sYpkDtcfLKGFYgZibWy-dDQoEXVrwgRPdbtu-k-ljEbnxNIAfhPQX_EPVVDdL9lJE4G9g" alt="SpendWise Premium Aesthetic" width="100%" style="border-radius: 12px; margin-bottom: 20px; object-fit: cover; height: 300px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);"/>
 
   # ✦ SpendWise ✦
   
   *Premium Personal Finance & Expense Tracking, Elevated for Students.*
 
-  <p>
+  <p align="center">
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
     <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
     <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+    <a href="https://zustand-demo.pmnd.rs/"><img src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" /></a>
   </p>
 
-  ### 🌐 **Live Demo:** [https://spendwise-458f0.web.app](https://spendwise-458f0.web.app)
+  ### 🌐 **Live Demo:** [spendwise-458f0.web.app](https://spendwise-458f0.web.app)
   
   ---
 </div>
@@ -27,28 +28,48 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
 
 ## 🌟 Signature Features
 
-### 🎨 Editorial Aesthetic
-- **Sahara Layout:** Warm peach and orange tones paired with elegant serif typography.
-- **Glassmorphic UI:** Soft blur panels and ultra-soft drop shadows.
-- **Micro-Animations:** Smooth, responsive hover states and scale transitions for every interaction.
+<table width="100%">
+  <tr>
+    <td width="50%">
+      <h3>🎨 Editorial Aesthetic</h3>
+      <ul>
+        <li><b>Sahara Layout:</b> Warm peach and orange tones paired with elegant serif typography.</li>
+        <li><b>Glassmorphic UI:</b> Soft blur panels and ultra-soft drop shadows.</li>
+        <li><b>Micro-Animations:</b> Smooth, responsive hover states and scale transitions for every interaction.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>⚡ Lightning Fast Logging</h3>
+      <ul>
+        <li><b>Frictionless:</b> Add expenses in under 3 seconds with optimized numeric keypads.</li>
+        <li><b>One-Tap Chips:</b> Select categories effortlessly using quick-action chips.</li>
+        <li><b>Bottom Sheet:</b> Seamlessly integrates directly into the global app drawer.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🔄 Real-time Cloud Sync</h3>
+      <ul>
+        <li><b>Cross-Device:</b> Powered by Firebase Firestore, your expenses synchronize instantly across all devices.</li>
+        <li><b>Offline First:</b> Full offline persistence. Log expenses on the subway, and they’ll silently sync when you’re back online.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>📊 Smart Budgeting & Analytics</h3>
+      <ul>
+        <li><b>Budget Tracking:</b> Set a monthly allowance and watch your remaining balance recalculate instantly.</li>
+        <li><b>Category Insights:</b> Stunning visualizations to see exactly where your money goes.</li>
+        <li><b>Smart Alerts:</b> In-app notifications when you exceed 85% of your total or category budget.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
-### ⚡ Lightning Fast Logging
-- Add expenses in under 3 seconds with optimized numeric keypads and one-tap category chips.
-- Seamlessly integrates directly into the global Bottom Sheet.
-
-### 🔄 Real-time Cloud Sync
-- Powered by **Firebase Firestore**, your expenses synchronize instantly across your phone, tablet, and laptop.
-- Full offline persistence: log expenses on the subway, and they’ll silently sync when you’re back online.
-
-### 📊 Smart Budgeting & Analytics
-- **Budget Tracking:** Set a monthly allowance and watch your remaining balance recalculate instantly.
-- **Category Insights:** Stunning visualizations to see exactly where your money goes.
-- **Smart Alerts:** In-app notifications when you exceed 85% of your total or category budget.
-
-### ✨ Premium UX Features
-- **Glassmorphic Profile Popover:** A sleek, animated dropdown providing a quick financial snapshot and access to settings without leaving the page.
-- **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
-- **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
+### ✨ Premium UX Upgrades
+- 🪞 **Glassmorphic Profile Popover:** A sleek, animated dropdown providing a quick financial snapshot and access to settings without leaving the page.
+- 📜 **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
+- 🪄 **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
 
 ---
 
@@ -56,13 +77,13 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
 
 SpendWise utilizes a "Thick Client + Smart Database" architecture pattern, completely eliminating the need for a custom backend server to reduce latency and infrastructure overhead.
 
-- **Frontend:** Next.js 14 (App Router)
-- **Language:** TypeScript (Strict Mode)
-- **Styling:** Tailwind CSS + Custom Design Tokens
-- **State Management:** Zustand
-- **Backend as a Service:** Firebase (Auth, Firestore, Hosting)
-- **Typography:** Google Fonts (EB Garamond & Manrope)
-- **Icons:** Google Material Symbols (Outlined)
+> [!NOTE] 
+> **Tech Stack Overview:**
+> - **Frontend:** Next.js 14 (App Router)
+> - **Language:** TypeScript (Strict Mode)
+> - **Styling:** Tailwind CSS + Framer Motion
+> - **State Management:** Zustand
+> - **Backend / Auth:** Firebase
 
 ---
 
@@ -110,15 +131,15 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in a
 
 Contributions are welcome! Whether it's adding new features, improving the UI/UX, or fixing bugs, we appreciate your help in making SpendWise the most beautiful expense tracker available.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. **Fork** the Project
+2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
 
 ---
 
 <div align="center">
   <i>"Discipline is the bridge between goals and accomplishment."</i><br><br>
-  Built with ❤️ for students, by students.
+  <b>Built with ❤️ for students, by students.</b>
 </div>
