@@ -27,6 +27,7 @@ import { PWAInstallPrompt } from '@/components/shared/PWAInstallPrompt';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 
 import { Sidebar } from './Sidebar';
+import { TopAppBar } from './TopAppBar';
 
 export const AppShell = ({ children }: AppShellProps) => {
  // Initialize global auth listener (now in GlobalProviders)
@@ -59,6 +60,7 @@ export const AppShell = ({ children }: AppShellProps) => {
  </main>
 
  {/* Global UI elements */}
+ <TopAppBar />
  <BottomNav />
  <PWAInstallPrompt />
  <OfflineIndicator />

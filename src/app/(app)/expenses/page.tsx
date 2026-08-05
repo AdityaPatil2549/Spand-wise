@@ -122,27 +122,8 @@ export default function ExpensesPage() {
  {/* SideNavBar */}
  <ExpensesSidebar />
 
- {/* TopAppBar */}
- <header className="hidden md:flex fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-theme-base/80 backdrop-blur-md justify-between items-center px-12 h-20">
- <nav className="flex gap-8">
- <a className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer font-body text-sm" href="#">Overview</a>
- <a className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer font-body text-sm" href="#">Reports</a>
- <a className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer font-body text-sm" href="#">Planning</a>
- </nav>
- <div className="flex items-center gap-6">
- <button className="font-body text-sm font-medium text-theme-accent hover:opacity-80 transition-opacity">Upgrade</button>
- <div className="h-6 w-px bg-theme-border/50"></div>
- <button className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center">
- <span className="material-symbols-outlined text-xl">notifications</span>
- </button>
- <button className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center">
- <span className="material-symbols-outlined text-3xl text-theme-accent">account_circle</span>
- </button>
- </div>
- </header>
-
  {/* Main Content Canvas */}
- <main className="flex-1 w-full md:ml-64 pt-24 md:pt-28 px-6 md:px-16 pb-20 overflow-y-auto">
+ <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-20 overflow-y-auto">
  {/* Page Header & Filters */}
  <div className="max-w-6xl mx-auto mb-12">
  <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
