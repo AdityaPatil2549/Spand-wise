@@ -1,36 +1,21 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Wallet } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useStore } from '@/store';
-import { setBudgetAmount } from '@/lib/budget/index';
-import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
-
-const budgetSchema = z.object({
- budgetAmount: z
- .number()
-'use client';
-
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Wallet } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { useStore } from '@/store';
-import { setBudgetAmount } from '@/lib/budget/index';
-import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Wallet } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { useStore } from '@/store';
+import { setBudgetAmount } from '@/lib/budget/index';
+import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
 
 const budgetSchema = z.object({
- budgetAmount: z
- .number()
- .min(MIN_BUDGET_AMOUNT, `Budget must be at least ${CURRENCY_SYMBOL}${MIN_BUDGET_AMOUNT}`)
- .max(MAX_BUDGET_AMOUNT, 'Budget amount is too large'),
+  budgetAmount: z
+    .number()
+    .min(MIN_BUDGET_AMOUNT, `Budget must be at least ${CURRENCY_SYMBOL}${MIN_BUDGET_AMOUNT}`)
+    .max(MAX_BUDGET_AMOUNT, 'Budget amount is too large'),
 });
 
 type BudgetFormValues = z.infer<typeof budgetSchema>;
