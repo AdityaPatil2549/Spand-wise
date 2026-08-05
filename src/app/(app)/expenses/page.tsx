@@ -248,12 +248,7 @@ export default function ExpensesPage() {
  )}
  </AnimatedGroup>
  
- {/* Load More */}
- {expenses.length > 0 && (
- <div className="mt-12 flex justify-center">
- <button className="px-8 py-3 rounded-full border border-theme-border/60 font-body text-sm text-theme-primary hover:bg-theme-surface-hover transition-colors duration-200">View Older Transactions</button>
- </div>
- )}
+  {/* Load More button removed as month pagination is handled by the tabs above */}
  </div>
  </main>
  </div>
