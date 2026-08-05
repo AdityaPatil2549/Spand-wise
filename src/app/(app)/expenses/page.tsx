@@ -246,9 +246,30 @@ export default function ExpensesPage() {
  {expenses.length === 0 && (
  <p className="text-center text-theme-secondary py-8">No expenses yet for this month.</p>
  )}
+  {/* Load More */}
+  {expenses.length > 0 && (
+    <div className="mt-12 flex justify-center">
+      <button 
+        onClick={() => {
+          const store = useStore.getState();
+          const oldestMonth = store.loadedMonths.sort()[0];
+          const [year, month] = oldestMonth.split('-').map(Number);
+          const date = new Date(year, month - 2); // month is 0-indexed in JS Date, so -2 gives previous month
+          const prevMonthStr = format(date, 'yyyy-MM');
+          
+          if (timeFilter !== 'All') {
+            setTimeFilter('All');
+          }
+          store.addLoadedMonth(prevMonthStr);
+        }}
+        className="px-8 py-3 rounded-full border border-theme-border/60 font-body text-sm text-theme-primary hover:bg-theme-surface-hover transition-colors duration-200"
+      >
+        View Older Transactions
+      </button>
+    </div>
+  )}
  </AnimatedGroup>
  
-  {/* Load More button removed as month pagination is handled by the tabs above */}
  </div>
  </main>
  </div>

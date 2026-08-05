@@ -34,6 +34,7 @@ export const AppShell = ({ children }: AppShellProps) => {
 
  const householdId = useStore((s) => s.householdId);
  const selectedMonth = useStore((s) => s.selectedMonth);
+ const loadedMonths = useStore((s) => s.loadedMonths);
  const bottomSheet = useStore((s) => s.bottomSheet);
  const closeBottomSheet = useStore((s) => s.closeBottomSheet);
 
@@ -42,7 +43,7 @@ export const AppShell = ({ children }: AppShellProps) => {
  const isDashboard = pathname === '/dashboard' || pathname === '/expenses';
 
  // Initialize real-time listeners
- useExpensesListener(householdId, selectedMonth);
+ useExpensesListener(householdId, loadedMonths);
  useBudgetListener(householdId, selectedMonth);
  useCategoriesLoader(householdId);
 
