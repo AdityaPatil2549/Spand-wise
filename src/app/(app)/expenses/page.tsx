@@ -91,7 +91,7 @@ export default function ExpensesPage() {
  catTotals[e.categoryId] = (catTotals[e.categoryId] || 0) + e.amount;
  });
  
- let topCatId = expenses[0].categoryId;
+ let topCatId = displayExpenses[0].categoryId;
  let maxAmt = 0;
  
  for (const [id, amt] of Object.entries(catTotals)) {
@@ -110,8 +110,6 @@ export default function ExpensesPage() {
  percent,
  };
  }, [expenses, totalSpent]);
-
- const groupedExpenses = useMemo(() => groupExpensesByDate(expenses), [expenses]);
  
  return (
  <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
