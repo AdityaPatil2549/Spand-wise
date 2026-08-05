@@ -73,7 +73,7 @@ export default function SettingsPage() {
         <div className="glass-panel p-8 rounded-3xl border border-theme-border/30 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-theme-accent/5 rounded-full blur-3xl -z-10"></div>
 
-          <div className="flex space-x-2 mb-8 bg-theme-elevated/50 p-1.5 rounded-xl w-fit max-w-full overflow-x-auto hide-scrollbar">
+          <div className="flex mb-8 bg-theme-elevated/50 p-1.5 rounded-xl w-full md:w-max overflow-x-auto hide-scrollbar snap-x">
             <AnimatedBackground
               defaultValue={TABS[0]}
               className="rounded-lg bg-theme-white shadow-sm"
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="pt-6 border-t border-theme-border/30">
-                    <button onClick={handleSignOut} className="px-6 py-3 bg-theme-danger/10 text-theme-danger font-medium rounded-xl hover:bg-theme-danger/20 transition-colors flex items-center gap-2">
+                    <button onClick={handleSignOut} className="px-6 py-3 bg-theme-danger/10 text-theme-danger font-medium rounded-xl hover:bg-theme-danger/20 active:scale-[0.98] transition-all flex items-center gap-2">
                       <span className="material-symbols-outlined">logout</span>
                       Sign Out
                     </button>
@@ -175,7 +175,7 @@ export default function SettingsPage() {
                     </div>
                     <button
                       onClick={downloadCSV}
-                      className="px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 transition-colors shadow-sm"
+                      className="px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 active:scale-[0.98] transition-all shadow-sm"
                     >
                       Generate Export
                     </button>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                           addToast({ type: 'error', message: 'Failed to seed data: ' + e.message });
                         }
                       }}
-                      className="px-6 py-2.5 bg-theme-elevated text-theme-primary font-medium rounded-xl hover:bg-theme-border transition-colors border border-theme-border/50"
+                      className="px-6 py-2.5 bg-theme-elevated text-theme-primary font-medium rounded-xl hover:bg-theme-border active:scale-[0.98] transition-all border border-theme-border/50"
                     >
                       Seed Demo Data
                     </button>

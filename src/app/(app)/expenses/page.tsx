@@ -286,7 +286,7 @@ export default function ExpensesPage() {
           }
           store.addLoadedMonth(prevMonthStr);
         }}
-        className="px-8 py-3 rounded-full border border-theme-border/60 font-body text-sm text-theme-primary hover:bg-theme-surface-hover transition-colors duration-200"
+        className="px-8 py-3 rounded-full border border-theme-border/60 font-body text-sm text-theme-primary hover:bg-theme-surface-hover active:scale-[0.98] transition-all duration-200"
       >
         View Older Transactions
       </button>

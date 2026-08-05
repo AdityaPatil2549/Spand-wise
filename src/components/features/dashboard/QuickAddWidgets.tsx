@@ -92,7 +92,7 @@ export const QuickAddWidgets: React.FC = () => {
             key={preset.id}
             onClick={() => handleQuickAdd(preset)}
             disabled={loadingId !== null}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-theme-surface border border-theme-primary/10 hover:border-theme-accent/30 hover:bg-theme-accent/5 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-theme-surface border border-theme-primary/10 hover:border-theme-accent/30 hover:bg-theme-accent/5 hover:-translate-y-[1px] transition-all shadow-sm active:scale-[0.98] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0"
           >
             <span 
               className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"

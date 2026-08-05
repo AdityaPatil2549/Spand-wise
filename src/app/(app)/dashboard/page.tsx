@@ -128,14 +128,14 @@ export default function DashboardPage() {
               <QuickAddWidgets />
               
               <AddExpenseMorph>
-                <span className="mt-12 bg-theme-accent text-theme-white px-8 py-4 rounded-full flex items-center gap-3 hover-elevate transition-all font-medium text-[20px] shadow-lg shadow-theme-accent/20 cursor-pointer">
+                <span className="mt-12 bg-theme-accent text-theme-white px-8 py-4 rounded-full flex items-center gap-3 hover-elevate active:scale-[0.98] transition-all font-medium text-[20px] shadow-lg shadow-theme-accent/20 cursor-pointer">
                   <span className="material-symbols-outlined text-[24px]">add</span>
                   Add Transaction
                 </span>
               </AddExpenseMorph>
             </div>
             <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-4 mt-8">
-              <Link href="/analytics" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group">
+              <Link href="/analytics" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
                 <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
                   <span className="material-symbols-outlined">analytics</span>
                 </div>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-theme-secondary">Deep dive into spending</p>
                 </div>
               </Link>
-              <Link href="/settings" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group">
+              <Link href="/settings" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
                 <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
                   <span className="material-symbols-outlined">edit_note</span>
                 </div>

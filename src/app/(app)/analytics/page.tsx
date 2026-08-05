@@ -263,7 +263,7 @@ export default function AnalyticsPage() {
             autoFocus
           />
           <button 
-            className="text-theme-accent hover:opacity-80 text-sm font-medium ml-2"
+            className="text-theme-accent hover:opacity-80 active:scale-[0.98] transition-transform text-sm font-medium ml-2"
             onClick={async () => {
               if (!householdId || !selectedMonth) return;
               const newLimit = Number(limitInput);
@@ -290,7 +290,7 @@ export default function AnalyticsPage() {
             Save
           </button>
           <button 
-            className="text-theme-secondary hover:opacity-80 text-sm ml-2"
+            className="text-theme-secondary hover:opacity-80 active:scale-[0.98] transition-transform text-sm ml-2"
             onClick={() => setEditingLimit(null)}
           >
             Cancel
@@ -305,7 +305,7 @@ export default function AnalyticsPage() {
             </span>
           </div>
           <button 
-            className="text-xs font-medium text-theme-accent bg-theme-accent/10 px-3 py-1.5 rounded-lg hover:bg-theme-accent/20 transition-colors"
+            className="text-xs font-medium text-theme-accent bg-theme-accent/10 px-3 py-1.5 rounded-lg hover:bg-theme-accent/20 active:scale-[0.98] transition-all"
             onClick={() => {
               setLimitInput(budget?.categoryBudgets?.[categoryId]?.toString() || '');
               setEditingLimit(categoryId);
