@@ -202,6 +202,9 @@ export default function AnalyticsPage() {
  {Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).map(([categoryId, amount]) => {
  const cat = categoriesMap.get(categoryId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
  const percentage = totalSpent > 0 ? ((amount / totalSpent) * 100).toFixed(1) : '0';
+ const categoryLimit = budget?.categoryBudgets?.[categoryId];
+ const categoryLimitPercent = categoryLimit ? ((amount / categoryLimit) * 100).toFixed(1) : null;
+ const isOverLimit = categoryLimit && amount > categoryLimit;
  
  return (
  <AccordionItem key={categoryId} value={categoryId} className="py-4">
@@ -221,10 +224,17 @@ export default function AnalyticsPage() {
  </AccordionTrigger>
  <AccordionContent className="pt-4 pb-2">
   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <p className="text-theme-secondary text-sm">
-      You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
-      This accounts for {percentage}% of your total spending.
-    </p>
+    <div className="flex flex-col gap-1">
+      <p className="text-theme-secondary text-sm">
+        You've spent <strong className="text-theme-primary">{CURRENCY_SYMBOL}{amount.toFixed(2)}</strong> on {cat?.name} so far. 
+        This accounts for {percentage}% of your total spending.
+      </p>
+      {categoryLimit && (
+        <p className={`text-sm font-medium ${isOverLimit ? 'text-theme-danger' : 'text-theme-accent'}`}>
+          You used {categoryLimitPercent}% of your {CURRENCY_SYMBOL}{categoryLimit} limit.
+        </p>
+      )}
+    </div>
     
     <div className="bg-theme-surface/50 rounded-xl p-3 border border-theme-border/30">
       {editingLimit === categoryId ? (
