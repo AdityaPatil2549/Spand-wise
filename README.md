@@ -40,9 +40,15 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
 - Powered by **Firebase Firestore**, your expenses synchronize instantly across your phone, tablet, and laptop.
 - Full offline persistence: log expenses on the subway, and they’ll silently sync when you’re back online.
 
-### 📊 Beautiful Analytics
+### 📊 Smart Budgeting & Analytics
+- **Budget Tracking:** Set a monthly allowance and watch your remaining balance recalculate instantly.
 - **Category Insights:** Stunning visualizations to see exactly where your money goes.
-- **Smart Budgets:** Set your monthly allowance and watch the remaining balance recalculate instantly.
+- **Smart Alerts:** In-app notifications when you exceed 85% of your total or category budget.
+
+### ✨ Premium UX Features
+- **Glassmorphic Profile Popover:** A sleek, animated dropdown providing a quick financial snapshot and access to settings without leaving the page.
+- **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
+- **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
 
 ---
 
