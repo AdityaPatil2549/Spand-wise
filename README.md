@@ -67,7 +67,9 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
 </table>
 
 ### ✨ Premium UX Upgrades
-- 🪞 **Glassmorphic Profile Popover:** A sleek, animated dropdown providing a quick financial snapshot and access to settings without leaving the page.
+- 🎨 **Dynamic Theming Engine:** A robust 9-theme structural matrix (Cyberpunk, Sahara, Minimal, etc.) that instantly adapts global color palettes, spacing, and curated Google typography combinations.
+- 🪞 **Advanced Glassmorphism UI:** Fully interactive, Framer Motion powered dropdown menus and modals that seamlessly blur and blend into the active theme.
+- 🔍 **Real-Time Ledger Search:** Lightning fast client-side filtering by description, category, or amount on the Expenses page.
 - 📜 **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
 - 🪄 **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
 
