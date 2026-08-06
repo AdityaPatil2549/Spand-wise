@@ -179,7 +179,7 @@ export default function DashboardPage() {
                     align="right"
                     trigger={<span className="material-symbols-outlined text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer p-2 -mr-2 rounded-full hover:bg-theme-surface-hover/80 active:scale-95">more_horiz</span>}
                     items={[
-                      { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings' },
+                      { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings#preferences' },
                       { label: 'View Deep Analysis', icon: 'analytics', href: '/analytics' },
                       { label: 'Export Report', icon: 'download', onClick: () => alert('Downloading report...') }
                     ]}

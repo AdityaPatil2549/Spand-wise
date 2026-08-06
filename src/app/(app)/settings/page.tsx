@@ -22,6 +22,14 @@ export default function SettingsPage() {
 
   const TABS = ['Account', 'Preferences', 'Categories', 'Export'];
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      const idx = TABS.findIndex(t => t.toLowerCase() === hash);
+      if (idx >= 0) setActiveTab(idx);
+    }
+  }, []);
+
   const handleSignOut = async () => {
     try {
       await signOut();
