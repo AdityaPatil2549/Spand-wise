@@ -148,7 +148,7 @@ export default function AnalyticsPage() {
  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#10b981]/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
  <div className="flex justify-between items-center mb-2 z-10 relative">
  <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm">Monthly Trend</span>
- <span className="text-xs text-[#10b981] font-medium bg-[#10b981]/10 px-2 py-1 rounded-md">{((totalSpent / (Number(budget) > 0 ? Number(budget) : 1)) * 100).toFixed(0)}% used</span>
+ <span className="text-xs text-[#10b981] font-medium bg-[#10b981]/10 px-2 py-1 rounded-md">{((totalSpent / (budget?.budgetAmount || 1)) * 100).toFixed(0)}% used</span>
  </div>
  <div className="relative z-10 flex-1 w-full h-full -ml-4">
  {areaData.some(d => d.spent !== null && d.spent > 0) ? (
