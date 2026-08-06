@@ -69,8 +69,9 @@ const groupExpensesByDate = (expenses: ExpenseDocument[]) => {
 };
 
 export default function ExpensesPage() {
- const [timeFilter, setTimeFilter] = useState<string>('All');
- const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap, setSelectedMonth, selectedMonth } = useStore();
+  const [timeFilter, setTimeFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap, setSelectedMonth, selectedMonth } = useStore();
  
  const totalSpent = budget?.totalSpent || 0;
  const budgetAmount = budget?.budgetAmount || 0;
@@ -82,13 +83,22 @@ export default function ExpensesPage() {
    );
  }, [expenses, budgetAmount]);
  
- // Filter expenses locally if needed
- const displayExpenses = useMemo(() => {
-   if (timeFilter === 'This Week') {
-     return expenses.filter(e => isThisWeek(e.date.toDate(), { weekStartsOn: 1 }));
-   }
-   return expenses;
- }, [expenses, timeFilter]);
+  // Filter expenses locally if needed
+  const displayExpenses = useMemo(() => {
+    let filtered = expenses;
+    if (timeFilter === 'This Week') {
+      filtered = filtered.filter(e => isThisWeek(e.date.toDate(), { weekStartsOn: 1 }));
+    }
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(e => {
+        const catName = (categoriesMap.get(e.categoryId)?.name || '').toLowerCase();
+        const desc = (e.description || '').toLowerCase();
+        return desc.includes(q) || catName.includes(q) || e.amount.toString().includes(q);
+      });
+    }
+    return filtered;
+  }, [expenses, timeFilter, searchQuery, categoriesMap]);
 
  // Group the filtered expenses
  const groupedExpenses = useMemo(() => groupExpensesByDate(displayExpenses), [displayExpenses]);
@@ -139,11 +149,17 @@ export default function ExpensesPage() {
  <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
  <button className="snap-start whitespace-nowrap text-theme-accent border-b-2 border-theme-accent pb-2 font-body text-sm uppercase tracking-wide font-semibold">{format(new Date(), 'MMMM yyyy')}</button>
  </nav>
- {/* Search/Category Filter */}
- <div className="relative w-full md:w-72">
- <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-theme-tertiary text-sm">search</span>
- <input className="w-full bg-theme-white border border-theme-border/60 rounded-full py-2.5 pl-10 pr-4 font-body text-sm text-theme-primary focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition-all shadow-ultra-soft placeholder:text-theme-tertiary" placeholder="Search or filter..." type="text" />
- </div>
+  {/* Search/Category Filter */}
+  <div className="relative w-full md:w-72 group">
+  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-theme-tertiary text-sm group-focus-within:text-theme-accent transition-colors">search</span>
+  <input 
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="w-full bg-theme-surface/50 backdrop-blur-md border border-theme-border/60 rounded-full py-2.5 pl-10 pr-4 font-body text-sm text-theme-primary focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition-all shadow-sm placeholder:text-theme-tertiary" 
+    placeholder="Search or filter..." 
+    type="text" 
+  />
+  </div>
  </div>
  </div>
 
