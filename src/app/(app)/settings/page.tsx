@@ -188,49 +188,6 @@ export default function SettingsPage() {
                       Generate Export
                     </button>
                   </div>
-
-                  <div className="p-6 border border-theme-border/50 bg-theme-surface rounded-2xl flex flex-col items-start gap-4">
-                    <div className="w-12 h-12 bg-theme-border/30 text-theme-primary rounded-full flex items-center justify-center">
-                      <span className="material-symbols-outlined">science</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-theme-primary text-lg">Developer Tools</h4>
-                      <p className="text-theme-secondary text-sm max-w-md mt-1">Inject realistic demo data for the current month to preview UI density and analytics.</p>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        const { getLocalMonthString } = await import('@/lib/date-sharding');
-                        const { addExpense } = await import('@/lib/expenses/index');
-                        const { DEFAULT_CATEGORY_ID } = await import('@/config/categories');
-                        
-                        if (!user) return;
-                        const householdId = useStore.getState().householdId || user.uid;
-                        const categories = Array.from(useStore.getState().categoriesMap.keys());
-                        
-                        addToast({ type: 'info', message: 'Seeding demo data...' });
-                        
-                        try {
-                          const today = new Date();
-                          for (let i = 0; i < 15; i++) {
-                            const pastDate = new Date();
-                            pastDate.setDate(today.getDate() - Math.floor(Math.random() * 28));
-                            
-                            await addExpense(householdId, user.uid, {
-                              amount: Math.floor(Math.random() * 3000) + 100,
-                              categoryId: categories[Math.floor(Math.random() * categories.length)] || DEFAULT_CATEGORY_ID,
-                              note: 'Demo expense',
-                              date: pastDate.toISOString(),
-                            });
-                          }
-                          addToast({ type: 'success', message: 'Successfully seeded 15 expenses!' });
-                        } catch (e: any) {
-                          addToast({ type: 'error', message: 'Failed to seed data: ' + e.message });
-                        }
-                      }}
-                      className="px-6 py-2.5 bg-theme-elevated text-theme-primary font-medium rounded-xl hover:bg-theme-border active:scale-[0.98] transition-all border border-theme-border/50"
-                    >
-                      Seed Demo Data
-                    </button>
                   </div>
                 </div>
               </div>
