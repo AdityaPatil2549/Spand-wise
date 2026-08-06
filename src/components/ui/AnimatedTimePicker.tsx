@@ -96,6 +96,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  <div className="flex items-center justify-center gap-2 mb-8 bg-theme-elevated/50 p-6 rounded-3xl w-full">
  <div className="flex items-center gap-2">
  <button
+ type="button"
  onClick={() => setMode('hour')}
  className={`text-6xl font-black tabular-nums transition-colors ${mode === 'hour' ? 'text-theme-accent' : 'text-theme-tertiary hover:text-theme-primary'}`}
  >
@@ -103,6 +104,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  </button>
  <span className="text-5xl font-bold text-theme-tertiary pb-2">:</span>
  <button
+ type="button"
  onClick={() => setMode('minute')}
  className={`text-6xl font-black tabular-nums transition-colors ${mode === 'minute' ? 'text-theme-accent' : 'text-theme-tertiary hover:text-theme-primary'}`}
  >
@@ -112,12 +114,14 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  
  <div className="flex flex-col ml-4 gap-2">
  <button 
+ type="button"
  onClick={() => toggleAmPm(true)}
  className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${current.isAm ? 'bg-theme-accent text-theme-inverse shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
  >
  AM
  </button>
  <button 
+ type="button"
  onClick={() => toggleAmPm(false)}
  className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${!current.isAm ? 'bg-theme-accent text-theme-inverse shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
  >
@@ -140,6 +144,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  >
  {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
  <button
+ type="button"
  key={`h-${h}`}
  onClick={() => handleHourSelect(h)}
  className={`h-14 rounded-2xl text-xl font-bold transition-all duration-200
@@ -163,6 +168,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  <div className="grid grid-cols-4 gap-3">
  {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map((m) => (
  <button
+ type="button"
  key={`m-${m}`}
  onClick={() => handleMinuteSelect(m)}
  className={`h-12 rounded-2xl text-xl font-bold transition-all duration-200
@@ -196,6 +202,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
 
  <div className="w-full mt-6">
  <button
+ type="button"
  onClick={handleConfirm}
  className="w-full py-4 bg-theme-accent text-theme-inverse font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
  >
