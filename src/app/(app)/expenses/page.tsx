@@ -131,24 +131,56 @@ export default function ExpensesPage() {
  percent,
  };
  }, [expenses, totalSpent]);
- 
- return (
- <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
- <ScrollProgress className="top-0 z-50 bg-theme-accent" />
- 
- {/* SideNavBar */}
- <ExpensesSidebar />
 
- {/* Main Content Canvas */}
- <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
- {/* Page Header & Filters */}
- <div className="max-w-6xl mx-auto mb-12">
- <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
- <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-theme-border/40 pb-6">
- {/* Timeline Filter */}
- <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
- <button className="snap-start whitespace-nowrap text-theme-accent border-b-2 border-theme-accent pb-2 font-body text-sm uppercase tracking-wide font-semibold">{format(new Date(), 'MMMM yyyy')}</button>
- </nav>
+  // Generate last 6 months for the timeline filter
+  const recentMonths = useMemo(() => {
+    const months = [];
+    const now = new Date();
+    for (let i = 0; i < 6; i++) {
+      const d = subMonths(now, i);
+      months.push({
+        label: format(d, 'MMMM yyyy'),
+        value: format(d, 'yyyy-MM')
+      });
+    }
+    return months;
+  }, []);
+
+  return (
+    <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
+      <ScrollProgress className="top-0 z-50 bg-theme-accent" />
+      
+      {/* SideNavBar */}
+      <ExpensesSidebar />
+
+      {/* Main Content Canvas */}
+      <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
+        {/* Page Header & Filters */}
+        <div className="max-w-6xl mx-auto mb-12">
+          <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-theme-border/40 pb-6">
+            {/* Timeline Filter */}
+            <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
+              {recentMonths.map((m) => {
+                const isActive = selectedMonth === m.value;
+                return (
+                  <button 
+                    key={m.value}
+                    onClick={() => {
+                      setSelectedMonth(m.value);
+                      setTimeFilter('All');
+                    }}
+                    className={`snap-start whitespace-nowrap pb-2 font-body text-sm uppercase tracking-wide font-semibold transition-colors ${
+                      isActive 
+                        ? 'text-theme-accent border-b-2 border-theme-accent' 
+                        : 'text-theme-tertiary hover:text-theme-primary'
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                );
+              })}
+            </nav>
   {/* Search/Category Filter */}
   <div className="relative w-full md:w-72 group">
   <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-theme-tertiary text-sm group-focus-within:text-theme-accent transition-colors">search</span>
