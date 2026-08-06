@@ -62,11 +62,11 @@ export default function RootLayout({
  children: React.ReactNode;
 }>) {
  return (
- <html lang="en" suppressHydrationWarning>
+ <html lang="en" suppressHydrationWarning className={`${nunito.variable} ${pacifico.variable} ${inter.variable} ${outfit.variable} ${workSans.variable} ${comfortaa.variable} ${merriweather.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${syne.variable} ${rubik.variable} ${bungee.variable} ${manrope.variable} ${anton.variable}`}>
  <head>
  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
  </head>
- <body className={`${nunito.variable} ${pacifico.variable} ${inter.variable} ${outfit.variable} ${workSans.variable} ${comfortaa.variable} ${merriweather.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${syne.variable} ${rubik.variable} ${bungee.variable} ${manrope.variable} ${anton.variable} font-sans antialiased`}>
+ <body className="font-sans antialiased">
  <ThemeProvider 
   attribute="class" 
   defaultTheme="oled-pro" 

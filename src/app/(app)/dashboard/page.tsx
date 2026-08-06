@@ -125,7 +125,7 @@ export default function DashboardPage() {
                 <>
                   <h1 className="font-display text-[64px] md:text-[88px] leading-[0.9] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
                     <TextEffect per="word" preset="blur" as="span">You're on</TextEffect>
-                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent italic" delay={0.1}>track.</TextEffect>
+                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent italic" delay={0.1}>Track.</TextEffect>
                   </h1>
                   <TextEffect per="line" preset="fade" as="p" className="text-[18px] text-theme-secondary max-w-lg mt-8" delay={0.2}>
                     Your spending is well within the allocated budget limits for this period. Keep it up.
