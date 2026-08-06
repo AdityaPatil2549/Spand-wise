@@ -181,7 +181,7 @@ export default function DashboardPage() {
                     items={[
                       { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings#preferences' },
                       { label: 'View Deep Analysis', icon: 'analytics', href: '/analytics' },
-                      { label: 'Export Report', icon: 'download', onClick: () => alert('Downloading report...') }
+                      { label: 'Export Report', icon: 'download', href: '/settings#export' }
                     ]}
                   />
                 </div>
