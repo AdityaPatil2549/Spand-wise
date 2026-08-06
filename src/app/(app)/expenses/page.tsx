@@ -139,7 +139,7 @@ export default function ExpensesPage() {
     for (let i = 0; i < 6; i++) {
       const d = subMonths(now, i);
       months.push({
-        label: format(d, 'MMMM yyyy'),
+        label: format(d, 'MMMM'),
         value: format(d, 'yyyy-MM')
       });
     }
@@ -158,7 +158,7 @@ export default function ExpensesPage() {
         {/* Page Header & Filters */}
         <div className="max-w-6xl mx-auto mb-12">
           <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-theme-border/40 pb-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
             {/* Timeline Filter */}
             <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
               {recentMonths.map((m) => {

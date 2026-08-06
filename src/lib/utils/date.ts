@@ -13,11 +13,11 @@ export const getCurrentMonth = (): string => {
 
 /**
  * Get a human-readable month label.
- * Example: "2026-07" → "July 2026"
+ * Example: "2026-07" → "July"
  */
 export const getMonthLabel = (month: string): string => {
  const date = parseISO(`${month}-01`);
- return format(date, 'MMMM yyyy');
+ return format(date, 'MMMM');
 };
 
 /**
@@ -29,7 +29,7 @@ export const getRecentMonths = (count = 6): { value: string; label: string }[] =
  for (let i = 0; i < count; i++) {
  const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
  const value = format(d, 'yyyy-MM');
- const label = format(d, 'MMMM yyyy');
+ const label = format(d, 'MMMM');
  months.push({ value, label });
  }
  return months;
