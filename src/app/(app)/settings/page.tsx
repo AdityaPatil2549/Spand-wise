@@ -188,7 +188,6 @@ export default function SettingsPage() {
                       Generate Export
                     </button>
                   </div>
-                  </div>
                 </div>
               </div>
 
