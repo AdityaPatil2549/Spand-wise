@@ -17,6 +17,7 @@ import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorp
 
 import { QuickAddWidgets } from '@/components/features/dashboard/QuickAddWidgets';
 import { TransactionRow } from '@/components/features/ledger/TransactionRow';
+import { DropdownMenu } from '@/components/ui/DropdownMenu';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -189,7 +190,15 @@ export default function DashboardPage() {
                       On Track
                     </span>
                   )}
-                  <span className="material-symbols-outlined text-theme-secondary">more_horiz</span>
+                  <DropdownMenu 
+                    align="right"
+                    trigger={<span className="material-symbols-outlined text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer p-2 -mr-2 rounded-full hover:bg-theme-surface-hover/80 active:scale-95">more_horiz</span>}
+                    items={[
+                      { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings' },
+                      { label: 'View Deep Analysis', icon: 'analytics', href: '/analytics' },
+                      { label: 'Export Report', icon: 'download', onClick: () => alert('Downloading report...') }
+                    ]}
+                  />
                 </div>
                 <div className="space-y-2 mt-12">
                   <p className="text-[16px] text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
