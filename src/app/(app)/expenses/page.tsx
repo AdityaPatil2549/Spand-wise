@@ -124,10 +124,6 @@ export default function ExpensesPage() {
  
  return (
  <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
- <style dangerouslySetInnerHTML={{__html: `
- .glass-card { background: rgba(246, 240, 232, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(216, 208, 200, 0.4); }
- .shadow-ultra-soft { box-shadow: 0 2px 16px rgba(58, 48, 42, 0.04); }
- `}} />
  <ScrollProgress className="top-0 z-50 bg-theme-accent" />
  
  {/* SideNavBar */}
@@ -153,7 +149,7 @@ export default function ExpensesPage() {
 
  {/* Bento Grid Context / Summary (High-End Layout) */}
  <AnimatedGroup preset="scale" className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
- <div className="glass-card rounded-2xl p-8 flex flex-col justify-between shadow-ultra-soft relative overflow-hidden group">
+ <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
  <div className="absolute -right-10 -top-10 w-32 h-32 bg-theme-accent-light/40 rounded-full blur-3xl group-hover:bg-theme-accent-light/60 transition-all duration-700"></div>
  <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Total Spent</span>
  <span className="font-headline text-5xl text-theme-primary flex items-baseline">
@@ -165,7 +161,7 @@ export default function ExpensesPage() {
  </div>
  </div>
  
- <div className="glass-card rounded-2xl p-8 flex flex-col justify-between shadow-ultra-soft relative overflow-hidden group">
+ <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
  <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-theme-elevated/40 rounded-full blur-3xl group-hover:bg-theme-elevated/60 transition-all duration-700"></div>
  <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Top Category</span>
  <span className="font-headline text-3xl text-theme-primary mb-1">{topCategory.name}</span>
@@ -181,7 +177,7 @@ export default function ExpensesPage() {
  </div>
  
  {/* Safe-Spend Odometer */}
- <div className="glass-card rounded-2xl p-8 flex flex-col justify-between shadow-ultra-soft relative overflow-hidden group">
+ <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
  <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#10b981]/20 rounded-full blur-3xl group-hover:bg-[#10b981]/40 transition-all duration-700"></div>
  <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Safe Daily Spend</span>
  <span className="font-headline text-5xl text-theme-primary flex items-baseline">

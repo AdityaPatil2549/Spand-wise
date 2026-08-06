@@ -90,21 +90,6 @@ export default function DashboardPage() {
   
   return (
     <div className="relative flex min-h-screen w-full bg-theme-base text-theme-primary font-body">
-      <style dangerouslySetInnerHTML={{__html: `
-        .glass-panel {
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .hover-elevate {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .hover-elevate:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
-      `}} />
       <ExpensesSidebar />
       <main className="flex-1 md:ml-64 flex flex-col px-[20px] md:px-[64px] pt-[48px] pb-32 md:pb-[48px] overflow-x-hidden">
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-[24px] mb-16 lg:items-center">
