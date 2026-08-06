@@ -40,7 +40,6 @@ export const metadata: Metadata = {
  'Track your daily college spends in 3 seconds. See your remaining budget instantly. No bank linking required.',
  keywords: ['expense tracker', 'student budget', 'college expenses', 'spending tracker'],
  authors: [{ name: 'SpendWise' }],
- manifest: '/manifest.json',
  appleWebApp: {
  capable: true,
  statusBarStyle: 'black-translucent',
