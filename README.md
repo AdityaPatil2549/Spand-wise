@@ -11,6 +11,7 @@
     <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
     <a href="https://zustand-demo.pmnd.rs/"><img src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" /></a>
+    <a href="https://www.framer.com/motion/"><img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" /></a>
   </p>
 
   ### 🌐 **Live Demo:** [spendwise-458f0.web.app](https://spendwise-458f0.web.app)
@@ -18,11 +19,23 @@
   ---
 </div>
 
+## 📑 Table of Contents
+- [The Vision](#-the-vision)
+- [Signature Features](#-signature-features)
+- [Premium UX Upgrades](#-premium-ux-upgrades)
+- [Dynamic Theming Engine](#-dynamic-theming-engine)
+- [System Architecture](#-system-architecture)
+- [Project Structure](#-project-structure)
+- [Local Development](#-local-development)
+- [Contributing](#-contributing)
+
+---
+
 ## ✧ The Vision
 
 **SpendWise** is not just another budgeting app. It is a meticulously crafted Progressive Web Application (PWA) designed to bring a high-end, luxury editorial aesthetic to personal finance for college students. 
 
-By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, and dynamic micro-interactions, SpendWise makes tracking your daily expenses feel like flipping through a premium lifestyle magazine.
+By combining minimalist typography, soft glassmorphism, and dynamic micro-interactions, SpendWise makes tracking your daily expenses feel like flipping through a premium lifestyle magazine.
 
 ---
 
@@ -33,8 +46,8 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
     <td width="50%">
       <h3>🎨 Editorial Aesthetic</h3>
       <ul>
-        <li><b>Sahara Layout:</b> Warm peach and orange tones paired with elegant serif typography.</li>
-        <li><b>Glassmorphic UI:</b> Soft blur panels and ultra-soft drop shadows.</li>
+        <li><b>Tailored Layouts:</b> Beautifully crafted color palettes paired with elegant typography.</li>
+        <li><b>Glassmorphic UI:</b> Soft blur panels, advanced frosted glass, and ultra-soft drop shadows.</li>
         <li><b>Micro-Animations:</b> Smooth, responsive hover states and scale transitions for every interaction.</li>
       </ul>
     </td>
@@ -66,26 +79,69 @@ By combining minimalist typography (EB Garamond & Manrope), soft glassmorphism, 
   </tr>
 </table>
 
-### ✨ Premium UX Upgrades
-- 🎨 **Dynamic Theming Engine:** A robust 9-theme structural matrix (Cyberpunk, Sahara, Minimal, etc.) that instantly adapts global color palettes, spacing, and curated Google typography combinations.
+---
+
+## ✨ Premium UX Upgrades
+
+- 🎨 **Dynamic Theming Engine:** A robust 9-theme structural matrix that instantly adapts global color palettes, spacing, and curated Google typography combinations.
 - 🪞 **Advanced Glassmorphism UI:** Fully interactive, Framer Motion powered dropdown menus and modals that seamlessly blur and blend into the active theme.
 - 🔍 **Real-Time Ledger Search:** Lightning fast client-side filtering by description, category, or amount on the Expenses page.
 - 📜 **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
 - 🪄 **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
+- 📤 **Data Portability:** Instantly generate and export your complete transaction history to a CSV file.
+
+---
+
+## 🎨 Dynamic Theming Engine
+
+SpendWise features a state-of-the-art structural matrix that dynamically swaps CSS variables, fonts, and layout spacing at runtime.
+
+### Available Themes
+1. **Cyberpunk** (Neon Purples, Tech Fonts)
+2. **Sahara** (Warm Peach, Elegant Serifs)
+3. **Minimal** (High-Contrast Black & White, Swiss Sans)
+4. **Ocean** (Deep Blues, Fluid Curves)
+5. **Forest** (Earthy Greens, Organic Spacing)
+6. **Neobrutalism** (Harsh Shadows, Bold Typography)
+7. **Midnight** (OLED Black, Sleek UI)
+8. **Sunset** (Warm Gradients, Soft Fonts)
+9. **Corporate** (Clean, Professional Blues)
 
 ---
 
 ## 🏗 System Architecture
 
-SpendWise utilizes a "Thick Client + Smart Database" architecture pattern, completely eliminating the need for a custom backend server to reduce latency and infrastructure overhead.
+SpendWise utilizes a **"Thick Client + Smart Database"** architecture pattern, completely eliminating the need for a custom backend server to reduce latency and infrastructure overhead.
 
-> [!NOTE] 
-> **Tech Stack Overview:**
-> - **Frontend:** Next.js 14 (App Router)
-> - **Language:** TypeScript (Strict Mode)
-> - **Styling:** Tailwind CSS + Framer Motion
-> - **State Management:** Zustand
-> - **Backend / Auth:** Firebase
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 14** | App Router, Server-Side Rendering (SSR), API Routes, and optimized static delivery. |
+| **Zustand** | Global client-state management (caching Firebase data to avoid redundant reads). |
+| **Tailwind CSS** | Utility-first styling enabling our dynamic CSS variable injection. |
+| **Framer Motion** | Complex, physics-based micro-animations and layout transitions. |
+| **Firebase** | Firestore (NoSQL Database), Auth (Google OAuth), and Hosting. |
+| **Recharts** | Rendering responsive, beautiful data visualizations on the Analytics page. |
+
+---
+
+## 📂 Project Structure
+
+```text
+src/
+├── app/                  # Next.js App Router Pages
+│   ├── (app)/            # Authenticated Routes (Dashboard, Analytics, Settings)
+│   └── (auth)/           # Public Routes (Login)
+├── components/           # React Components
+│   ├── features/         # Domain-specific components (e.g., Budget, Expenses)
+│   ├── layout/           # Structural components (Sidebar, TopNav)
+│   ├── shared/           # Reusable generic components (ThemeSelector)
+│   └── ui/               # Base UI components (Buttons, Inputs, Modals)
+├── config/               # App configuration (Constants, Categories, Themes)
+├── hooks/                # Custom React hooks (useClickOutside, useAuthGuard)
+├── lib/                  # Utility functions and external integrations (Firebase)
+├── store/                # Zustand global state slices
+└── types/                # TypeScript interfaces
+```
 
 ---
 
