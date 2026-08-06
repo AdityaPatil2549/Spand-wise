@@ -6,6 +6,8 @@ import { useStore } from '@/store';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import { getRecentMonths } from '@/lib/utils/date';
+import { getMonthlyExpenses } from '@/lib/expenses/index';
 import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { TransitionPanel } from '@/components/ui/motion/transition-panel';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
@@ -40,33 +42,53 @@ export default function SettingsPage() {
     }
   };
 
-  const downloadCSV = () => {
-    // Need to import format from date-fns or use native
-    const expensesList = useStore.getState().expenses;
-    if (!expensesList || expensesList.length === 0) {
-      addToast({ type: 'info', message: 'No transactions to export.' });
-      return;
+  const [exportMonth, setExportMonth] = useState('all');
+  const [isExporting, setIsExporting] = useState(false);
+  const recentMonths = React.useMemo(() => getRecentMonths(12), []);
+
+  const downloadCSV = async () => {
+    setIsExporting(true);
+    try {
+      let expensesList = [];
+      if (exportMonth === 'all') {
+        expensesList = useStore.getState().expenses;
+      } else {
+        const householdId = useStore.getState().householdId;
+        if (!householdId) throw new Error('No household ID found');
+        expensesList = await getMonthlyExpenses(householdId, exportMonth);
+      }
+      
+      if (!expensesList || expensesList.length === 0) {
+        addToast({ type: 'info', message: 'No transactions found for this period.' });
+        setIsExporting(false);
+        return;
+      }
+
+      const headers = ['Date', 'Amount', 'Category', 'Note'];
+      const rows = expensesList.map(e => [
+        format(e.date.toDate(), 'dd/MM/yy'),
+        e.amount.toString(),
+        e.categoryId,
+        `"${e.note?.replace(/"/g, '""') || ''}"`
+      ]);
+
+      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `spendwise_export_${exportMonth}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      addToast({ type: 'success', message: 'Export generated successfully!' });
+    } catch (error) {
+      console.error(error);
+      addToast({ type: 'error', message: 'Failed to generate export.' });
+    } finally {
+      setIsExporting(false);
     }
-
-    const headers = ['Date', 'Amount', 'Category', 'Note'];
-    const rows = expensesList.map(e => [
-      format(e.date.toDate(), 'dd/MM/yy'),
-      e.amount.toString(),
-      e.categoryId,
-      `"${e.note?.replace(/"/g, '""') || ''}"`
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `spendwise_export.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    addToast({ type: 'success', message: 'Export generated successfully!' });
   };
 
   if (isLoading) return null;
@@ -180,13 +202,25 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-theme-primary text-lg">Export Data</h4>
-                      <p className="text-theme-secondary text-sm max-w-md mt-1">Download all your transaction history and budget configurations as a CSV file.</p>
+                      <p className="text-theme-secondary text-sm max-w-md mt-1">Download your transaction history as a CSV file.</p>
+                      <select
+                        value={exportMonth}
+                        onChange={(e) => setExportMonth(e.target.value)}
+                        className="mt-4 bg-theme-surface border border-theme-border rounded-xl px-4 py-2 text-theme-primary font-medium focus:outline-none focus:border-theme-accent transition-colors block w-full max-w-xs"
+                      >
+                        <option value="all">Currently Loaded Data</option>
+                        {recentMonths.map(m => (
+                          <option key={m.value} value={m.value}>{m.label}</option>
+                        ))}
+                      </select>
                     </div>
                     <button
                       onClick={downloadCSV}
-                      className="px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 active:scale-[0.98] transition-all shadow-sm"
+                      disabled={isExporting}
+                      className="mt-2 px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
                     >
-                      Generate Export
+                      {isExporting ? <span className="w-4 h-4 rounded-full border-2 border-theme-inverse border-t-transparent animate-spin" /> : null}
+                      {isExporting ? 'Generating...' : 'Generate Export'}
                     </button>
                   </div>
                 </div>
