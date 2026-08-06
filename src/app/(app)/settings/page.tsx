@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/useAuth';
 import { useStore } from '@/store';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { TransitionPanel } from '@/components/ui/motion/transition-panel';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
@@ -49,7 +50,7 @@ export default function SettingsPage() {
 
     const headers = ['Date', 'Amount', 'Category', 'Note'];
     const rows = expensesList.map(e => [
-      e.date.toDate().toLocaleDateString(),
+      format(e.date.toDate(), 'dd/MM/yy'),
       e.amount.toString(),
       e.categoryId,
       `"${e.note?.replace(/"/g, '""') || ''}"`
