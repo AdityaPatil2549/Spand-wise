@@ -1,20 +1,35 @@
 import type { Metadata, Viewport } from 'next';
-import { Quicksand, Caveat, Space_Grotesk, Syne, Space_Mono, Orbitron, Inter, Outfit } from 'next/font/google';
+import { Nunito, Pacifico, Inter, Outfit, Work_Sans, Comfortaa, Merriweather, Fraunces, JetBrains_Mono, Orbitron, DM_Sans, Cinzel, Space_Grotesk, Syne, Rubik, Bungee, Manrope, Anton } from 'next/font/google';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
 
-const quicksand = Quicksand({ subsets: ['latin'], variable: '--font-quicksand', display: 'swap' });
-const caveat = Caveat({ subsets: ['latin'], variable: '--font-caveat', display: 'swap' });
+const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito', display: 'swap' });
+const pacifico = Pacifico({ weight: '400', subsets: ['latin'], variable: '--font-pacifico', display: 'swap' });
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
+
+const workSans = Work_Sans({ subsets: ['latin'], variable: '--font-work-sans', display: 'swap' });
+const comfortaa = Comfortaa({ subsets: ['latin'], variable: '--font-comfortaa', display: 'swap' });
+
+const merriweather = Merriweather({ weight: ['300', '400', '700', '900'], subsets: ['latin'], variable: '--font-merriweather', display: 'swap' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces', display: 'swap' });
+
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono', display: 'swap' });
+const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
+
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-dm-sans', display: 'swap' });
+const cinzel = Cinzel({ subsets: ['latin'], variable: '--font-cinzel', display: 'swap' });
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk', display: 'swap' });
 const syne = Syne({ subsets: ['latin'], variable: '--font-syne', display: 'swap' });
 
-const spaceMono = Space_Mono({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-space-mono', display: 'swap' });
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron', display: 'swap' });
+const rubik = Rubik({ subsets: ['latin'], variable: '--font-rubik', display: 'swap' });
+const bungee = Bungee({ weight: '400', subsets: ['latin'], variable: '--font-bungee', display: 'swap' });
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
+const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', display: 'swap' });
+const anton = Anton({ weight: '400', subsets: ['latin'], variable: '--font-anton', display: 'swap' });
 
 export const metadata: Metadata = {
  title: {
@@ -51,7 +66,7 @@ export default function RootLayout({
  <head>
  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
  </head>
- <body className={`${quicksand.variable} ${caveat.variable} ${spaceGrotesk.variable} ${syne.variable} ${spaceMono.variable} ${orbitron.variable} ${inter.variable} ${outfit.variable} font-sans antialiased`}>
+ <body className={`${nunito.variable} ${pacifico.variable} ${inter.variable} ${outfit.variable} ${workSans.variable} ${comfortaa.variable} ${merriweather.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${syne.variable} ${rubik.variable} ${bungee.variable} ${manrope.variable} ${anton.variable} font-sans antialiased`}>
  <ThemeProvider 
   attribute="class" 
   defaultTheme="oled-pro" 

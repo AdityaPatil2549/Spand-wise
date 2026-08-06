@@ -14,8 +14,15 @@
     
     --theme-border: 216 208 200;
     
-    --theme-font-sans: var(--font-quicksand);
-    --theme-font-display: var(--font-caveat);
+    --theme-font-sans: var(--font-nunito);
+    --theme-font-display: var(--font-pacifico);
+    --theme-weight-body: 400;
+    --theme-weight-display: 400;
+    --theme-tracking-body: normal;
+    --theme-tracking-display: normal;
+    --theme-line-height-body: 1.6;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
     
     /* Calibrated Typography Tokens */
     --theme-primary: 45 36 31; /* #2d241f -> 12.8:1 contrast (AAA Pass) */
@@ -46,6 +53,13 @@
     
     --theme-font-sans: var(--font-inter);
     --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
     
     --theme-primary: 255 255 255; /* #ffffff */
     --theme-secondary: 163 163 163; /* #a3a3a3 */
@@ -72,8 +86,15 @@
     
     --theme-border: 30 58 138;
     
-    --theme-font-sans: var(--font-quicksand);
-    --theme-font-display: var(--font-caveat);
+    --theme-font-sans: var(--font-work-sans);
+    --theme-font-display: var(--font-comfortaa);
+    --theme-weight-body: 300;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0.02em;
+    --theme-tracking-display: -0.04em;
+    --theme-line-height-body: 1.7;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
     
     --theme-primary: 230 241 255; /* Ice white */
     --theme-secondary: 136 146 176;
@@ -100,8 +121,15 @@
     
     --theme-border: 62 82 75;
     
-    --theme-font-sans: var(--font-quicksand);
-    --theme-font-display: var(--font-caveat);
+    --theme-font-sans: var(--font-merriweather);
+    --theme-font-display: var(--font-fraunces);
+    --theme-weight-body: 400;
+    --theme-weight-display: 800;
+    --theme-tracking-body: 0;
+    --theme-tracking-display: -0.03em;
+    --theme-line-height-body: 1.8;
+    --theme-casing-display: none;
+    --theme-style-display: italic;
     
     --theme-primary: 242 245 235; /* Off-white cream */
     --theme-secondary: 173 189 179;
@@ -128,8 +156,15 @@
     
     --theme-border: 71 18 163;
     
-    --theme-font-sans: var(--font-space-mono);
+    --theme-font-sans: var(--font-jetbrains-mono);
     --theme-font-display: var(--font-orbitron);
+    --theme-weight-body: 400;
+    --theme-weight-display: 900;
+    --theme-tracking-body: 0;
+    --theme-tracking-display: 0.1em;
+    --theme-line-height-body: 1.4;
+    --theme-casing-display: uppercase;
+    --theme-style-display: normal;
     
     --theme-primary: 255 255 255; /* Glowing white */
     --theme-secondary: 200 176 250;
@@ -156,8 +191,15 @@
     
     --theme-border: 203 213 225;
     
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
+    --theme-font-sans: var(--font-dm-sans);
+    --theme-font-display: var(--font-cinzel);
+    --theme-weight-body: 400;
+    --theme-weight-display: 500;
+    --theme-tracking-body: -0.02em;
+    --theme-tracking-display: 0.05em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: uppercase;
+    --theme-style-display: normal;
     
     --theme-primary: 30 41 59; /* Dark slate */
     --theme-secondary: 71 85 105;
@@ -186,6 +228,13 @@
     
     --theme-font-sans: var(--font-space-grotesk);
     --theme-font-display: var(--font-syne);
+    --theme-weight-body: 500;
+    --theme-weight-display: 800;
+    --theme-tracking-body: -0.03em;
+    --theme-tracking-display: -0.05em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
     
     --theme-primary: 255 255 255; /* #FFFFFF */
     --theme-secondary: 163 175 194; /* Muted blue-grey */
@@ -212,8 +261,15 @@
     
     --theme-border: 85 43 128;
     
-    --theme-font-sans: var(--font-space-mono);
-    --theme-font-display: var(--font-orbitron);
+    --theme-font-sans: var(--font-rubik);
+    --theme-font-display: var(--font-bungee);
+    --theme-weight-body: 400;
+    --theme-weight-display: 400;
+    --theme-tracking-body: 0;
+    --theme-tracking-display: 0.05em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: uppercase;
+    --theme-style-display: normal;
     
     --theme-primary: 255 240 245; /* Lavender blush */
     --theme-secondary: 219 195 227;
@@ -240,8 +296,15 @@
     
     --theme-border: 60 60 60;
     
-    --theme-font-sans: var(--font-space-grotesk);
-    --theme-font-display: var(--font-syne);
+    --theme-font-sans: var(--font-manrope);
+    --theme-font-display: var(--font-anton);
+    --theme-weight-body: 500;
+    --theme-weight-display: 400;
+    --theme-tracking-body: -0.04em;
+    --theme-tracking-display: 0;
+    --theme-line-height-body: 1.3;
+    --theme-casing-display: uppercase;
+    --theme-style-display: normal;
     
     --theme-primary: 240 240 240;
     --theme-secondary: 160 160 160;
@@ -281,6 +344,21 @@
     transition: background-color var(--duration-normal) var(--ease-in-out),
                 color var(--duration-normal) var(--ease-in-out);
     min-height: 100vh;
+    
+    /* Dynamic Theme Typography (Body) */
+    font-family: var(--theme-font-sans) !important;
+    font-weight: var(--theme-weight-body) !important;
+    line-height: var(--theme-line-height-body) !important;
+    letter-spacing: var(--theme-tracking-body) !important;
+  }
+
+  /* Dynamic Theme Typography (Display) */
+  h1, h2, h3, h4, h5, h6, .font-display, .font-headline {
+    font-family: var(--theme-font-display) !important;
+    font-weight: var(--theme-weight-display) !important;
+    letter-spacing: var(--theme-tracking-display) !important;
+    text-transform: var(--theme-casing-display) !important;
+    font-style: var(--theme-style-display) !important;
   }
   
   .dark body {
