@@ -93,7 +93,7 @@ export default function ExpensesPage() {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(e => {
         const catName = (categoriesMap.get(e.categoryId)?.name || '').toLowerCase();
-        const desc = (e.description || '').toLowerCase();
+        const desc = (e.note || '').toLowerCase();
         return desc.includes(q) || catName.includes(q) || e.amount.toString().includes(q);
       });
     }
