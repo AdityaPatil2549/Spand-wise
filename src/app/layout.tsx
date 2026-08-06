@@ -68,7 +68,7 @@ export default function RootLayout({
  <body className="font-sans antialiased">
  <ThemeProvider 
   attribute="class" 
-  defaultTheme="oled-pro" 
+  defaultTheme="light" 
   enableSystem={false}
   themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro', 'neon-sunset', 'graphite']}
  >
