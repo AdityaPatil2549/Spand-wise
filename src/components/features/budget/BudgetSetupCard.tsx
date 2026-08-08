@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -31,9 +31,19 @@ export const BudgetSetupCard = () => {
   const budget = useStore((s) => s.budget);
   const addToast = useStore((s) => s.addToast);
 
+  const isBudgetLoading = useStore((s) => s.isBudgetLoading);
+
   const hasBudgetSet = (budget?.budgetAmount || 0) > 0;
   const isFirstOfMonth = new Date().getDate() === 1;
-  const [isExpanded, setIsExpanded] = useState(!hasBudgetSet || isFirstOfMonth);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (!isBudgetLoading && !hasInitialized) {
+      setIsExpanded(!hasBudgetSet || isFirstOfMonth);
+      setHasInitialized(true);
+    }
+  }, [isBudgetLoading, hasBudgetSet, isFirstOfMonth, hasInitialized]);
 
   const {
     register,
