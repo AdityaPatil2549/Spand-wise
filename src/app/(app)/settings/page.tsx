@@ -5,33 +5,34 @@ import { useAuthGuard } from '@/hooks/useAuth';
 import { useStore } from '@/store';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
-import { getRecentMonths } from '@/lib/utils/date';
-import { getMonthlyExpenses } from '@/lib/expenses/index';
-import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
-import { TransitionPanel } from '@/components/ui/motion/transition-panel';
-import { AnimatedBackground } from '@/components/ui/motion/animated-background';
-import { TextEffect } from '@/components/ui/motion/text-effect';
-import { CategoryManager } from '@/components/features/settings/CategoryManager';
+import { 
+  Settings as SettingsIcon, 
+  LogOut, 
+  Users, 
+  Star, 
+  MessageSquare, 
+  HelpCircle, 
+  Info,
+  Calendar,
+  LayoutGrid,
+  List,
+  Crown,
+  Hash,
+  Download,
+  Palette,
+  CalendarRange
+} from 'lucide-react';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
-import { BudgetSetupCard } from '@/components/features/budget/BudgetSetupCard';
-import { QuickAddManager } from '@/components/features/settings/QuickAddManager';
+import { BottomSheet } from '@/components/ui/BottomSheet';
+import { CategoryBudgetsSheet } from '@/components/features/budget/CategoryBudgetsSheet';
 
-export default function SettingsPage() {
+export default function MorePage() {
   const { user, isLoading } = useAuthGuard();
   const router = useRouter();
   const addToast = useStore((s) => s.addToast);
-  const [activeTab, setActiveTab] = useState(0);
-
-  const TABS = ['Account', 'Preferences', 'Categories', 'Export'];
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const hash = window.location.hash.replace('#', '').toLowerCase();
-      const idx = TABS.findIndex(t => t.toLowerCase() === hash);
-      if (idx >= 0) setActiveTab(idx);
-    }
-  }, []);
+  const expenses = useStore((s) => s.expenses);
+  const categories = useStore((s) => s.categories);
+  const [isThemesExpanded, setIsThemesExpanded] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -42,194 +43,173 @@ export default function SettingsPage() {
     }
   };
 
-  const [exportMonth, setExportMonth] = useState('all');
-  const [isExporting, setIsExporting] = useState(false);
-  const recentMonths = React.useMemo(() => getRecentMonths(12), []);
-
-  const downloadCSV = async () => {
-    setIsExporting(true);
-    try {
-      let expensesList = [];
-      if (exportMonth === 'all') {
-        expensesList = useStore.getState().expenses;
-      } else {
-        const householdId = useStore.getState().householdId;
-        if (!householdId) throw new Error('No household ID found');
-        expensesList = await getMonthlyExpenses(householdId, exportMonth);
-      }
-      
-      if (!expensesList || expensesList.length === 0) {
-        addToast({ type: 'info', message: 'No transactions found for this period.' });
-        setIsExporting(false);
-        return;
-      }
-
-      const headers = ['Date', 'Amount', 'Category', 'Note'];
-      const rows = expensesList.map(e => [
-        format(e.date.toDate(), 'dd/MM/yy'),
-        e.amount.toString(),
-        e.categoryId,
-        `"${e.note?.replace(/"/g, '""') || ''}"`
-      ]);
-
-      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `spendwise_export_${exportMonth}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      addToast({ type: 'success', message: 'Export generated successfully!' });
-    } catch (error) {
-      console.error(error);
-      addToast({ type: 'error', message: 'Failed to generate export.' });
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   if (isLoading) return null;
 
   return (
-    <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
-      <ExpensesSidebar />
-      <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-4xl mx-auto px-6 md:px-12 pt-8 pb-32 md:pb-24">
-        <TextEffect as="h1" preset="fade" className="font-display text-[48px] font-medium leading-none tracking-tight text-theme-primary mb-8">
-          Settings
-        </TextEffect>
-
-        <div className="glass-panel p-8 rounded-3xl border border-theme-border/30 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-theme-accent/5 rounded-full blur-3xl -z-10"></div>
-
-          <div className="flex mb-8 bg-theme-elevated/50 p-1.5 rounded-xl w-full md:w-max overflow-x-auto hide-scrollbar snap-x">
-            <AnimatedBackground
-              defaultValue={TABS[0]}
-              className="rounded-lg bg-theme-white shadow-sm"
-              transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
-              onValueChange={(id) => {
-                if (id) {
-                  setActiveTab(TABS.indexOf(id));
-                }
-              }}
-            >
-              {TABS.map((tab, index) => (
-                <button
-                  key={tab}
-                  data-id={tab}
-                  className={`whitespace-nowrap px-6 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none ${activeTab === index ? 'text-theme-primary' : 'text-theme-tertiary hover:text-theme-primary'}`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </AnimatedBackground>
+    <div className="bg-theme-base text-theme-primary flex flex-col min-h-screen font-body w-full pb-32">
+      <div className="px-6 md:px-8 pt-24 pb-8 md:max-w-4xl md:mx-auto w-full flex-1">
+        
+        {/* Profile Section */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-16 h-16 rounded-full bg-theme-accent/20 flex items-center justify-center text-theme-accent text-2xl font-bold shadow-sm">
+            {user?.displayName ? user.displayName[0].toUpperCase() : 'U'}
           </div>
-
-          <div className="relative">
-            <TransitionPanel
-              activeIndex={activeTab}
-              transition={{ type: 'spring', bounce: 0, duration: 0.4 }}
-              variants={{
-                enter: { opacity: 0, y: 10, filter: 'blur(4px)' },
-                center: { opacity: 1, y: 0, filter: 'blur(0px)' },
-                exit: { opacity: 0, y: -10, filter: 'blur(4px)' },
-              }}
-              className="w-full"
-            >
-              {/* Account Tab */}
-              <div className="py-2">
-                <h3 className="font-headline text-2xl text-theme-primary mb-6">Account Details</h3>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-2 uppercase tracking-widest">Email Address</label>
-                    <div className="w-full bg-theme-surface px-4 py-3 rounded-xl text-theme-primary font-medium border border-theme-border/50">
-                      {user?.email}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-theme-tertiary mb-2 uppercase tracking-widest">Display Name</label>
-                    <div className="w-full bg-theme-surface px-4 py-3 rounded-xl text-theme-primary font-medium border border-theme-border/50">
-                      {user?.displayName || 'Not set'}
-                    </div>
-                  </div>
-                  <div className="pt-6 border-t border-theme-border/30">
-                    <button onClick={handleSignOut} className="px-6 py-3 bg-theme-danger/10 text-theme-danger font-medium rounded-xl hover:bg-theme-danger/20 active:scale-[0.98] transition-all flex items-center gap-2">
-                      <span className="material-symbols-outlined">logout</span>
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Preferences Tab */}
-              <div className="py-2">
-                <h3 className="font-headline text-2xl text-theme-primary mb-6">Preferences</h3>
-                <div className="space-y-6">
-                  <div className="mb-6 -mx-4">
-                    <BudgetSetupCard />
-                  </div>
-                  <ThemeSelector />
-                  <div className="pt-4">
-                    <QuickAddManager />
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-theme-surface rounded-xl border border-theme-border/50">
-                    <div>
-                      <h4 className="font-medium text-theme-primary">Notifications</h4>
-                      <p className="text-sm text-theme-tertiary">Budget alerts and summaries</p>
-                    </div>
-                    <button className="w-12 h-6 bg-[#10b981] rounded-full relative transition-colors cursor-pointer">
-                      <div className="absolute right-1 top-1 w-4 h-4 bg-theme-white rounded-full shadow-sm"></div>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Categories Tab */}
-              <div className="py-2">
-                <h3 className="font-headline text-2xl text-theme-primary mb-6">Manage Categories</h3>
-                <CategoryManager />
-              </div>
-
-              {/* Export & Data Tab */}
-              <div className="py-2">
-                <h3 className="font-headline text-2xl text-theme-primary mb-6">Data & Privacy</h3>
-                <div className="space-y-6">
-                  <div className="p-6 border border-theme-accent/20 bg-theme-accent/5 rounded-2xl flex flex-col items-start gap-4">
-                    <div className="w-12 h-12 bg-theme-accent/10 text-theme-accent rounded-full flex items-center justify-center">
-                      <span className="material-symbols-outlined">download</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-theme-primary text-lg">Export Data</h4>
-                      <p className="text-theme-secondary text-sm max-w-md mt-1">Download your transaction history as a CSV file.</p>
-                      <select
-                        value={exportMonth}
-                        onChange={(e) => setExportMonth(e.target.value)}
-                        className="mt-4 bg-theme-surface border border-theme-border rounded-xl px-4 py-2 text-theme-primary font-medium focus:outline-none focus:border-theme-accent transition-colors block w-full max-w-xs"
-                      >
-                        <option value="all">Currently Loaded Data</option>
-                        {recentMonths.map(m => (
-                          <option key={m.value} value={m.value}>{m.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <button
-                      onClick={downloadCSV}
-                      disabled={isExporting}
-                      className="mt-2 px-6 py-2.5 bg-theme-accent text-theme-inverse font-medium rounded-xl hover:bg-theme-accent/90 active:scale-[0.98] transition-all shadow-sm disabled:opacity-50 flex items-center gap-2"
-                    >
-                      {isExporting ? <span className="w-4 h-4 rounded-full border-2 border-theme-inverse border-t-transparent animate-spin" /> : null}
-                      {isExporting ? 'Generating...' : 'Generate Export'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-            </TransitionPanel>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold tracking-tight text-theme-primary">{user?.displayName || 'User'}</h1>
+            <p className="text-theme-secondary text-sm">{user?.email}</p>
           </div>
         </div>
-      </main>
+
+        {/* Backup Warning Section */}
+        <div className="bg-theme-surface border border-theme-border rounded-2xl p-4 flex items-center justify-between mb-8 shadow-sm">
+          <div className="flex items-center gap-3 text-theme-primary">
+            <Download className="w-5 h-5 text-indigo-500" />
+            <span className="font-medium text-sm">Download your data</span>
+          </div>
+          <button onClick={() => router.push('/settings/export')} className="text-sm font-bold text-indigo-500 hover:text-indigo-600 transition-colors">
+            Download
+          </button>
+        </div>
+
+        {/* Top Actions Grid */}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          <button 
+            onClick={() => router.push('/tags')}
+            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
+          >
+            <Hash className="w-5 h-5 text-indigo-400" />
+            <span className="font-medium text-[10px] sm:text-xs">Tags</span>
+          </button>
+          <button 
+            onClick={() => router.push('/transactions')}
+            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
+          >
+            <List className="w-5 h-5 text-indigo-400" />
+            <span className="font-medium text-[10px] sm:text-xs">History</span>
+          </button>
+          <button 
+            onClick={() => router.push('/scheduled')}
+            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
+          >
+            <Calendar className="w-5 h-5 text-indigo-400" />
+            <span className="font-medium text-[10px] sm:text-xs">Scheduled</span>
+          </button>
+        </div>
+
+        {/* Views Section */}
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-theme-secondary mb-4 uppercase tracking-wider">Views</h2>
+          <div className="grid grid-cols-3 gap-3">
+            <button 
+              onClick={() => router.push('/day')}
+              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+            >
+              <List className="w-5 h-5 text-theme-primary" />
+              <span className="text-xs font-medium text-theme-primary">Day</span>
+            </button>
+            <button 
+              onClick={() => router.push('/calendar')}
+              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+            >
+              <Calendar className="w-5 h-5 text-theme-primary" />
+              <span className="text-xs font-medium text-theme-primary">Calendar</span>
+            </button>
+            <button 
+              onClick={() => router.push('/custom')}
+              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+            >
+              <CalendarRange className="w-5 h-5 text-theme-primary" />
+              <span className="text-xs font-medium text-theme-primary text-center leading-tight">Date<br/>Range</span>
+            </button>
+          </div>
+        </div>
+
+
+
+        {/* More Options List */}
+        <div>
+          <h2 className="text-sm font-semibold text-theme-secondary mb-4 uppercase tracking-wider">More options</h2>
+          <div className="space-y-1">
+            <button 
+              onClick={() => setIsThemesExpanded(!isThemesExpanded)} 
+              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
+            >
+              <div className="flex items-center gap-4 text-theme-primary">
+                <Palette className="w-5 h-5 text-theme-secondary group-hover:text-theme-primary transition-colors" />
+                <span className="font-medium">Theme</span>
+              </div>
+              <ChevronRightIcon className={`transition-transform duration-300 ${isThemesExpanded ? 'rotate-90' : ''}`} />
+            </button>
+
+            {isThemesExpanded && (
+              <div className="p-4 bg-theme-surface/30 rounded-2xl mb-2 animate-fade-in">
+                <ThemeSelector />
+              </div>
+            )}
+
+            <button 
+              onClick={() => router.push('/settings/categories')} 
+              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
+            >
+              <div className="flex items-center gap-4 text-theme-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-theme-secondary group-hover:text-theme-primary transition-colors"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span className="font-medium">Manage Categories</span>
+              </div>
+              <ChevronRightIcon className={`transition-transform duration-300`} />
+            </button>
+
+            <button 
+              onClick={() => router.push('/settings/limits')} 
+              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
+            >
+              <div className="flex items-center gap-4 text-theme-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-theme-secondary group-hover:text-theme-primary transition-colors"><line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="14" y2="14"/><line x1="4" x2="20" y1="7" y2="7"/><polyline points="14 11 18 7 22 11"/><polyline points="2 18 6 14 10 18"/></svg>
+                <span className="font-medium">Adjust Category Limits</span>
+              </div>
+              <ChevronRightIcon className={`transition-transform duration-300`} />
+            </button>
+            
+            <div className="h-px bg-theme-border my-2"></div>
+            
+            <button 
+              onClick={async () => {
+                const { getAuth, signOut } = await import('firebase/auth');
+                const auth = getAuth();
+                await signOut(auth);
+                const { useStore } = await import('@/store');
+                useStore.getState().setUser(null);
+                useStore.getState().setHouseholdId(null);
+                window.location.href = '/login';
+              }}
+              className="w-full flex items-center justify-between p-4 hover:bg-theme-danger/10 rounded-2xl transition-colors group mt-4"
+            >
+              <div className="flex items-center gap-4 text-theme-danger">
+                <LogOut className="w-5 h-5 group-hover:text-theme-danger transition-colors" />
+                <span className="font-medium">Sign out</span>
+              </div>
+              <ChevronRightIcon className="text-theme-danger opacity-50" />
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
+
+const ChevronRightIcon = ({ className = "text-theme-secondary opacity-50" }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={`w-5 h-5 ${className}`}
+  >
+    <path d="m9 18 6-6-6-6"/>
+  </svg>
+);

@@ -13,6 +13,8 @@ export interface AddExpenseInput {
  note?: string;
  /** ISO date string — defaults to current datetime, can be changed by user */
  date: string;
+ accountId?: string;
+ type?: 'expense' | 'income';
 }
 
 /**

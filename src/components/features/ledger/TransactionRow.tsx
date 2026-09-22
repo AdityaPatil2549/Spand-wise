@@ -9,11 +9,14 @@ interface TransactionRowProps {
   formattedTime: string;
   categoryColor: string;
   iconName?: string;
+  type?: 'expense' | 'income';
 }
 
 export const TransactionRow: React.FC<TransactionRowProps> = ({
-  title, categoryName, amount, formattedTime, categoryColor, iconName
+  title, categoryName, amount, formattedTime, categoryColor, iconName, type = 'expense'
 }) => {
+  const isIncome = type === 'income';
+  
   return (
     <span className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-[var(--surface-base)] border border-[var(--border-light)] hover:bg-black/5 transition-colors">
       <span className="flex items-center gap-3.5 min-w-0">
@@ -30,7 +33,10 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
       </span>
       <span className="text-right flex-shrink-0 pl-4">
         {/* Tabular numbers ensure Rupee digits never shift column alignment */}
-        <FormattedCurrency amount={amount} className="font-semibold text-sm text-[var(--text-primary)]" />
+        <span className={`font-semibold text-sm ${isIncome ? 'text-[#10b981]' : 'text-[var(--text-primary)]'}`}>
+          {isIncome ? '+' : ''}
+          <FormattedCurrency amount={amount} />
+        </span>
       </span>
     </span>
   );

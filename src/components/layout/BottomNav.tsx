@@ -4,15 +4,16 @@ import React from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, List, BarChart2, Settings, Plus } from 'lucide-react';
+import { LayoutGrid, Plus, Wallet, PiggyBank, Settings } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useStore } from '@/store';
+import { InstallPWAAction } from '../shared/InstallPWAAction';
 
 const NAV_ITEMS = [
- { id: 'dashboard', label: 'Home', href: '/dashboard', Icon: LayoutDashboard },
- { id: 'expenses', label: 'Expenses', href: '/expenses', Icon: List },
- { id: 'analytics', label: 'Analytics', href: '/analytics', Icon: BarChart2 },
- { id: 'settings', label: 'Settings', href: '/settings', Icon: Settings },
+  { id: 'dashboard', label: 'Home', href: '/dashboard', Icon: LayoutGrid },
+  { id: 'expenses', label: 'Budget', href: '/budget', Icon: Wallet },
+  { id: 'accounts', label: 'Savings', href: '/accounts', Icon: PiggyBank },
+  { id: 'settings', label: 'More', href: '/settings', Icon: Settings },
 ];
 
 /**

@@ -11,36 +11,55 @@ import type { CategoryDocument } from '@/types/firestore';
 import { deleteCustomCategory } from '@/lib/categories/index';
 
 export const CategoryManager = () => {
- const { user, householdId, categories, removeCategoryOptimistic, addToast } = useStore();
- const [isFormOpen, setIsFormOpen] = useState(false);
- const [editingCategory, setEditingCategory] = useState<CategoryDocument | null>(null);
+  const { user, householdId, categories, removeCategoryOptimistic, addToast } = useStore();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<CategoryDocument | null>(null);
+  const [currentType, setCurrentType] = useState<'expense' | 'income'>('expense');
 
- const customCategories = categories.filter((c) => !c.isDefault);
- const presetCategories = categories.filter((c) => c.isDefault);
+  const customCategories = categories.filter((c) => !c.isDefault && (c.type || 'expense') === currentType);
+  const presetCategories = categories.filter((c) => c.isDefault && (c.type || 'expense') === currentType);
 
- const canAddMore = customCategories.length < MAX_CUSTOM_CATEGORIES;
+  const canAddMore = customCategories.length < MAX_CUSTOM_CATEGORIES;
 
- const handleEdit = (category: CategoryDocument) => {
- setEditingCategory(category);
- setIsFormOpen(true);
- };
+  const handleEdit = (category: CategoryDocument) => {
+    setEditingCategory(category);
+    setIsFormOpen(true);
+  };
 
- const handleDelete = async (category: CategoryDocument) => {
- if (!householdId) return;
- if (confirm(`Are you sure you want to delete "${category.name}"? Existing expenses will show as "Misc".`)) {
- try {
- await deleteCustomCategory(householdId, category.id);
- removeCategoryOptimistic(category.id);
- addToast({ type: 'success', message: 'Category deleted' });
- } catch (err: any) {
- addToast({ type: 'error', message: 'Failed to delete category' });
- }
- }
- };
+  const handleDelete = async (category: CategoryDocument) => {
+    if (!householdId) return;
+    if (confirm(`Are you sure you want to delete "${category.name}"? Existing ${currentType}s will show as "Misc".`)) {
+      try {
+        await deleteCustomCategory(householdId, category.id);
+        removeCategoryOptimistic(category.id);
+        addToast({ type: 'success', message: 'Category deleted' });
+      } catch (err: any) {
+        addToast({ type: 'error', message: 'Failed to delete category' });
+      }
+    }
+  };
 
- return (
- <div className="space-y-8">
- {/* Custom Categories */}
+  return (
+    <div className="space-y-8">
+      {/* Type Toggle */}
+      <div className="flex bg-theme-surface p-1 rounded-xl mb-6 border border-theme-border/50">
+        <button
+          type="button"
+          onClick={() => setCurrentType('expense')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${currentType === 'expense' ? 'bg-theme-base text-theme-primary shadow-sm' : 'text-theme-secondary hover:text-theme-primary'}`}
+        >
+          Expense
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrentType('income')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${currentType === 'income' ? 'bg-theme-base text-[#10b981] shadow-sm' : 'text-theme-secondary hover:text-[#10b981]'}`}
+        >
+          Income
+        </button>
+      </div>
+
+      {/* Custom Categories */}
  <div>
  <div className="flex items-center justify-between mb-4">
  <h4 className="font-medium text-theme-primary">Custom Categories</h4>
@@ -106,6 +125,7 @@ export const CategoryManager = () => {
  {isFormOpen && (
  <CategoryForm 
  editingCategory={editingCategory} 
+ type={currentType}
  onClose={() => setIsFormOpen(false)} 
  />
  )}

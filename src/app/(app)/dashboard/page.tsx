@@ -1,5 +1,6 @@
 'use client';
 
+import { useHydrated } from '@/hooks/useHydrated';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { useStore } from '@/store';
@@ -54,8 +55,6 @@ const getGradientClass = (index: number) => {
   return gradients[index % gradients.length];
 };
 
-import { useHydrated } from '@/hooks/useHydrated';
-
 export default function DashboardPage() {
   const isHydrated = useHydrated();
   const { openBottomSheet, expenses, budget, getBudgetState, isExpensesLoading, categoriesMap } = useStore();
@@ -79,10 +78,11 @@ export default function DashboardPage() {
         icon: cat?.icon,
         iconColor: cat?.color || '#605850',
         bgGradientClass: getGradientClass(index),
+        type: exp.type || 'expense',
         originalExpense: exp,
       };
     });
-  }, [expenses]);
+  }, [expenses, categoriesMap]);
   
   if (!isHydrated) {
     return null;
@@ -90,26 +90,25 @@ export default function DashboardPage() {
   
   return (
     <div className="relative flex min-h-screen w-full bg-theme-base text-theme-primary font-body">
-      <ExpensesSidebar />
-      <main className="flex-1 md:ml-64 flex flex-col px-[20px] md:px-[64px] pt-[48px] pb-32 md:pb-[48px] overflow-x-hidden">
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-[24px] mb-16 lg:items-center">
-          <div className="lg:col-span-7 flex flex-col gap-8 pr-0 lg:pr-12">
+      <main className="flex-1 flex flex-col px-5 md:px-12 pt-8 pb-32 md:pb-12 overflow-x-hidden max-w-5xl mx-auto w-full">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 lg:items-center">
+          <div className="flex flex-col gap-8">
             <div className="space-y-4">
-              <p className="text-[12px] tracking-[0.1em] font-bold text-theme-accent uppercase mb-2">Overview • {format(new Date(), 'MMMM yyyy')}</p>
+              <p className="text-xs tracking-[0.1em] font-bold text-theme-accent uppercase mb-2">Overview • {format(new Date(), 'MMMM yyyy')}</p>
               
               {isOverBudget ? (
                 <>
-                  <h1 className="font-display text-[64px] md:text-[88px] leading-[0.9] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
                     <TextEffect per="word" preset="blur" as="span">You're</TextEffect>
                     <TextEffect per="word" preset="blur" as="span" className="text-theme-danger italic" delay={0.1}>over budget.</TextEffect>
                   </h1>
-                  <TextEffect per="line" preset="fade" as="p" className="text-[18px] text-theme-secondary max-w-lg mt-8" delay={0.2}>
+                  <TextEffect per="line" preset="fade" as="p" className="text-lg text-theme-secondary max-w-lg mt-4" delay={0.2}>
                     You've gone past your planned spending limit this month. Let's review recent expenses and pull back where possible.
                   </TextEffect>
                 </>
               ) : (
                 <>
-                  <h1 className="font-display text-[64px] md:text-[88px] leading-[0.9] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
                     <TextEffect per="word" preset="blur" as="span">You're on</TextEffect>
                     <TextEffect per="word" preset="blur" as="span" className="text-theme-accent italic" delay={0.1}>Track.</TextEffect>
                   </h1>
@@ -142,7 +141,7 @@ export default function DashboardPage() {
                   <p className="text-sm text-theme-secondary">Deep dive into spending</p>
                 </div>
               </Link>
-              <Link href="/settings" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+              <Link href="/settings/limits" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
                 <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
                   <span className="material-symbols-outlined">edit_note</span>
                 </div>
@@ -153,7 +152,7 @@ export default function DashboardPage() {
               </Link>
             </AnimatedGroup>
           </div>
-          <div className="lg:col-span-5 w-full mt-12 lg:mt-0">
+          <div className="w-full mt-8 lg:mt-0">
             <div className={`relative w-full rounded-[32px] overflow-hidden hover-elevate group ${isOverBudget ? 'ring-1 ring-theme-danger/30 shadow-[0_0_40px_rgba(192,57,43,0.15)]' : ''}`}>
               {isOverBudget && <BorderTrail size={120} transition={{ ease: 'linear', duration: 4, repeat: Infinity }} />}
               <div className="absolute inset-0 bg-gradient-to-br from-theme-danger/20 via-theme-surface-hover to-theme-base opacity-90 z-0"></div>
@@ -179,9 +178,9 @@ export default function DashboardPage() {
                     align="right"
                     trigger={<span className="material-symbols-outlined text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer p-2 -mr-2 rounded-full hover:bg-theme-surface-hover/80 active:scale-95">more_horiz</span>}
                     items={[
-                      { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings#preferences' },
+                      { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings/limits' },
                       { label: 'View Deep Analysis', icon: 'analytics', href: '/analytics' },
-                      { label: 'Export Report', icon: 'download', href: '/settings#export' }
+                      { label: 'Export Report', icon: 'download', href: '/settings/export' }
                     ]}
                   />
                 </div>
@@ -194,6 +193,7 @@ export default function DashboardPage() {
                 <div className="mt-12 space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-theme-secondary flex items-center gap-1">Spent: <strong className="text-theme-primary"><AnimatedNumber value={totalSpent} /></strong></span>
+                    <span className="text-theme-secondary flex items-center gap-1">Income: <strong className="text-[#10b981]"><AnimatedNumber value={budget?.totalIncome || 0} /></strong></span>
                     <span className="text-theme-secondary flex items-center gap-1">Budget: <strong className="text-theme-primary"><AnimatedNumber value={budgetAmount} /></strong></span>
                   </div>
                   <div className="w-full h-2 bg-theme-elevated rounded-full overflow-hidden">
@@ -229,6 +229,7 @@ export default function DashboardPage() {
                       formattedTime={cardProps.timeLabel} 
                       categoryColor={cardProps.iconColor} 
                       iconName={cardProps.icon} 
+                      type={cardProps.type as any}
                     />
                   </EditExpenseMorph>
                 );

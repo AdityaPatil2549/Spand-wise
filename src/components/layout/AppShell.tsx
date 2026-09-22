@@ -6,6 +6,8 @@ import { useStore } from '@/store';
 import { useExpensesListener } from '@/hooks/useExpenses';
 import { useBudgetListener } from '@/hooks/useBudget';
 import { useCategoriesLoader } from '@/hooks/useCategories';
+import { useAccountsLoader } from '@/hooks/useAccounts';
+import { useScheduledTransactionsLoader } from '@/hooks/useScheduledTransactions';
 import { useHydrated } from '@/hooks/useHydrated';
 import { BottomNav } from './BottomNav';
 
@@ -48,6 +50,8 @@ export const AppShell = ({ children }: AppShellProps) => {
  useExpensesListener(householdId, loadedMonths);
  useBudgetListener(householdId, selectedMonth);
  useCategoriesLoader(householdId);
+ useAccountsLoader(householdId);
+ useScheduledTransactionsLoader(householdId);
 
  // Find the expense being edited (if any)
  const editingExpense: ExpenseDocument | null = bottomSheet.editingExpenseId
@@ -64,9 +68,14 @@ export const AppShell = ({ children }: AppShellProps) => {
 
  return (
  <div className="min-h-screen bg-[var(--surface-base)] flex w-full overflow-hidden relative">
- {/* Main Content Area */}
- <div className="flex-1 w-full flex flex-col h-screen overflow-y-auto relative">
- <main className="flex-1 w-full max-w-7xl mx-auto" id="main-content">
+  {/* Desktop Sidebar */}
+  <div className="hidden md:flex w-64 flex-shrink-0">
+    <Sidebar className="w-full h-screen" />
+  </div>
+
+  {/* Main Content Area */}
+  <div className="flex-1 w-full flex flex-col h-screen overflow-y-auto relative">
+ <main className="flex-1 w-full max-w-5xl mx-auto" id="main-content">
  {children}
  </main>
 

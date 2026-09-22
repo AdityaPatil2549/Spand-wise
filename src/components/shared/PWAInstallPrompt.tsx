@@ -72,7 +72,7 @@ export const PWAInstallPrompt = () => {
  if (!showPrompt) return null;
 
  return (
- <div className="fixed bottom-24 left-4 right-4 bg-[var(--surface-primary)] p-4 rounded-2xl shadow-[var(--shadow-lg)] border border-[var(--surface-secondary)] z-50 flex items-start gap-4 animate-in slide-in-from-bottom-8 fade-in duration-300">
+ <div className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] bg-[var(--surface-primary)] p-4 rounded-2xl shadow-[var(--shadow-lg)] border border-[var(--surface-secondary)] z-50 flex items-start gap-4 animate-in slide-in-from-bottom-8 fade-in duration-300">
  <div className="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center shrink-0">
  <Download className="w-6 h-6 text-violet-600" />
  </div>

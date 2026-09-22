@@ -335,6 +335,19 @@
   
   .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite {
     color-scheme: dark;
+    /* Soften 3D Neumorphism shadows for dark themes */
+    --shadow-3d-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-3d-card-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
+    --shadow-3d-inset: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+    --shadow-3d-button: 0 4px 10px rgba(0, 0, 0, 0.5);
+    --shadow-3d-button-active: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+    --shadow-3d-button-secondary: 0 4px 10px rgba(0, 0, 0, 0.3);
+    --shadow-3d-button-secondary-active: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    --shadow-3d-button-danger: 0 4px 10px rgba(220, 38, 38, 0.4);
+    --shadow-3d-button-danger-active: inset 0 2px 5px rgba(185, 28, 28, 0.6);
+    --shadow-3d-fab: 0 8px 20px rgba(0, 0, 0, 0.5);
+    --shadow-3d-fab-active: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+    --shadow-3d-bottom-nav: 0 -4px 20px rgba(0, 0, 0, 0.3);
   }
 
   body {
@@ -350,6 +363,20 @@
     font-weight: var(--theme-weight-body) !important;
     line-height: var(--theme-line-height-body) !important;
     letter-spacing: var(--theme-tracking-body) !important;
+
+    /* Map static tokens.css variables to dynamic Tailwind theme variables */
+    --surface-base: rgb(var(--theme-base));
+    --surface-primary: rgb(var(--theme-surface));
+    --surface-secondary: rgb(var(--theme-surface-hover));
+    --surface-tertiary: rgb(var(--theme-elevated));
+    --text-primary: rgb(var(--theme-primary));
+    --text-secondary: rgb(var(--theme-secondary));
+    --text-tertiary: rgb(var(--theme-tertiary));
+    --text-inverse: rgb(var(--theme-inverse));
+    --text-brand: rgb(var(--theme-accent));
+    
+    --border-light: rgb(var(--theme-border) / 0.5);
+    --border-subtle: rgb(var(--theme-border) / 0.2);
   }
 
   /* Dynamic Theme Typography (Display) */

@@ -25,38 +25,41 @@ const ICONS_MAP: Record<string, React.ElementType> = {
 const ICON_NAMES = Object.keys(ICONS_MAP);
 
 const categorySchema = z.object({
- name: z.string().min(1, 'Name is required').max(20, 'Max 20 characters'),
- icon: z.string().min(1, 'Icon is required'),
- color: z.string().min(1, 'Color is required'),
+  name: z.string().min(1, 'Name is required').max(20, 'Max 20 characters'),
+  icon: z.string().min(1, 'Icon is required'),
+  color: z.string().min(1, 'Color is required'),
+  type: z.enum(['expense', 'income']).default('expense'),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
 
 interface CategoryFormProps {
- editingCategory: CategoryDocument | null;
- onClose: () => void;
+  editingCategory: CategoryDocument | null;
+  type: 'expense' | 'income';
+  onClose: () => void;
 }
 
-export const CategoryForm = ({ editingCategory, onClose }: CategoryFormProps) => {
- const { user, householdId, addToast, addCategoryOptimistic, updateCategoryOptimistic } = useStore();
- 
- const {
- register,
- handleSubmit,
- setValue,
- watch,
- formState: { errors, isSubmitting },
- } = useForm<CategoryFormValues>({
- resolver: zodResolver(categorySchema),
- defaultValues: {
- name: editingCategory?.name || '',
- icon: editingCategory?.icon || 'Tag',
- color: editingCategory?.color || COLORS[0],
- },
- });
+export const CategoryForm = ({ editingCategory, type, onClose }: CategoryFormProps) => {
+  const { user, householdId, addToast, addCategoryOptimistic, updateCategoryOptimistic } = useStore();
+  
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: editingCategory?.name || '',
+      icon: editingCategory?.icon || 'Tag',
+      color: editingCategory?.color || COLORS[0],
+      type: editingCategory?.type || type,
+    },
+  });
 
- const selectedColor = watch('color');
- const selectedIcon = watch('icon');
+  const selectedColor = watch('color');
+  const selectedIcon = watch('icon');
 
  const onSubmit = async (data: CategoryFormValues) => {
  if (!householdId || !user) return;

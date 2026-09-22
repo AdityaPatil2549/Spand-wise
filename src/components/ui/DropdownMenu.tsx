@@ -12,14 +12,15 @@ export type DropdownMenuItem = {
   danger?: boolean;
 };
 
-interface DropdownMenuProps {
+export interface DropdownMenuProps {
   trigger: React.ReactNode;
   items: DropdownMenuItem[];
   align?: 'left' | 'right';
   className?: string;
+  menuClassName?: string;
 }
 
-export function DropdownMenu({ trigger, items, align = 'right', className }: DropdownMenuProps) {
+export function DropdownMenu({ trigger, items, align = 'right', className, menuClassName }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -52,43 +53,56 @@ export function DropdownMenu({ trigger, items, align = 'right', className }: Dro
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className={cn(
-              "absolute z-50 mt-2 w-56 rounded-2xl bg-theme-surface border border-theme-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] glass overflow-hidden",
-              align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'
+              "absolute z-50 mt-2 rounded-2xl bg-theme-surface border border-theme-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] glass overflow-hidden",
+              align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left',
+              menuClassName || 'w-56'
             )}
           >
             <div className="py-1 flex flex-col">
               {items.map((item, idx) => {
-                const Content = () => (
-                  <button
-                    onClick={() => {
-                      if (item.onClick) item.onClick();
-                      setIsOpen(false);
-                    }}
-                    className={cn(
-                      "w-full text-left px-4 py-3 text-sm flex items-center gap-3 transition-colors outline-none",
-                      item.danger 
-                        ? "text-theme-danger hover:bg-theme-danger/10" 
-                        : "text-theme-primary hover:bg-theme-surface-hover"
-                    )}
-                  >
+                const commonClasses = cn(
+                  "w-full text-left px-4 py-3 text-sm flex items-center gap-3 transition-colors outline-none",
+                  item.danger 
+                    ? "text-theme-danger hover:bg-theme-danger/10" 
+                    : "text-theme-primary hover:bg-theme-surface-hover"
+                );
+
+                const innerContent = (
+                  <>
                     {item.icon && (
                       <span className="material-symbols-outlined text-[18px]">
                         {item.icon}
                       </span>
                     )}
                     <span className="font-medium">{item.label}</span>
-                  </button>
+                  </>
                 );
 
                 if (item.href) {
                   return (
-                    <Link key={idx} href={item.href} className="outline-none" onClick={() => setIsOpen(false)}>
-                      <Content />
+                    <Link 
+                      key={idx} 
+                      href={item.href} 
+                      className={commonClasses} 
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {innerContent}
                     </Link>
                   );
                 }
 
-                return <Content key={idx} />;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      if (item.onClick) item.onClick();
+                      setIsOpen(false);
+                    }}
+                    className={commonClasses}
+                  >
+                    {innerContent}
+                  </button>
+                );
               })}
             </div>
           </motion.div>

@@ -149,12 +149,9 @@ export default function ExpensesPage() {
   return (
     <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
       <ScrollProgress className="top-0 z-50 bg-theme-accent" />
-      
-      {/* SideNavBar */}
-      <ExpensesSidebar />
 
       {/* Main Content Canvas */}
-      <main className="flex-1 w-full md:ml-64 pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
+      <main className="flex-1 w-full pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
         {/* Page Header & Filters */}
         <div className="max-w-6xl mx-auto mb-12">
           <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
@@ -298,6 +295,7 @@ export default function ExpensesPage() {
  icon={getMaterialIcon(cat?.icon)}
  iconColor={cat?.color || '#605850'}
  iconBgClass="bg-theme-base"
+ type={expense.type || 'expense'}
  />
  </EditExpenseMorph>
  </InView>

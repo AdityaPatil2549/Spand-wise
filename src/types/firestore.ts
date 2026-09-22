@@ -58,6 +58,8 @@ export interface BudgetDocument {
  budgetAmount: number;
  /** System-calculated running total of all non-deleted expenses for this month */
  totalSpent: number;
+ /** System-calculated running total of all non-deleted income for this month */
+ totalIncome?: number;
  /** Optional map of categoryId to specific budget allowance */
  categoryBudgets?: Record<string, number>;
  createdAt: Timestamp;
@@ -83,11 +85,14 @@ export interface ExpenseDocument {
  month: string;
  /** Soft-delete flag. When true, this expense is excluded from budget calculations. */
  isDeleted: boolean;
+ type?: 'expense' | 'income';
  createdAt: Timestamp;
  /** Set when expense is edited */
  updatedAt?: Timestamp;
  /** UID of the user who added this expense */
  createdBy?: string;
+ /** ID of the account this expense was paid from (e.g., Bank, Cash) */
+ accountId?: string;
 }
 
 /**
@@ -102,7 +107,35 @@ export interface CategoryDocument {
  icon?: string;
  /** Hex color string, e.g. "#f97316" */
  color: string;
- /** True if created by the system (preset); false if user-created */
- isDefault: boolean;
- createdAt: Timestamp;
+  /** True if created by the system (preset); false if user-created */
+  isDefault: boolean;
+  type?: 'expense' | 'income';
+  createdAt: Timestamp;
+}
+
+/**
+ * /users/{uid}/accounts/{accountId}
+ * Represents a funding source (e.g., Bank, Cash).
+ */
+export interface AccountDocument {
+  id: string;
+  name: string;
+  type: 'bank' | 'cash' | 'credit';
+  balance: number;
+  createdAt: Timestamp;
+}
+
+export interface ScheduledTransactionDocument {
+  id: string;
+  amount: number;
+  categoryId: string;
+  accountId?: string;
+  note: string | null;
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  startDate: Timestamp;
+  nextDueDate: Timestamp;
+  isActive: boolean;
+  createdBy: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }

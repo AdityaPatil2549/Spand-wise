@@ -79,10 +79,9 @@ export default function AnalyticsPage() {
  }, [expenses, categoriesMap]);
 
  return (
- <div className="bg-theme-base text-theme-primary flex min-h-screen font-body w-full">
- <ExpensesSidebar />
- <main className="flex-1 md:ml-64 relative min-h-screen overflow-x-hidden w-full max-w-7xl mx-auto px-6 md:px-12 pt-8 pb-32 md:pb-24">
- <TextEffect as="h1" preset="fade" className="font-display text-[48px] md:text-[64px] font-medium leading-none tracking-tight text-theme-primary mb-2">
+ <div className="w-full">
+ <main className="flex-1 w-full px-6 pt-8 pb-32 md:pb-12">
+ <TextEffect as="h1" preset="fade" className="font-display text-4xl md:text-5xl font-medium leading-none tracking-tight text-theme-primary mb-2">
  Analytics
  </TextEffect>
  <TextEffect as="p" preset="fade" className="text-[18px] text-theme-secondary max-w-2xl mb-12">
@@ -186,6 +185,63 @@ export default function AnalyticsPage() {
  <CarouselIndicator className="mt-8 relative bottom-0" />
  </Carousel>
  </div>
+
+  {/* Stats & Payment Modes Grid */}
+  <div className="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+    {/* Payment Modes */}
+    <div className="glass-panel p-8 rounded-3xl border border-theme-border/30">
+      <h3 className="font-headline text-xl text-theme-primary mb-6">Payment modes</h3>
+      <div className="flex bg-theme-elevated/50 p-1.5 rounded-xl w-max mb-6">
+        <button className="px-6 py-2 text-sm font-medium bg-theme-surface rounded-lg shadow-sm text-theme-primary">Spending</button>
+        <button className="px-6 py-2 text-sm font-medium text-theme-secondary hover:text-theme-primary transition-colors">Income</button>
+      </div>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between bg-theme-surface p-4 rounded-2xl border border-theme-border/40">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-[#10b981]">payments</span>
+            <span className="font-medium text-theme-primary">Cash</span>
+          </div>
+          <span className="font-bold text-theme-primary">{CURRENCY_SYMBOL}{expenses.filter(e => !e.accountId || e.accountId === 'cash').reduce((a, b) => a + b.amount, 0).toFixed(2)}</span>
+        </div>
+        <div className="flex items-center justify-between bg-theme-surface p-4 rounded-2xl border border-theme-border/40">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-indigo-500">account_balance</span>
+            <span className="font-medium text-theme-primary">UPI</span>
+          </div>
+          <span className="font-bold text-theme-primary">{CURRENCY_SYMBOL}{expenses.filter(e => e.accountId === 'bank').reduce((a, b) => a + b.amount, 0).toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Stats */}
+    <div className="glass-panel p-8 rounded-3xl border border-theme-border/30">
+      <h3 className="font-headline text-xl text-theme-primary mb-6">Stats</h3>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <h4 className="text-xs font-bold text-theme-danger uppercase tracking-widest">Average Spending</h4>
+          <div>
+            <p className="text-sm text-theme-secondary mb-1">Per month</p>
+            <p className="text-2xl font-bold text-theme-primary">{CURRENCY_SYMBOL}{(totalSpent || 0).toFixed(2)}</p>
+          </div>
+          <div>
+            <p className="text-sm text-theme-secondary mb-1">Per transaction</p>
+            <p className="text-2xl font-bold text-theme-primary">{CURRENCY_SYMBOL}{expenses.length ? (totalSpent / expenses.length).toFixed(2) : '0.00'}</p>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <h4 className="text-xs font-bold text-[#10b981] uppercase tracking-widest">Average Income</h4>
+          <div>
+            <p className="text-sm text-theme-secondary mb-1">Per month</p>
+            <p className="text-2xl font-bold text-theme-primary">{CURRENCY_SYMBOL}0.00</p>
+          </div>
+          <div>
+            <p className="text-sm text-theme-secondary mb-1">Per transaction</p>
+            <p className="text-2xl font-bold text-theme-primary">{CURRENCY_SYMBOL}0.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
  {/* Accordion Breakdown */}
  <div className="mb-16">

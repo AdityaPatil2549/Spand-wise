@@ -61,6 +61,12 @@ service cloud.firestore {
         allow read: if isAuthenticated();
         allow write: if isAuthenticated();
       }
+
+      // ── Account Documents ─────────────────────────────────────
+      match /accounts/{accountId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
     }
   }
 }
