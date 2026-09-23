@@ -22,7 +22,7 @@
 ## 📑 Table of Contents
 - [The Vision](#-the-vision)
 - [Signature Features](#-signature-features)
-- [Premium UX Upgrades](#-premium-ux-upgrades)
+- [Advanced Engineering & Premium UX](#-advanced-engineering--premium-ux)
 - [Dynamic Theming Engine](#-dynamic-theming-engine)
 - [System Architecture](#-system-architecture)
 - [Project Structure](#-project-structure)
@@ -35,7 +35,7 @@
 
 **SpendWise** is not just another budgeting app. It is a meticulously crafted Progressive Web Application (PWA) designed to bring a high-end, luxury editorial aesthetic to personal finance for college students. 
 
-By combining minimalist typography, soft glassmorphism, and dynamic micro-interactions, SpendWise makes tracking your daily expenses feel like flipping through a premium lifestyle magazine.
+By combining minimalist typography, soft glassmorphism, advanced AI-lite features, and dynamic micro-interactions, SpendWise makes tracking your daily expenses feel like flipping through a premium lifestyle magazine.
 
 ---
 
@@ -81,14 +81,16 @@ By combining minimalist typography, soft glassmorphism, and dynamic micro-intera
 
 ---
 
-## ✨ Premium UX Upgrades
+## 🚀 Advanced Engineering & Premium UX
 
+SpendWise goes beyond basic CRUD operations, featuring complex, physics-based UI and intelligent automation:
+
+- 📸 **Smart Receipt Scanning (OCR):** Snap a photo of a receipt, and our local Tesseract.js engine will automatically extract the total amount and pre-fill the form (privacy-first, no cloud processing).
+- 🤖 **Subscription Autopilot:** Set up recurring expenses (like Netflix or Spotify) once. SpendWise will intelligently process them in the background on their due date, ensuring your budget is always accurate.
+- 🪄 **Native Micro-Interactions:** Enjoy iOS-style swipe-to-delete gestures with Framer Motion spring physics, haptic feedback vibrations on mobile devices, and satisfying confetti explosions when you hit a savings goal.
 - 🎨 **Dynamic Theming Engine:** A robust 9-theme structural matrix that instantly adapts global color palettes, spacing, and curated Google typography combinations.
 - 🪞 **Advanced Glassmorphism UI:** Fully interactive, Framer Motion powered dropdown menus and modals that seamlessly blur and blend into the active theme.
 - 🔍 **Real-Time Ledger Search:** Lightning fast client-side filtering by description, category, or amount on the Expenses page.
-- 📜 **Endless Scroll Transactions:** Seamlessly load previous months of transaction data directly into your feed with a single click.
-- 🪄 **Smart Visibility:** The monthly budget setup card elegantly collapses into a minimalist summary strip once configured, automatically expanding on the 1st of every new month.
-- 📤 **Data Portability:** Instantly generate and export your complete transaction history to a CSV file.
 
 ---
 
@@ -120,6 +122,7 @@ SpendWise utilizes a **"Thick Client + Smart Database"** architecture pattern, c
 | **Tailwind CSS** | Utility-first styling enabling our dynamic CSS variable injection. |
 | **Framer Motion** | Complex, physics-based micro-animations and layout transitions. |
 | **Firebase** | Firestore (NoSQL Database), Auth (Google OAuth), and Hosting. |
+| **Tesseract.js** | Client-side Optical Character Recognition (OCR) for receipt scanning. |
 | **Recharts** | Rendering responsive, beautiful data visualizations on the Analytics page. |
 
 ---
@@ -132,12 +135,12 @@ src/
 │   ├── (app)/            # Authenticated Routes (Dashboard, Analytics, Settings)
 │   └── (auth)/           # Public Routes (Login)
 ├── components/           # React Components
-│   ├── features/         # Domain-specific components (e.g., Budget, Expenses)
+│   ├── features/         # Domain-specific components (e.g., Budget, Expenses, OCR)
 │   ├── layout/           # Structural components (Sidebar, TopNav)
 │   ├── shared/           # Reusable generic components (ThemeSelector)
 │   └── ui/               # Base UI components (Buttons, Inputs, Modals)
 ├── config/               # App configuration (Constants, Categories, Themes)
-├── hooks/                # Custom React hooks (useClickOutside, useAuthGuard)
+├── hooks/                # Custom React hooks (useHaptic, useClickOutside)
 ├── lib/                  # Utility functions and external integrations (Firebase)
 ├── store/                # Zustand global state slices
 └── types/                # TypeScript interfaces
@@ -189,11 +192,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the application in a
 
 Contributions are welcome! Whether it's adding new features, improving the UI/UX, or fixing bugs, we appreciate your help in making SpendWise the most beautiful expense tracker available.
 
+Please review our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before getting started.
+
 1. **Fork** the Project
 2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
+5. **Open** a Pull Request using our standard PR template.
 
 ---
 
