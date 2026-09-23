@@ -1,208 +1,153 @@
 <div align="center">
-  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuACrBq3mzB3KNbIhNfjJxMjvPG1Um8git0W7hb2Flj45gHRWfuQb1cHJysssenPSQUQRy0XaYiZ4y0Pc3FxrIyvLR_plgQcjvCsveiQrpRo6l0_Ej6tLu71vNYS4XksDCEvgFp7JHxqqDtijfqBEZ_X8uDtdzRL2_-Lw-8ubtxj5KpY1sYpkDtcfLKGFYgZibWy-dDQoEXVrwgRPdbtu-k-ljEbnxNIAfhPQX_EPVVDdL9lJE4G9g" alt="SpendWise Premium Aesthetic" width="100%" style="border-radius: 12px; margin-bottom: 20px; object-fit: cover; height: 300px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);"/>
+  <a href="https://spendwise-458f0.web.app">
+    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuACrBq3mzB3KNbIhNfjJxMjvPG1Um8git0W7hb2Flj45gHRWfuQb1cHJysssenPSQUQRy0XaYiZ4y0Pc3FxrIyvLR_plgQcjvCsveiQrpRo6l0_Ej6tLu71vNYS4XksDCEvgFp7JHxqqDtijfqBEZ_X8uDtdzRL2_-Lw-8ubtxj5KpY1sYpkDtcfLKGFYgZibWy-dDQoEXVrwgRPdbtu-k-ljEbnxNIAfhPQX_EPVVDdL9lJE4G9g" alt="SpendWise Premium Aesthetic" width="100%" style="border-radius: 16px; margin-bottom: 24px; object-fit: cover; height: 350px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);"/>
+  </a>
 
-  # ✦ SpendWise ✦
+  <h1 style="font-weight: 900; letter-spacing: -1px; font-size: 3em;">✦ SpendWise ✦</h1>
   
-  *Premium Personal Finance & Expense Tracking, Elevated for Students.*
-
-  <p align="center">
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
-    <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
-    <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" /></a>
-    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-    <a href="https://zustand-demo.pmnd.rs/"><img src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=react&logoColor=white" alt="Zustand" /></a>
-    <a href="https://www.framer.com/motion/"><img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" /></a>
+  <p style="font-size: 1.2em; color: #666; max-width: 600px; margin: 0 auto; line-height: 1.5;">
+    <em>Personal finance shouldn't feel like a spreadsheet. It should feel like luxury. A premium, intelligence-driven expense tracking engine designed exclusively for the modern student.</em>
   </p>
 
-  ### 🌐 **Live Demo:** [spendwise-458f0.web.app](https://spendwise-458f0.web.app)
-  
+  <br />
+
+  <p align="center">
+    <a href="https://spendwise-458f0.web.app" target="_blank">
+      <img src="https://img.shields.io/badge/Launch_Live_App-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
+    </a>
+  </p>
+
+  <br />
+
+  <p align="center">
+    <img src="https://img.shields.io/badge/Next.js_14-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white" alt="Framer Motion" />
+    <img src="https://img.shields.io/badge/Firebase_9-FFCA28?style=flat-square&logo=firebase&logoColor=black" alt="Firebase" />
+    <img src="https://img.shields.io/badge/Zustand-443E38?style=flat-square&logo=react&logoColor=white" alt="Zustand" />
+    <img src="https://img.shields.io/badge/Tesseract.js-008000?style=flat-square&logo=cplusplus&logoColor=white" alt="Tesseract OCR" />
+  </p>
+
   ---
 </div>
 
-## 📑 Table of Contents
-- [The Vision](#-the-vision)
-- [Signature Features](#-signature-features)
-- [Advanced Engineering & Premium UX](#-advanced-engineering--premium-ux)
-- [Dynamic Theming Engine](#-dynamic-theming-engine)
-- [System Architecture](#-system-architecture)
-- [Project Structure](#-project-structure)
-- [Local Development](#-local-development)
-- [Contributing](#-contributing)
+<br/>
 
----
+## 💎 The Vibe
+Most budgeting apps are clinical, boring, and tedious. **SpendWise is different.** 
+We engineered a Progressive Web Application that marries brutalist efficiency with glassmorphic elegance. It features physics-based micro-interactions, hardware-accelerated animations, and intelligent automation to make logging a coffee purchase feel like unlocking an iPhone.
 
-## ✧ The Vision
+<br/>
 
-**SpendWise** is not just another budgeting app. It is a meticulously crafted Progressive Web Application (PWA) designed to bring a high-end, luxury editorial aesthetic to personal finance for college students. 
-
-By combining minimalist typography, soft glassmorphism, advanced AI-lite features, and dynamic micro-interactions, SpendWise makes tracking your daily expenses feel like flipping through a premium lifestyle magazine.
-
----
-
-## 🌟 Signature Features
+## 🚀 The Arsenal: Killer Features
 
 <table width="100%">
   <tr>
-    <td width="50%">
-      <h3>🎨 Editorial Aesthetic</h3>
-      <ul>
-        <li><b>Tailored Layouts:</b> Beautifully crafted color palettes paired with elegant typography.</li>
-        <li><b>Glassmorphic UI:</b> Soft blur panels, advanced frosted glass, and ultra-soft drop shadows.</li>
-        <li><b>Micro-Animations:</b> Smooth, responsive hover states and scale transitions for every interaction.</li>
-      </ul>
+    <td width="33%" valign="top">
+      <h3 align="center">📸<br/>Vision AI (OCR)</h3>
+      <p align="center">Stop typing. Snap a photo of your receipt. Our on-device Tesseract.js engine instantly extracts the total amount and pre-fills your ledger. 100% private. Zero cloud processing.</p>
     </td>
-    <td width="50%">
-      <h3>⚡ Lightning Fast Logging</h3>
-      <ul>
-        <li><b>Frictionless:</b> Add expenses in under 3 seconds with optimized numeric keypads.</li>
-        <li><b>One-Tap Chips:</b> Select categories effortlessly using quick-action chips.</li>
-        <li><b>Bottom Sheet:</b> Seamlessly integrates directly into the global app drawer.</li>
-      </ul>
+    <td width="33%" valign="top">
+      <h3 align="center">🤖<br/>Autopilot Subs</h3>
+      <p align="center">Netflix. Spotify. Gym. Enter them once. The SpendWise background engine silently logs your recurring subscriptions on their exact due date while you sleep.</p>
     </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>🔄 Real-time Cloud Sync</h3>
-      <ul>
-        <li><b>Cross-Device:</b> Powered by Firebase Firestore, your expenses synchronize instantly across all devices.</li>
-        <li><b>Offline First:</b> Full offline persistence. Log expenses on the subway, and they’ll silently sync when you’re back online.</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <h3>📊 Smart Budgeting & Analytics</h3>
-      <ul>
-        <li><b>Budget Tracking:</b> Set a monthly allowance and watch your remaining balance recalculate instantly.</li>
-        <li><b>Category Insights:</b> Stunning visualizations to see exactly where your money goes.</li>
-        <li><b>Smart Alerts:</b> In-app notifications when you exceed 85% of your total or category budget.</li>
-      </ul>
+    <td width="33%" valign="top">
+      <h3 align="center">🪄<br/>Physics & Haptics</h3>
+      <p align="center">Framer Motion spring physics power buttery-smooth swipe-to-delete gestures, paired with native mobile haptic vibrations and confetti bursts for hitting savings goals.</p>
     </td>
   </tr>
 </table>
 
----
+<br/>
 
-## 🚀 Advanced Engineering & Premium UX
+## 🎨 The Matrix: Dynamic Theming
+Why settle for Light/Dark mode? SpendWise features a deeply integrated CSS-variable injection engine that hot-swaps the entire molecular structure of the app at runtime. 
 
-SpendWise goes beyond basic CRUD operations, featuring complex, physics-based UI and intelligent automation:
+Choose your aesthetic:
+> **`CYBERPUNK`** (Neon purples & harsh tech fonts) · **`MINIMAL`** (Stark contrast & Swiss typography) · **`SAHARA`** (Warm desert peach & elegant serifs) · **`OCEAN`** (Abyssal blues) · **`NEOBRUTALISM`** (Harsh shadows & loud borders) · **`MIDNIGHT`** (OLED pitch black)
 
-- 📸 **Smart Receipt Scanning (OCR):** Snap a photo of a receipt, and our local Tesseract.js engine will automatically extract the total amount and pre-fill the form (privacy-first, no cloud processing).
-- 🤖 **Subscription Autopilot:** Set up recurring expenses (like Netflix or Spotify) once. SpendWise will intelligently process them in the background on their due date, ensuring your budget is always accurate.
-- 🪄 **Native Micro-Interactions:** Enjoy iOS-style swipe-to-delete gestures with Framer Motion spring physics, haptic feedback vibrations on mobile devices, and satisfying confetti explosions when you hit a savings goal.
-- 🎨 **Dynamic Theming Engine:** A robust 9-theme structural matrix that instantly adapts global color palettes, spacing, and curated Google typography combinations.
-- 🪞 **Advanced Glassmorphism UI:** Fully interactive, Framer Motion powered dropdown menus and modals that seamlessly blur and blend into the active theme.
-- 🔍 **Real-Time Ledger Search:** Lightning fast client-side filtering by description, category, or amount on the Expenses page.
+<br/>
 
----
+## 🏗 The Engine: Architecture
 
-## 🎨 Dynamic Theming Engine
+SpendWise operates on a **"Thick Client + Smart Cloud"** paradigm. By shifting compute to the client and caching aggressively via `Zustand`, we bypass the need for a traditional backend, reducing latency to near zero.
 
-SpendWise features a state-of-the-art structural matrix that dynamically swaps CSS variables, fonts, and layout spacing at runtime.
+- **The Brain:** Next.js 14 (App Router) + TypeScript.
+- **The Muscle:** Firebase Firestore (Real-time NoSQL sync with offline-first persistence).
+- **The Soul:** TailwindCSS + Framer Motion (Hardware-accelerated DOM manipulation).
+- **The Eyes:** Client-side Tesseract OCR (WASM-based optical character recognition).
 
-### Available Themes
-1. **Cyberpunk** (Neon Purples, Tech Fonts)
-2. **Sahara** (Warm Peach, Elegant Serifs)
-3. **Minimal** (High-Contrast Black & White, Swiss Sans)
-4. **Ocean** (Deep Blues, Fluid Curves)
-5. **Forest** (Earthy Greens, Organic Spacing)
-6. **Neobrutalism** (Harsh Shadows, Bold Typography)
-7. **Midnight** (OLED Black, Sleek UI)
-8. **Sunset** (Warm Gradients, Soft Fonts)
-9. **Corporate** (Clean, Professional Blues)
+<br/>
 
----
+## 📂 The Blueprint
 
-## 🏗 System Architecture
-
-SpendWise utilizes a **"Thick Client + Smart Database"** architecture pattern, completely eliminating the need for a custom backend server to reduce latency and infrastructure overhead.
-
-| Technology | Purpose |
-|------------|---------|
-| **Next.js 14** | App Router, Server-Side Rendering (SSR), API Routes, and optimized static delivery. |
-| **Zustand** | Global client-state management (caching Firebase data to avoid redundant reads). |
-| **Tailwind CSS** | Utility-first styling enabling our dynamic CSS variable injection. |
-| **Framer Motion** | Complex, physics-based micro-animations and layout transitions. |
-| **Firebase** | Firestore (NoSQL Database), Auth (Google OAuth), and Hosting. |
-| **Tesseract.js** | Client-side Optical Character Recognition (OCR) for receipt scanning. |
-| **Recharts** | Rendering responsive, beautiful data visualizations on the Analytics page. |
-
----
-
-## 📂 Project Structure
-
-```text
+```bash
 src/
-├── app/                  # Next.js App Router Pages
-│   ├── (app)/            # Authenticated Routes (Dashboard, Analytics, Settings)
-│   └── (auth)/           # Public Routes (Login)
-├── components/           # React Components
-│   ├── features/         # Domain-specific components (e.g., Budget, Expenses, OCR)
-│   ├── layout/           # Structural components (Sidebar, TopNav)
-│   ├── shared/           # Reusable generic components (ThemeSelector)
-│   └── ui/               # Base UI components (Buttons, Inputs, Modals)
-├── config/               # App configuration (Constants, Categories, Themes)
-├── hooks/                # Custom React hooks (useHaptic, useClickOutside)
-├── lib/                  # Utility functions and external integrations (Firebase)
-├── store/                # Zustand global state slices
-└── types/                # TypeScript interfaces
+├── app/                  # Next.js 14 App Router (RSC & Client Boundaries)
+├── components/           
+│   ├── features/         # Highly cohesive, domain-specific modules (OCR, Budgeting)
+│   ├── layout/           # Global shells (Glassmorphic TopNav, Blur Sidebars)
+│   ├── shared/           # Reusable primitive atoms
+│   └── ui/               # Radix/Tailwind styled components
+├── config/               # Master configuration (Themes, Categories, Tokens)
+├── hooks/                # Specialized React hooks (useHaptic, useIntersectionObserver)
+├── lib/                  # Pure utility functions & Firebase singletons
+├── store/                # Zustand atomic state slices
+└── types/                # Strict TypeScript interfaces & Zod schemas
 ```
 
----
+<br/>
 
-## 💻 Local Development
+<details>
+<summary><b>🛠️ Boot up the Local Development Server (Click to expand)</b></summary>
+<br/>
 
-Want to run this premium experience on your local machine? Follow these steps:
+Ready to hack on the codebase? Here is how to spin it up locally.
 
-### 1. Prerequisites
-- **Node.js**: v18.17.0 or higher
-- **Firebase CLI**: Installed globally (`npm i -g firebase-tools`)
-- **Java**: Required for running the local Firebase Emulator Suite
+1. **Clone & Install**
+   ```bash
+   git clone https://github.com/AdityaPatil2549/Spand-wise.git
+   cd Spand-wise
+   npm install
+   ```
 
-### 2. Installation
-Clone the repository from GitHub:
-```bash
-git clone https://github.com/AdityaPatil2549/Spand-wise.git
-cd Spand-wise
-npm install
-```
+2. **Environment Variables**
+   Duplicate `.env.example` into `.env.local` and inject your Firebase keys:
+   ```env
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project
+   # ...
+   ```
 
-### 3. Environment Configuration
-Create a `.env.local` file in the root directory based on the `.env.example`:
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-```
+3. **Ignition**
+   ```bash
+   # Terminal A: The Next.js UI Engine
+   npm run dev
 
-### 4. Running the Development Server
-```bash
-# Terminal 1: Start the Next.js development server
-npm run dev
+   # Terminal B: The Local Firebase Backend Emulators
+   npm run emulators
+   ```
+   Navigate to `http://localhost:3000`. Welcome to SpendWise.
 
-# Terminal 2: Start the Firebase Emulator Suite (Firestore & Auth)
-npm run emulators
-```
-Open [http://localhost:3000](http://localhost:3000) to view the application in all its glory.
+</details>
 
----
+<br/>
 
-## 🤝 Contributing
+## 🤝 The Guild (Contributing)
 
-Contributions are welcome! Whether it's adding new features, improving the UI/UX, or fixing bugs, we appreciate your help in making SpendWise the most beautiful expense tracker available.
+We hold this codebase to the highest standard of engineering and design. If you want to contribute, we would love to have you. 
 
-Please review our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before getting started.
-
-1. **Fork** the Project
-2. **Create** your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** to the Branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request using our standard PR template.
+Before opening a PR, please review the rules of engagement:
+- 📖 [Read the Contributing Guide](CONTRIBUTING.md)
+- ⚖️ [Review the Code of Conduct](CODE_OF_CONDUCT.md)
+- 🐛 [Report a Bug](.github/ISSUE_TEMPLATE/bug_report.md) or [Request a Feature](.github/ISSUE_TEMPLATE/feature_request.md)
 
 ---
 
 <div align="center">
-  <i>"Discipline is the bridge between goals and accomplishment."</i><br><br>
-  <b>Built with ❤️ for students, by students.</b>
+  <p style="font-size: 1.1em; font-family: serif; font-style: italic; color: #888;">
+    "Discipline is the bridge between goals and accomplishment."
+  </p>
+  <br/>
+  <b>Built with ⚡ by Aditya Patil & Contributors.</b>
 </div>
