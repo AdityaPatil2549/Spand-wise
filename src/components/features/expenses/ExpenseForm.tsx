@@ -1,5 +1,7 @@
 'use client';
 import { Timestamp } from 'firebase/firestore';
+import confetti from 'canvas-confetti';
+import { useHaptic } from '@/hooks/useHaptic';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +11,7 @@ import { AnimatedTimePicker } from '@/components/ui/AnimatedTimePicker';
 import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 import { AnimatedSelect } from '@/components/ui/AnimatedSelect';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
+import { ReceiptScanner } from '@/components/features/expenses/ReceiptScanner';
 import { useStore } from '@/store';
 import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
@@ -57,6 +60,36 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const adjustTotalSpentOptimistic = useStore((s) => s.adjustTotalSpentOptimistic);
 
   const isEdit = !!editingExpense;
+  const haptic = useHaptic();
+
+  const triggerConfetti = () => {
+    const duration = 2000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#10b981', '#3b82f6', '#f43f5e'],
+        zIndex: 9999,
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#10b981', '#3b82f6', '#f43f5e'],
+        zIndex: 9999,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  };
 
   const {
     register,
@@ -120,6 +153,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
           editingExpense.type,
           editingExpense.accountId
         );
+        haptic.medium();
         addToast({ type: 'success', message: 'Transaction updated!' });
       } else {
         // Optimistic add — create a temporary ID
@@ -149,6 +183,8 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         // Replace temp expense with real one
         removeExpenseOptimistic(tempId);
         addExpenseOptimistic(newExpense);
+        haptic.success();
+        triggerConfetti();
         addToast({ type: 'success', message: data.type === 'income' ? 'Income added! 💰' : 'Expense added! 💸' });
       }
 
@@ -259,35 +295,50 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
       {/* Amount Input */}
       <div>
-        <label className="text-sm font-medium text-theme-secondary mb-1.5 block font-body">
-          Amount
+        <label className="text-sm font-medium text-theme-secondary mb-1.5 block font-body flex justify-between items-end">
+          <span>Amount</span>
         </label>
- <div className="relative flex items-center">
- <span className="absolute left-4 text-theme-secondary font-bold text-xl pointer-events-none select-none">
- {CURRENCY_SYMBOL}
- </span>
- <input
- type="number"
- inputMode="numeric"
- step="1"
- placeholder="0"
- autoFocus
- className="w-full pl-10 pr-4 py-4 text-4xl font-manrope tabular-nums font-semibold rounded-2xl border-2
- bg-theme-elevated text-theme-primary
- placeholder:text-theme-tertiary
- border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent
- transition-all duration-150"
- {...register('amount', { valueAsNumber: true })}
- aria-label="Expense amount in rupees"
- aria-invalid={!!errors.amount}
- />
- </div>
- {errors.amount && (
- <p className="mt-1 text-xs text-red-500" role="alert">
- {errors.amount.message}
- </p>
- )}
- </div>
+        <div className="flex gap-3 items-center">
+          <div className="relative flex-1 flex items-center">
+            <span className="absolute left-4 text-theme-secondary font-bold text-xl pointer-events-none select-none">
+            {CURRENCY_SYMBOL}
+            </span>
+            <input
+            type="number"
+            inputMode="numeric"
+            step="1"
+            placeholder="0"
+            autoFocus
+            className="w-full pl-10 pr-4 py-4 text-4xl font-manrope tabular-nums font-semibold rounded-2xl border-2
+            bg-theme-elevated text-theme-primary
+            placeholder:text-theme-tertiary
+            border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent
+            transition-all duration-150"
+            {...register('amount', { valueAsNumber: true })}
+            aria-label="Expense amount in rupees"
+            aria-invalid={!!errors.amount}
+            />
+          </div>
+          <ReceiptScanner 
+            onScanComplete={(data) => {
+              if (data.amount) {
+                setValue('amount', data.amount, { shouldValidate: true });
+              }
+              if (data.date) {
+                // We use watch('date') to grab the current state, but it might be stale in closure. 
+                // However, since it's an inline function, we can just let react-hook-form handle it.
+                // It's safer to just set the date directly to noon on that day if we can't reliably get the time.
+                setValue('date', `${data.date}T12:00`, { shouldValidate: true });
+              }
+            }} 
+          />
+        </div>
+        {errors.amount && (
+        <p className="mt-1 text-xs text-red-500" role="alert">
+        {errors.amount.message}
+        </p>
+        )}
+      </div>
 
  {/* Category Picker */}
  <div>

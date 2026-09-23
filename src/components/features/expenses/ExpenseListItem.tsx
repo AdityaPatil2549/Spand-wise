@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils/format';
 import { formatTime } from '@/lib/utils/date';
 import { UNDO_TOAST_DURATION_MS } from '@/config/constants';
 import type { ExpenseDocument } from '@/types/firestore';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface ExpenseListItemProps {
  expense: ExpenseDocument;
@@ -25,6 +26,7 @@ interface ExpenseListItemProps {
 export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
  const [isExpanded, setIsExpanded] = useState(false);
  const controls = useAnimation();
+ const haptic = useHaptic();
  
  const { user, householdId, addToast, removeExpenseOptimistic, restoreExpenseOptimistic, adjustTotalSpentOptimistic } =
  useStore();
@@ -79,6 +81,7 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
  const threshold = -80; // pixels swiped left
  if (info.offset.x < threshold) {
+ haptic.heavy();
  handleDelete();
  } else {
  // snap back

@@ -9,16 +9,48 @@ import { AnimatedNumber } from '@/components/ui/motion/animated-number';
 import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
 import { getMaterialIcon } from '@/lib/utils';
 import { TextEffect } from '@/components/ui/motion/text-effect';
-import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts';
-import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns';
+import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { startOfMonth, endOfMonth, eachDayOfInterval, format, subMonths } from 'date-fns';
 import { CURRENCY_SYMBOL } from '@/config/constants';
-import { setDoc } from 'firebase/firestore';
-import { budgetDocRef } from '@/lib/firebase/firestore';
+import { setDoc, getDocs, query, where } from 'firebase/firestore';
+import { budgetDocRef, budgetsColRef } from '@/lib/firebase/firestore';
+import { useEffect } from 'react';
 
 export default function AnalyticsPage() {
  const { expenses, budget, categoriesMap, householdId, selectedMonth, setCategoryBudgetOptimistic, addToast } = useStore();
  const [editingLimit, setEditingLimit] = useState<string | null>(null);
  const [limitInput, setLimitInput] = useState('');
+ const [pastBudgets, setPastBudgets] = useState<any[]>([]);
+
+ useEffect(() => {
+   if (!householdId) return;
+   const fetchPast6Months = async () => {
+     try {
+       const last6MonthIds = Array.from({ length: 6 }).map((_, i) => 
+         format(subMonths(new Date(), i), 'yyyy-MM')
+       );
+       const q = query(budgetsColRef(householdId), where('id', 'in', last6MonthIds));
+       const snap = await getDocs(q);
+       
+       const fetchedBudgets = snap.docs.map(d => d.data());
+       
+       const chartData = last6MonthIds.reverse().map(monthId => {
+         const b = fetchedBudgets.find(doc => doc.id === monthId);
+         const displayMonth = format(new Date(monthId + '-01T00:00:00'), 'MMM');
+         return {
+           name: displayMonth,
+           Income: b?.totalIncome || 0,
+           Expenses: b?.totalSpent || 0,
+         };
+       });
+       
+       setPastBudgets(chartData);
+     } catch (err) {
+       console.error("Failed to fetch past budgets", err);
+     }
+   };
+   fetchPast6Months();
+ }, [householdId]);
 
  const { categoryTotals, totalSpent, highestCategory, pieData, areaData } = useMemo(() => {
  let total = 0;
@@ -174,14 +206,44 @@ export default function AnalyticsPage() {
  />
  </AreaChart>
  </ResponsiveContainer>
- ) : (
- <div className="flex items-center justify-center h-full text-theme-tertiary ml-4">No data yet</div>
- )}
- </div>
- </div>
- </CarouselItem>
- </CarouselContent>
- <CarouselNavigation className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between -ml-4 -mr-4" />
+  ) : (
+  <div className="flex items-center justify-center h-full text-theme-tertiary ml-4">No data yet</div>
+  )}
+  </div>
+  </div>
+  </CarouselItem>
+
+  {/* Slide 4: 6-Month Trend */}
+  <CarouselItem className="basis-full md:basis-1/2 lg:basis-1/3 pr-4">
+  <div className="glass-panel p-6 rounded-3xl border border-theme-border/30 h-72 flex flex-col relative overflow-hidden group">
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+  <div className="flex justify-between items-center mb-2 z-10 relative">
+  <span className="font-medium text-theme-secondary uppercase tracking-widest text-sm">6-Month Trend</span>
+  </div>
+  <div className="relative z-10 flex-1 w-full h-full -ml-4">
+  {pastBudgets.length > 0 ? (
+  <ResponsiveContainer width="100%" height="100%">
+  <BarChart data={pastBudgets} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8f8881' }} dy={10} />
+  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8f8881' }} tickFormatter={(val) => `₹${val}`} />
+  <Tooltip 
+  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--theme-surface)' }}
+  itemStyle={{ fontWeight: 600 }}
+  />
+  <Bar dataKey="Expenses" fill="#f43f5e" radius={[4, 4, 0, 0]} maxBarSize={40} />
+  <Bar dataKey="Income" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+  </BarChart>
+  </ResponsiveContainer>
+  ) : (
+  <div className="flex items-center justify-center h-full text-theme-tertiary ml-4">Loading...</div>
+  )}
+  </div>
+  </div>
+  </CarouselItem>
+  </CarouselContent>
+  <CarouselNavigation className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between -ml-4 -mr-4" />
  <CarouselIndicator className="mt-8 relative bottom-0" />
  </Carousel>
  </div>

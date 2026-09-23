@@ -28,7 +28,8 @@ interface AppShellProps {
  */
 import { PWAInstallPrompt } from '@/components/shared/PWAInstallPrompt';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
-
+import { DynamicBackground } from '@/components/ui/motion/DynamicBackground';
+import { ExpenseItemSkeleton, BudgetHeroSkeleton } from '@/components/ui/Skeleton';
 import { Sidebar } from './Sidebar';
 import { TopAppBar } from './TopAppBar';
 
@@ -60,14 +61,24 @@ export const AppShell = ({ children }: AppShellProps) => {
 
  if (!isHydrated) {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-theme-base">
-      <div className="w-8 h-8 rounded-full border-4 border-theme-border border-t-theme-accent animate-spin" />
+    <div className="min-h-screen flex flex-col w-full overflow-hidden relative">
+      <DynamicBackground />
+      <div className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 pt-12 md:pt-16 flex flex-col gap-8 opacity-60">
+        <BudgetHeroSkeleton />
+        <div className="space-y-4">
+          <ExpenseItemSkeleton />
+          <ExpenseItemSkeleton />
+          <ExpenseItemSkeleton />
+          <ExpenseItemSkeleton />
+        </div>
+      </div>
     </div>
   );
  }
 
  return (
- <div className="min-h-screen bg-[var(--surface-base)] flex w-full overflow-hidden relative">
+ <div className="min-h-screen flex w-full overflow-hidden relative">
+  <DynamicBackground />
   {/* Desktop Sidebar */}
   <div className="hidden md:flex w-64 flex-shrink-0">
     <Sidebar className="w-full h-screen" />

@@ -20,7 +20,8 @@ import {
   Hash,
   Download,
   Palette,
-  CalendarRange
+  CalendarRange,
+  RefreshCw
 } from 'lucide-react';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
 import { BottomSheet } from '@/components/ui/BottomSheet';
@@ -91,8 +92,8 @@ export default function MorePage() {
             onClick={() => router.push('/scheduled')}
             className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
           >
-            <Calendar className="w-5 h-5 text-indigo-400" />
-            <span className="font-medium text-[10px] sm:text-xs">Scheduled</span>
+            <RefreshCw className="w-5 h-5 text-indigo-400" />
+            <span className="font-medium text-[10px] sm:text-xs">Subscriptions</span>
           </button>
         </div>
 
