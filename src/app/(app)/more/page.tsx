@@ -97,7 +97,7 @@ export default function MoreToolsPage() {
     {
       title: 'Savings Goals',
       description: 'Track student savings targets, textbook funds, and semester milestones.',
-      href: '/analytics',
+      href: '/goals',
       icon: Target,
       badge: 'Milestones',
       iconColor: 'text-theme-accent',

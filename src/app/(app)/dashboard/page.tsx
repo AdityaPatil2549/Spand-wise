@@ -151,13 +151,13 @@ export default function DashboardPage() {
                   <p className="text-xs text-theme-secondary">Hostel & roommate shares</p>
                 </div>
               </Link>
-              <Link href="/analytics" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+              <Link href="/goals" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
                 <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors shadow-sm">
                   <span className="material-symbols-outlined text-[20px]">target</span>
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-theme-primary">Savings Goals</h3>
-                  <p className="text-xs text-theme-secondary">Semester milestones</p>
+                  <p className="text-xs text-theme-secondary">Semester milestones & runway</p>
                 </div>
               </Link>
               <Link href="/settings/limits" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">

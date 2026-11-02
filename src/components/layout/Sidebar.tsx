@@ -10,7 +10,8 @@ import {
   MoreHorizontal,
   Settings, 
   Plus,
-  Users
+  Users,
+  Target
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useStore } from '@/store';
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { id: 'expenses', label: 'Budget & Overview', href: '/expenses', Icon: Wallet },
   { id: 'transactions', label: 'Transactions', href: '/transactions', Icon: ReceiptText },
   { id: 'analytics', label: 'Analytics', href: '/analytics', Icon: LineChart },
+  { id: 'goals', label: 'Savings Goals', href: '/goals', Icon: Target },
   { id: 'split', label: 'Split Bills', href: '/split', Icon: Users },
 ];
 
