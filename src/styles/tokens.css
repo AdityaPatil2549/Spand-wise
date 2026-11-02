@@ -120,10 +120,14 @@
 
   /* ── Animation ──────────────────────────────────────────── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --duration-fast: 150ms;
   --duration-normal: 250ms;
   --duration-slow: 400ms;
+  --duration-layout: 500ms;
+  --duration-hover: 250ms;
 
   /* ── Spacing Rhythm (8px base) ──────────────────────────── */
   --space-1: 0.25rem;   /* 4px */

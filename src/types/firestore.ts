@@ -139,3 +139,19 @@ export interface ScheduledTransactionDocument {
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
+
+export interface GoalDocument {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  category?: string;
+  targetDate?: Timestamp;
+  color?: string;
+  icon?: string;
+  isCompleted: boolean;
+  createdBy: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+

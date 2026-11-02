@@ -80,10 +80,10 @@ export default function TransactionsPage() {
   });
 
   return (
-    <div className="min-h-screen pb-32">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-20 bg-theme-base/80 backdrop-blur-md border-b border-theme-border px-4 py-4 md:px-8">
-        <h1 className="text-2xl font-bold text-theme-primary tracking-tight mb-4">Transactions</h1>
+    <div className="w-full">
+      {/* Controls & Search */}
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight mb-4">Transactions</h1>
         
         {/* Search Bar */}
         <div className="flex gap-3 mb-3">
@@ -134,7 +134,7 @@ export default function TransactionsPage() {
 
       <div className="pt-4 md:px-4">
         <ExpenseList 
-          onEditExpense={(expense) => openBottomSheet({ editingExpenseId: expense.id, initialCategoryId: expense.categoryId })} 
+            onEditExpense={(expense) => openBottomSheet({ editingExpenseId: expense.id, initialCategoryId: expense.categoryId })} 
           expenses={filteredExpenses}
         />
         

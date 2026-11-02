@@ -137,7 +137,7 @@ export default function CustomViewPage() {
             </p>
           </div>
         ) : (
-          <ExpenseList expenses={filteredExpenses} />
+          <ExpenseList expenses={filteredExpenses} onEditExpense={() => {}} />
         )}
       </div>
     </div>

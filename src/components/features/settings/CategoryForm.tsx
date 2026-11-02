@@ -28,7 +28,7 @@ const categorySchema = z.object({
   name: z.string().min(1, 'Name is required').max(20, 'Max 20 characters'),
   icon: z.string().min(1, 'Icon is required'),
   color: z.string().min(1, 'Color is required'),
-  type: z.enum(['expense', 'income']).default('expense'),
+  type: z.enum(['expense', 'income']),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;

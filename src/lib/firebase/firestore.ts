@@ -5,7 +5,7 @@ import {
  type DocumentReference,
 } from 'firebase/firestore';
 import { db } from './index';
-import type { UserDocument, BudgetDocument, ExpenseDocument, CategoryDocument, HouseholdDocument } from '@/types/firestore';
+import type { UserDocument, BudgetDocument, ExpenseDocument, CategoryDocument, HouseholdDocument, GoalDocument } from '@/types/firestore';
 
 /**
  * Typed Firestore collection and document reference helpers.
@@ -43,3 +43,12 @@ export const categoriesColRef = (householdId: string): CollectionReference<Categ
 /** /households/{householdId}/categories/{categoryId} — Single category document reference */
 export const categoryDocRef = (householdId: string, categoryId: string): DocumentReference<CategoryDocument> =>
  doc(db, 'households', householdId, 'categories', categoryId) as DocumentReference<CategoryDocument>;
+
+/** /households/{householdId}/goals — Goals collection reference */
+export const goalsColRef = (householdId: string): CollectionReference<GoalDocument> =>
+ collection(db, 'households', householdId, 'goals') as CollectionReference<GoalDocument>;
+
+/** /households/{householdId}/goals/{goalId} — Single goal document reference */
+export const goalDocRef = (householdId: string, goalId: string): DocumentReference<GoalDocument> =>
+ doc(db, 'households', householdId, 'goals', goalId) as DocumentReference<GoalDocument>;
+

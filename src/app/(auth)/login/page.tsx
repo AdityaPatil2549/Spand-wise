@@ -68,8 +68,8 @@ export default function LoginPage() {
  }
  };
 
- return (
- <div className="min-h-screen bg-theme-base text-theme-primary font-body flex flex-col items-center justify-center p-6 relative overflow-hidden">
+  return (
+    <div className="min-h-[100dvh] bg-theme-base text-theme-primary font-body flex flex-col items-center justify-center py-10 px-4 sm:px-6 relative overflow-x-hidden safe-area-top safe-area-bottom">
  <Spotlight className="z-0 from-white/40 via-white/10 to-transparent blur-2xl" size={400} />
  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-theme-accent/5 rounded-full blur-3xl"></div>
  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#10b981]/5 rounded-full blur-3xl"></div>

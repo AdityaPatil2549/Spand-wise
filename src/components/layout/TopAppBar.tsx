@@ -7,7 +7,7 @@ import { useStore } from '@/store';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { signOut } from '@/lib/firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export function TopAppBar() {
   const { addToast, expenses, budget, categoriesMap, user } = useStore();
@@ -18,6 +18,7 @@ export function TopAppBar() {
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -108,8 +109,27 @@ export function TopAppBar() {
   const hasUnread = allNotifications.some((a) => !readAlerts.includes(a.id));
 
   return (
-    <header className="fixed top-0 right-0 z-40 flex items-center px-6 md:px-12 h-20">
-      <div className="flex items-center gap-4 md:gap-6">
+    <header className="sticky top-0 z-30 flex items-center justify-between w-full px-4 sm:px-6 md:px-8 h-16 md:h-18 bg-theme-base/90 backdrop-blur-md border-b border-theme-border/30 transition-colors select-none">
+      {/* Left: Mobile Branding or Desktop Section Breadcrumb */}
+      <div className="flex items-center gap-3">
+        <Link href="/dashboard" className="md:hidden flex items-center gap-2 group">
+          <span 
+            className="text-2xl text-theme-accent leading-none font-medium group-hover:opacity-90 transition-opacity"
+            style={{ fontFamily: 'var(--font-pacifico), cursive' }}
+          >
+            SpendWise
+          </span>
+        </Link>
+        <div className="hidden md:flex items-center gap-2 text-xs uppercase tracking-wider text-theme-tertiary font-semibold">
+          <span>SpendWise</span>
+          <span className="text-theme-border font-bold">/</span>
+          <span className="text-theme-primary font-bold">
+            {pathname.split('/')[1] ? pathname.split('/')[1].replace('-', ' ') : 'Dashboard'}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
         {/* Notifications */}
         <div className="relative" ref={notificationsRef}>
           <button 

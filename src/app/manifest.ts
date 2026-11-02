@@ -5,10 +5,12 @@ export default function manifest(): MetadataRoute.Manifest {
  name: 'SpendWise - Expense Tracker',
  short_name: 'SpendWise',
  description: 'Student expense tracking with real-time multi-device sync.',
- start_url: '/dashboard',
- display: 'standalone',
- background_color: '#0f0a1e',
- theme_color: '#7c3aed',
+  start_url: '/dashboard',
+  display: 'standalone',
+  orientation: 'portrait-primary',
+  background_color: '#faf5ee',
+  theme_color: '#d96b14',
+  categories: ['finance', 'productivity'],
  icons: [
  {
  src: '/favicon.ico',

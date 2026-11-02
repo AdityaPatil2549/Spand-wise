@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useStore } from '@/store';
 import { Card } from '@/components/ui/Card';
 import { Wallet, Landmark, Plus, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
@@ -82,20 +83,29 @@ export default function AccountsPage() {
     <div className="p-4 md:p-8 space-y-8 animate-fade-in pb-32">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight">My Savings</h1>
-          <p className="text-sm text-theme-secondary mt-1">Manage your savings and cash balances</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight">Accounts & Reserves</h1>
+          <p className="text-sm text-theme-secondary mt-1">Total accumulated cash & bank reserves (persists continuously, not reset monthly)</p>
         </div>
+        <Link 
+          href="/analytics" 
+          className="text-xs font-semibold text-theme-accent bg-theme-accent/10 hover:bg-theme-accent/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
+        >
+          <span>Savings this month in Analytics</span>
+          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Available Balance */}
         <Card className="p-6 bg-gradient-to-br from-theme-elevated to-theme-base border-theme-border">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-theme-secondary">Total Savings</h3>
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="text-sm font-medium text-theme-secondary">Total Net Balance</h3>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Lifetime Accumulated</span>
           </div>
           <p className="text-3xl font-bold tracking-tight text-theme-primary">
             {CURRENCY_SYMBOL} {totalBalance.toFixed(2)}
           </p>
+          <p className="text-xs text-theme-tertiary mt-2">Combined balance across your UPI and Cash accounts</p>
         </Card>
 
         {/* Available Credit */}

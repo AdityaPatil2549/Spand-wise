@@ -26,7 +26,7 @@ import { DEFAULT_CATEGORY_ID } from '@/config/categories';
 import type { ExpenseDocument } from '@/types/firestore';
 
 const expenseSchema = z.object({
-  type: z.enum(['expense', 'income']).default('expense'),
+  type: z.enum(['expense', 'income']),
   amount: z
     .number()
     .min(MIN_EXPENSE_AMOUNT, 'Amount must be greater than 0')

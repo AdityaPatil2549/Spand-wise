@@ -89,9 +89,8 @@ export default function DashboardPage() {
   }
   
   return (
-    <div className="relative flex min-h-screen w-full bg-theme-base text-theme-primary font-body">
-      <main className="flex-1 flex flex-col px-5 md:px-12 pt-8 pb-32 md:pb-12 overflow-x-hidden max-w-5xl mx-auto w-full">
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 lg:items-center">
+    <div className="flex flex-col w-full">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 lg:items-center">
           <div className="flex flex-col gap-8">
             <div className="space-y-4">
               <p className="text-xs tracking-[0.1em] font-bold text-theme-accent uppercase mb-2">Overview • {format(new Date(), 'MMMM yyyy')}</p>
@@ -237,7 +236,6 @@ export default function DashboardPage() {
             </AnimatedGroup>
           )}
         </section>
-      </main>
     </div>
   );
 }

@@ -143,7 +143,7 @@ export default function DayViewPage() {
             </p>
           </div>
         ) : (
-          <ExpenseList expenses={dayExpenses} />
+          <ExpenseList expenses={dayExpenses} onEditExpense={() => {}} />
         )}
       </div>
     </div>

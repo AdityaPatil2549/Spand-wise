@@ -394,25 +394,63 @@
 
   * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Remove default button styles */
   button {
     cursor: pointer;
+    touch-action: manipulation;
   }
 
-  /* Smooth scrolling */
-  html {
+  /* Mobile and Desktop Ergonomics */
+  html, body {
+    min-height: 100dvh;
     scroll-behavior: smooth;
+    overscroll-behavior-y: contain;
   }
 
-  /* Safe area padding for devices with notches */
+  /* Prevent automatic mobile input zooming in Android Chrome / iOS */
+  @media (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Safe area padding for devices with notches & gesture bars */
   .safe-area-top {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(env(safe-area-inset-top, 0px), 0px);
   }
 
   .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+  }
+
+  /* Android 48px touch target standard */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Sleek desktop scrollbars */
+  @media (min-width: 768px) {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgb(var(--theme-border) / 0.7);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgb(var(--theme-accent) / 0.5);
+    }
   }
 }
 
@@ -553,3 +591,45 @@
     opacity: 1;
   }
 }
+
+@keyframes motionFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motionScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.motion-fade-up {
+  animation: motionFadeUp 0.4s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.motion-scale-in {
+  animation: motionScaleIn 0.35s var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

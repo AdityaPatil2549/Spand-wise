@@ -34,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/tools/reference_repos
+.firebase
+public/sw.js
+public/swe-worker*.js
