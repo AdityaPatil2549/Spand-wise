@@ -36,6 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 /tools/reference_repos
+/tools/GitNexus
 .firebase
 public/sw.js
 public/swe-worker*.js
