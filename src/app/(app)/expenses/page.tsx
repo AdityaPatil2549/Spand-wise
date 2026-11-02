@@ -15,6 +15,7 @@ import { InView } from '@/components/ui/motion/in-view';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorph';
 import { EmptyMonthState } from '@/components/ui/EmptyMonthState';
+import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
 import { calculateFinancialSummary } from '@/lib/finance-math';
 import { FormattedCurrency } from '@/components/ui/FormattedCurrency';
 import type { ExpenseDocument } from '@/types/firestore';
@@ -269,7 +270,19 @@ export default function ExpensesPage() {
  </div>
  </div>
  
- <AnimatedGroup preset="slide" className="space-y-4">
+ {isExpensesLoading ? (
+            <div className="pt-4">
+              <TransactionSkeletonGroup count={6} />
+            </div>
+          ) : Object.keys(groupedExpenses).length === 0 ? (
+            <div className="mt-8">
+              <EmptyMonthState 
+                monthName={format(new Date(), 'MMMM')} 
+                onAddClick={() => openBottomSheet()} 
+              />
+            </div>
+          ) : (
+            <AnimatedGroup preset="slide" className="space-y-4">
  {Object.entries(groupedExpenses).map(([dateLabel, dayExpenses]) => (
  <div key={dateLabel} className="space-y-4">
  <p className="font-body text-xs text-theme-tertiary uppercase tracking-widest pl-4 pt-4 pb-2">{dateLabel}</p>
@@ -304,37 +317,8 @@ export default function ExpensesPage() {
  </div>
  ))}
  
- {expenses.length === 0 && (
- <div className="mt-8">
- <EmptyMonthState 
- monthName={format(new Date(), 'MMMM')} 
- onAddClick={() => openBottomSheet()} 
- />
- </div>
- )}
-  {/* Load More */}
-  {expenses.length > 0 && (
-    <div className="mt-12 flex justify-center">
-      <button 
-        onClick={() => {
-          const store = useStore.getState();
-          const oldestMonth = store.loadedMonths.sort()[0];
-          const [year, month] = oldestMonth.split('-').map(Number);
-          const date = new Date(year, month - 2); // month is 0-indexed in JS Date, so -2 gives previous month
-          const prevMonthStr = format(date, 'yyyy-MM');
-          
-          if (timeFilter !== 'All') {
-            setTimeFilter('All');
-          }
-          store.addLoadedMonth(prevMonthStr);
-        }}
-        className="px-8 py-3 rounded-full border border-theme-border/60 font-body text-sm text-theme-primary hover:bg-theme-surface-hover active:scale-[0.98] transition-all duration-200"
-      >
-        View Older Transactions
-      </button>
-    </div>
-  )}
  </AnimatedGroup>
+          )}
  
  </div>
  </main>

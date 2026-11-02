@@ -19,6 +19,8 @@ import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorp
 import { QuickAddWidgets } from '@/components/features/dashboard/QuickAddWidgets';
 import { TransactionRow } from '@/components/features/ledger/TransactionRow';
 import { DropdownMenu } from '@/components/ui/DropdownMenu';
+import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -130,23 +132,41 @@ export default function DashboardPage() {
                 </span>
               </AddExpenseMorph>
             </div>
-            <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-4 mt-8">
-              <Link href="/analytics" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
-                  <span className="material-symbols-outlined">analytics</span>
+            <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-3.5 mt-8">
+              <Link href="/analytics" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">analytics</span>
                 </div>
                 <div>
-                  <h3 className="text-[16px] font-medium text-theme-primary">View Analysis</h3>
-                  <p className="text-sm text-theme-secondary">Deep dive into spending</p>
+                  <h3 className="text-sm font-semibold text-theme-primary">Analysis</h3>
+                  <p className="text-xs text-theme-secondary">Health score & burn rate</p>
                 </div>
               </Link>
-              <Link href="/settings/limits" className="hover-elevate glass-panel p-6 rounded-2xl flex flex-col items-start gap-4 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-12 h-12 rounded-full bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors">
-                  <span className="material-symbols-outlined">edit_note</span>
+              <Link href="/split" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">group</span>
                 </div>
                 <div>
-                  <h3 className="text-[16px] font-medium text-theme-primary">Adjust Limits</h3>
-                  <p className="text-sm text-theme-secondary">Rebalance categories</p>
+                  <h3 className="text-sm font-semibold text-theme-primary">Split Bills</h3>
+                  <p className="text-xs text-theme-secondary">Hostel & roommate shares</p>
+                </div>
+              </Link>
+              <Link href="/analytics" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">target</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-theme-primary">Savings Goals</h3>
+                  <p className="text-xs text-theme-secondary">Semester milestones</p>
+                </div>
+              </Link>
+              <Link href="/settings/limits" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors shadow-sm">
+                  <span className="material-symbols-outlined text-[20px]">edit_note</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-theme-primary">Adjust Limits</h3>
+                  <p className="text-xs text-theme-secondary">Rebalance category caps</p>
                 </div>
               </Link>
             </AnimatedGroup>
@@ -213,8 +233,15 @@ export default function DashboardPage() {
               See all <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
           </div>
-          {recentExpenses.length === 0 && !isExpensesLoading ? (
-            <p className="text-theme-secondary">No recent expenses.</p>
+          {isExpensesLoading ? (
+            <TransactionSkeletonGroup count={4} />
+          ) : recentExpenses.length === 0 ? (
+            <EmptyState
+              title="No Recent Expenses"
+              description="Keep track of snacks, college canteen, or supplies to monitor your monthly spending velocity."
+              actionLabel="+ Add First Expense"
+              onAction={() => openBottomSheet()}
+            />
           ) : (
             <AnimatedGroup preset="blur-slide" className="flex flex-col gap-2">
               {recentExpenses.map((expense) => {

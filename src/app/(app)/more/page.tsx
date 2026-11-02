@@ -13,7 +13,8 @@ import {
   Palette, 
   ArrowRight,
   Sparkles,
-  Target
+  Target,
+  Users
 } from 'lucide-react';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { useStore } from '@/store';
@@ -102,6 +103,15 @@ export default function MoreToolsPage() {
       iconColor: 'text-theme-accent',
       iconBg: 'bg-theme-accent/10',
       stat: `${goals?.length || 0} Active Goals`
+    },
+    {
+      title: 'Split Expense',
+      description: 'Divide shared hostel food, flat rent, or utilities. Generate WhatsApp summary & log your share.',
+      href: '/split',
+      icon: Users,
+      badge: 'Roommates',
+      iconColor: 'text-cyan-500',
+      iconBg: 'bg-cyan-500/10'
     },
     {
       title: 'Expense Calendar',
