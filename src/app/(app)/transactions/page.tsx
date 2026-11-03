@@ -57,18 +57,6 @@ export default function TransactionsPage() {
     };
   }, [oldestLoadedMonth, hasMoreMonths, isExpensesLoading, addLoadedMonth]);
 
-  if (!isHydrated) {
-    return (
-      <div className="w-full space-y-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight mb-4">Transactions</h1>
-          <div className="h-12 w-full rounded-xl bg-theme-surface/50 border border-theme-border/30 animate-pulse" />
-        </div>
-        <TransactionSkeletonGroup count={6} />
-      </div>
-    );
-  }
-
   const [quickFilter, setQuickFilter] = useState<'all' | 'upi' | 'cash' | 'high'>('all');
 
   const filteredExpenses = useMemo(() => {
@@ -97,6 +85,18 @@ export default function TransactionsPage() {
   const filteredTotal = useMemo(() => {
     return filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
   }, [filteredExpenses]);
+
+  if (!isHydrated) {
+    return (
+      <div className="w-full space-y-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight mb-4">Transactions</h1>
+          <div className="h-12 w-full rounded-xl bg-theme-surface/50 border border-theme-border/30 animate-pulse" />
+        </div>
+        <TransactionSkeletonGroup count={6} />
+      </div>
+    );
+  }
 
   const handleExportFilteredCSV = () => {
     if (filteredExpenses.length === 0) return;
