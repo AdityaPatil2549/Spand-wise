@@ -106,7 +106,7 @@ export const AppShell = ({ children }: AppShellProps) => {
         <TopAppBar />
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pb-28 md:pb-12 pt-4 md:pt-6" id="main-content">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pb-36 md:pb-12 pt-4 md:pt-6" id="main-content">
           {children}
         </main>
 

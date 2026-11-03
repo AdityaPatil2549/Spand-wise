@@ -32,7 +32,8 @@ import {
   getDay, 
   getDate, 
   getDaysInMonth,
-  isSameDay
+  isSameDay,
+  parse
 } from 'date-fns';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { setDoc, getDoc, Timestamp } from 'firebase/firestore';
@@ -59,12 +60,17 @@ import {
   Sparkles,
   Zap,
   Clock,
-  ArrowRight
+  ArrowRight,
+  FileDown
 } from 'lucide-react';
 import { calculateFinancialHealth } from '@/lib/algorithms/financialHealth';
+import { WaterfallMoneyFlow } from '@/components/features/analytics/WaterfallMoneyFlow';
+import { RecurringVsVariableSplit } from '@/components/features/analytics/RecurringVsVariableSplit';
+import { generateMonthlyPDFReport } from '@/lib/export/pdfReport';
 
 export default function AnalyticsPage() {
   const { 
+    user,
     expenses, 
     budget, 
     categoriesMap, 
@@ -485,6 +491,41 @@ export default function AnalyticsPage() {
       });
   }, [categoryTotals, pastBudgets, categoriesMap]);
 
+  const handleDownloadPDF = () => {
+    try {
+      generateMonthlyPDFReport({
+        monthName: format(parse(selectedMonth, 'yyyy-MM', new Date()), 'MMMM yyyy'),
+        userDisplayName: user?.displayName || user?.email?.split('@')[0] || 'Student',
+        householdName: householdId ? 'Shared Household' : 'Personal',
+        monthlyIncome: savingsThisMonth.monthlyIncome,
+        totalSpent,
+        budgetAmount: budget?.budgetAmount || 0,
+        balance: savingsThisMonth.netSavings,
+        expenses,
+        categoriesMap,
+        healthResult,
+      });
+      addToast({ type: 'success', message: 'Monthly PDF statement downloaded successfully.' });
+    } catch (err) {
+      console.error(err);
+      addToast({ type: 'error', message: 'Failed to generate PDF statement.' });
+    }
+  };
+
+  const renderTypesetFormula = (formula: string) => {
+    return formula
+      .replace(/\\sigma/g, 'σ')
+      .replace(/\\mu/g, 'μ')
+      .replace(/\\rho/g, 'ρ')
+      .replace(/\\Delta/g, 'Δ')
+      .replace(/_\{ess\}/g, 'ₑₛₛ')
+      .replace(/_\{total\}/g, 'ₜₒₜₐₗ')
+      .replace(/_\{curr\}/g, '꜀ᵤᵣᵣ')
+      .replace(/_\{prev\}/g, 'ₚᵣₑᵥ')
+      .replace(/e\^\{-12\(r - 0\.15\)\}/g, 'e⁻¹²⁽ʳ ⁻ ⁰·¹⁵⁾')
+      .replace(/V = \(E \/ B\) \/ \(t \/ T\)/g, 'V = (E / B) ÷ (t / T)');
+  };
+
   return (
     <div className="w-full">
       <main className="flex-1 w-full px-4 sm:px-6 pt-8 pb-32 md:pb-12 max-w-7xl mx-auto">
@@ -495,26 +536,38 @@ export default function AnalyticsPage() {
             <TextEffect as="h1" preset="fade" className="font-display text-4xl md:text-5xl font-medium leading-none tracking-tight text-theme-primary mb-2">
               Analytics
             </TextEffect>
-            <TextEffect as="p" preset="fade" className="text-[17px] text-theme-secondary max-w-2xl">
+            <TextEffect as="p" preset="fade" className="text-base sm:text-lg text-theme-secondary max-w-2xl">
               Authentic financial insights, mathematical health diagnostics, and behavioral patterns.
             </TextEffect>
           </div>
 
-          {/* Month-over-Month Quick Badge */}
-          {momChange.hasPrevious && (
-            <div className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-sm font-semibold backdrop-blur-md self-start sm:self-auto ${
-              momChange.isIncrease 
-                ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' 
-                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
-            }`}>
-              {momChange.isIncrease ? (
-                <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
-              ) : (
-                <ArrowDownRight className="w-4 h-4 stroke-[2.5]" />
-              )}
-              <span>{momChange.percent}% spend {momChange.isIncrease ? 'higher' : 'lower'} than last month</span>
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Month-over-Month Quick Badge */}
+            {momChange.hasPrevious && (
+              <div className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-sm font-semibold backdrop-blur-md self-start sm:self-auto ${
+                momChange.isIncrease 
+                  ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' 
+                  : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+              }`}>
+                {momChange.isIncrease ? (
+                  <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+                ) : (
+                  <ArrowDownRight className="w-4 h-4 stroke-[2.5]" />
+                )}
+                <span>{momChange.percent}% spend {momChange.isIncrease ? 'higher' : 'lower'} than last month</span>
+              </div>
+            )}
+
+            {/* Export Monthly PDF Report CTA (Tier 5.5) */}
+            <button
+              onClick={handleDownloadPDF}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-theme-surface border border-theme-border/50 hover:bg-theme-elevated text-theme-primary text-sm font-semibold transition-all shadow-xs active:scale-[0.98]"
+              title="Download Branded Monthly Statement PDF"
+            >
+              <FileDown className="w-4 h-4 text-theme-accent stroke-[2]" />
+              <span>Export PDF Statement</span>
+            </button>
+          </div>
         </div>
 
         {/* SECTION 1: Pure Mathematical Financial Health Score Card (Deterministic, No AI) */}
@@ -574,7 +627,7 @@ export default function AnalyticsPage() {
                     >
                       Grade {healthResult.grade} • {healthResult.tier}
                     </span>
-                    <span className="text-[11px] text-theme-tertiary flex items-center gap-1">
+                    <span className="text-xs text-theme-tertiary flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                       Calculus Model
                     </span>
@@ -600,10 +653,10 @@ export default function AnalyticsPage() {
                 {Object.entries(healthResult.metrics).map(([key, m]) => (
                   <div key={key} className="p-3 rounded-2xl bg-theme-surface/50 border border-theme-border/30">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[11px] font-semibold text-theme-secondary truncate max-w-[90px]">
+                      <span className="text-xs font-semibold text-theme-secondary truncate max-w-[90px]">
                         {m.name}
                       </span>
-                      <span className="text-[11px] font-bold text-theme-primary">
+                      <span className="text-xs font-bold text-theme-primary">
                         {m.score}/{m.maxScore}
                       </span>
                     </div>
@@ -639,7 +692,7 @@ export default function AnalyticsPage() {
                   <div className="flex justify-between items-start relative z-10">
                     <span className="font-medium text-theme-secondary uppercase tracking-widest text-xs">Total Spent</span>
                     {momChange.hasPrevious && (
-                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                         momChange.isIncrease ? 'bg-rose-500/15 text-rose-500' : 'bg-emerald-500/15 text-emerald-500'
                       }`}>
                         {momChange.isIncrease ? `+${momChange.percent}% MoM` : `-${momChange.percent}% MoM`}
@@ -912,6 +965,24 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
+        {/* SECTION 2.5: Income vs Expenses Waterfall Flow Chart (Tier 2.5) */}
+        <div className="mb-12">
+          <WaterfallMoneyFlow
+            income={savingsThisMonth.monthlyIncome}
+            budgetAmount={budget?.budgetAmount || 0}
+            expenses={expenses}
+            categoriesMap={categoriesMap}
+          />
+        </div>
+
+        {/* SECTION 2.7: Recurring Commitments vs. Variable Discretionary Outflows (Tier 2.7) */}
+        <div className="mb-12">
+          <RecurringVsVariableSplit
+            expenses={expenses}
+            categoriesMap={categoriesMap}
+          />
+        </div>
+
         {/* SECTION 3: No-Spend Streak & Habit Tracker (Tier 2.4) */}
         <div className="mb-12">
           <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-theme-border/30 relative overflow-hidden">
@@ -935,7 +1006,7 @@ export default function AnalyticsPage() {
               {/* Streak Stat Badges */}
               <div className="flex items-center gap-4">
                 <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/40 text-center min-w-[110px]">
-                  <span className="text-[11px] font-semibold text-theme-tertiary uppercase block">
+                  <span className="text-xs font-semibold text-theme-tertiary uppercase block">
                     Current Streak
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-amber-500 flex items-center justify-center gap-1">
@@ -945,7 +1016,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/40 text-center min-w-[110px]">
-                  <span className="text-[11px] font-semibold text-theme-tertiary uppercase block">
+                  <span className="text-xs font-semibold text-theme-tertiary uppercase block">
                     Zero Days
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-emerald-500">
@@ -954,7 +1025,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/40 text-center min-w-[110px]">
-                  <span className="text-[11px] font-semibold text-theme-tertiary uppercase block">
+                  <span className="text-xs font-semibold text-theme-tertiary uppercase block">
                     Best Streak
                   </span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-theme-primary flex items-center justify-center gap-1">
@@ -983,7 +1054,7 @@ export default function AnalyticsPage() {
                     <div 
                       key={dayNum}
                       title={`Day ${dayNum}: ${isZero ? 'No expenses (Zero spend!)' : `${CURRENCY_SYMBOL}${spent.toFixed(2)}`}`}
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-[11px] font-bold transition-transform hover:scale-110 cursor-pointer ${
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-transform hover:scale-110 cursor-pointer ${
                         isZero 
                           ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30' 
                           : 'bg-theme-elevated text-theme-secondary border border-theme-border/20'
@@ -1044,7 +1115,7 @@ export default function AnalyticsPage() {
                             <span className="text-sm font-semibold text-theme-primary block truncate max-w-[140px] sm:max-w-[180px]">
                               {expense.note || cat?.name || 'Expense'}
                             </span>
-                            <span className="text-[11px] text-theme-tertiary">
+                            <span className="text-xs text-theme-tertiary">
                               {format(expense.date.toDate(), 'MMM dd, yyyy')} • {pctOfTotal}% of spend
                             </span>
                           </div>
@@ -1186,7 +1257,7 @@ export default function AnalyticsPage() {
                             </div>
                             <div>
                               <h4 className="font-headline font-bold text-base text-theme-primary">{g.name}</h4>
-                              <span className="text-[11px] text-theme-tertiary">
+                              <span className="text-xs text-theme-tertiary">
                                 {g.isCompleted ? 'Goal Achieved! 🎉' : `${CURRENCY_SYMBOL}${remaining.toFixed(0)} remaining`}
                               </span>
                             </div>
@@ -1328,7 +1399,7 @@ export default function AnalyticsPage() {
                   <p className="text-2xl font-bold text-theme-primary">
                     {CURRENCY_SYMBOL}{velocityStats.dailyBurn} <span className="text-xs font-normal text-theme-tertiary">/ day</span>
                   </p>
-                  <p className="text-[11px] text-theme-tertiary mt-1">Based on days elapsed</p>
+                  <p className="text-xs text-theme-tertiary mt-1">Based on days elapsed</p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-theme-surface/50 border border-theme-border/40">
@@ -1336,7 +1407,7 @@ export default function AnalyticsPage() {
                   <p className={`text-2xl font-bold ${velocityStats.safeDailyAllowance > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {CURRENCY_SYMBOL}{velocityStats.safeDailyAllowance} <span className="text-xs font-normal text-theme-tertiary">/ day</span>
                   </p>
-                  <p className="text-[11px] text-theme-tertiary mt-1">To stay within budget</p>
+                  <p className="text-xs text-theme-tertiary mt-1">To stay within budget</p>
                 </div>
               </div>
             </div>
@@ -1665,16 +1736,16 @@ export default function AnalyticsPage() {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-theme-primary">{m.name}</span>
-                        <code className="text-[11px] px-2 py-0.5 rounded bg-theme-surface font-mono text-theme-secondary">
-                          {m.formula}
-                        </code>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-theme-surface border border-theme-border/40 font-mono text-xs text-theme-accent font-semibold shadow-xs tracking-tight">
+                          {renderTypesetFormula(m.formula)}
+                        </span>
                       </div>
                       <span className="text-sm font-extrabold" style={{ color: healthResult.color }}>
                         {m.score} / {m.maxScore} pts
                       </span>
                     </div>
                     <p className="text-xs text-theme-secondary">{m.explanation}</p>
-                    <div className="text-[11px] font-semibold text-theme-primary">
+                    <div className="text-xs font-semibold text-theme-primary">
                       Evaluated value: <span className="text-theme-accent">{m.metricValue}</span>
                     </div>
                   </div>

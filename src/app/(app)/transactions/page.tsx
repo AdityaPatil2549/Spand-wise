@@ -7,6 +7,7 @@ import { AnimatedSelect } from '@/components/ui/AnimatedSelect';
 import { Search, Filter, Loader2 } from 'lucide-react';
 import { useHydrated } from '@/hooks/useHydrated';
 import { format, subMonths, parse } from 'date-fns';
+import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
 
 export default function TransactionsPage() {
   const isHydrated = useHydrated();
@@ -57,8 +58,12 @@ export default function TransactionsPage() {
 
   if (!isHydrated) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-theme-border border-t-theme-accent animate-spin" />
+      <div className="w-full space-y-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight mb-4">Transactions</h1>
+          <div className="h-12 w-full rounded-xl bg-theme-surface/50 border border-theme-border/30 animate-pulse" />
+        </div>
+        <TransactionSkeletonGroup count={6} />
       </div>
     );
   }
@@ -98,10 +103,12 @@ export default function TransactionsPage() {
             />
           </div>
           <button 
+            type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-3 border rounded-xl transition-colors ${showFilters ? 'bg-theme-accent text-white border-theme-accent' : 'bg-theme-surface border-theme-border text-theme-secondary hover:text-theme-primary'}`}
+            className={`min-h-[44px] min-w-[44px] p-3 border rounded-xl flex items-center justify-center transition-all active:scale-[0.98] ${showFilters ? 'bg-theme-accent text-theme-inverse border-theme-accent shadow-sm' : 'bg-theme-surface border-theme-border text-theme-secondary hover:text-theme-primary'}`}
+            aria-label="Toggle transaction filters"
           >
-            <Filter className="w-5 h-5" />
+            <Filter className="w-5 h-5 stroke-[2]" />
           </button>
         </div>
 

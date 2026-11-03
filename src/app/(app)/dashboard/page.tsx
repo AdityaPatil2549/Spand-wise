@@ -21,6 +21,7 @@ import { TransactionRow } from '@/components/features/ledger/TransactionRow';
 import { DropdownMenu } from '@/components/ui/DropdownMenu';
 import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Plus, BarChart3, Users, Target, SlidersHorizontal, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -91,7 +92,7 @@ export default function DashboardPage() {
   }
   
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full pb-32 md:pb-16">
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 lg:items-center">
           <div className="flex flex-col gap-8">
             <div className="space-y-4">
@@ -99,21 +100,21 @@ export default function DashboardPage() {
               
               {isOverBudget ? (
                 <>
-                  <h1 className="font-display text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3 text-balance">
                     <TextEffect per="word" preset="blur" as="span">You're</TextEffect>
-                    <TextEffect per="word" preset="blur" as="span" className="text-theme-danger italic" delay={0.1}>over budget.</TextEffect>
+                    <TextEffect per="word" preset="blur" as="span" className="text-theme-danger font-semibold" delay={0.1}>over budget.</TextEffect>
                   </h1>
-                  <TextEffect per="line" preset="fade" as="p" className="text-lg text-theme-secondary max-w-lg mt-4" delay={0.2}>
+                  <TextEffect per="line" preset="fade" as="p" className="text-base sm:text-lg text-theme-secondary max-w-lg mt-4 text-pretty" delay={0.2}>
                     You've gone past your planned spending limit this month. Let's review recent expenses and pull back where possible.
                   </TextEffect>
                 </>
               ) : (
                 <>
-                  <h1 className="font-display text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3">
+                  <h1 className="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.1] font-medium text-theme-primary tracking-[-0.03em] flex flex-wrap gap-x-3 text-balance">
                     <TextEffect per="word" preset="blur" as="span">You're on</TextEffect>
-                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent italic" delay={0.1}>Track.</TextEffect>
+                    <TextEffect per="word" preset="blur" as="span" className="text-theme-accent font-semibold" delay={0.1}>Track.</TextEffect>
                   </h1>
-                  <TextEffect per="line" preset="fade" as="p" className="text-[18px] text-theme-secondary max-w-lg mt-8" delay={0.2}>
+                  <TextEffect per="line" preset="fade" as="p" className="text-base sm:text-lg text-theme-secondary max-w-lg mt-6 sm:mt-8 text-pretty" delay={0.2}>
                     Your spending is well within the allocated budget limits for this period. Keep it up.
                   </TextEffect>
                 </>
@@ -122,10 +123,10 @@ export default function DashboardPage() {
               <QuickAddWidgets />
               
               <AddExpenseMorph>
-                <span className="mt-12 inline-block">
+                <span className="mt-8 sm:mt-12 inline-block">
                   <Magnetic intensity={0.2} springOptions={{ bounce: 0.1 }} actionArea="global">
-                    <span className="bg-theme-accent text-theme-white px-8 py-4 rounded-full flex items-center justify-center gap-3 hover-elevate active:scale-[0.98] transition-all font-medium text-[20px] shadow-lg shadow-theme-accent/20 cursor-pointer">
-                      <span className="material-symbols-outlined text-[24px]">add</span>
+                    <span className="bg-theme-accent text-theme-inverse px-7 py-3.5 sm:px-8 sm:py-4 rounded-full flex items-center justify-center gap-2.5 hover-elevate active:scale-[0.98] transition-all font-medium text-lg shadow-lg shadow-theme-accent/20 cursor-pointer">
+                      <Plus className="w-5 h-5 stroke-[2.5]" />
                       Add Transaction
                     </span>
                   </Magnetic>
@@ -133,36 +134,36 @@ export default function DashboardPage() {
               </AddExpenseMorph>
             </div>
             <AnimatedGroup preset="fade" className="grid grid-cols-2 gap-3.5 mt-8">
-              <Link href="/analytics" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-accent group-hover:bg-theme-accent group-hover:text-theme-white transition-colors shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">analytics</span>
+              <Link href="/analytics" className="hover-elevate glass-panel p-4 sm:p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-primary group-hover:bg-theme-accent group-hover:text-theme-inverse transition-colors shadow-sm">
+                  <BarChart3 className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-theme-primary">Analysis</h3>
                   <p className="text-xs text-theme-secondary">Health score & burn rate</p>
                 </div>
               </Link>
-              <Link href="/split" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">group</span>
+              <Link href="/split" className="hover-elevate glass-panel p-4 sm:p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-primary group-hover:bg-theme-accent group-hover:text-theme-inverse transition-colors shadow-sm">
+                  <Users className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-theme-primary">Split Bills</h3>
                   <p className="text-xs text-theme-secondary">Hostel & roommate shares</p>
                 </div>
               </Link>
-              <Link href="/goals" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-colors shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">target</span>
+              <Link href="/goals" className="hover-elevate glass-panel p-4 sm:p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-primary group-hover:bg-theme-accent group-hover:text-theme-inverse transition-colors shadow-sm">
+                  <Target className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-theme-primary">Savings Goals</h3>
                   <p className="text-xs text-theme-secondary">Semester milestones & runway</p>
                 </div>
               </Link>
-              <Link href="/settings/limits" className="hover-elevate glass-panel p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors shadow-sm">
-                  <span className="material-symbols-outlined text-[20px]">edit_note</span>
+              <Link href="/settings/limits" className="hover-elevate glass-panel p-4 sm:p-5 rounded-2xl flex flex-col items-start gap-3 border border-theme-border/30 text-left group active:scale-[0.98] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-theme-surface flex items-center justify-center text-theme-primary group-hover:bg-theme-accent group-hover:text-theme-inverse transition-colors shadow-sm">
+                  <SlidersHorizontal className="w-5 h-5 stroke-[2]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-theme-primary">Adjust Limits</h3>
@@ -183,13 +184,13 @@ export default function DashboardPage() {
               <div className="relative z-10 p-8 md:p-12 h-full flex flex-col justify-between min-h-[400px]">
                 <div className="flex justify-between items-center">
                   {isOverBudget ? (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-danger/10 text-theme-danger text-sm font-medium">
-                      <span className="material-symbols-outlined text-[16px]">warning</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-theme-danger/10 text-theme-danger text-sm font-medium">
+                      <AlertTriangle className="w-4 h-4 stroke-[2]" />
                       Over budget
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-accent/10 text-theme-accent text-sm font-medium">
-                      <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-theme-accent/10 text-theme-accent text-sm font-medium">
+                      <CheckCircle2 className="w-4 h-4 stroke-[2]" />
                       On Track
                     </span>
                   )}
@@ -203,14 +204,14 @@ export default function DashboardPage() {
                     ]}
                   />
                 </div>
-                <div className="space-y-2 mt-12">
-                  <p className="text-[16px] text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
-                  <h2 className="font-display text-[56px] leading-none text-theme-primary tracking-tight flex items-center glow-text">
+                <div className="space-y-2 mt-10 sm:mt-12">
+                  <p className="text-sm sm:text-base text-theme-secondary font-medium">{isOverBudget ? 'Overage' : 'Current Balance'}</p>
+                  <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-none text-theme-primary tracking-tight flex items-center glow-text">
                     {isOverBudget ? '-' : ''}<AnimatedNumber value={Math.abs(balance)} />
                   </h2>
                 </div>
-                <div className="mt-12 space-y-4">
-                  <div className="flex justify-between text-sm">
+                <div className="mt-10 sm:mt-12 space-y-4">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-theme-secondary flex items-center gap-1">Spent: <strong className="text-theme-primary"><AnimatedNumber value={totalSpent} /></strong></span>
                     <span className="text-theme-secondary flex items-center gap-1">Income: <strong className="text-[#10b981]"><AnimatedNumber value={budget?.totalIncome || 0} /></strong></span>
                     <span className="text-theme-secondary flex items-center gap-1">Budget: <strong className="text-theme-primary"><AnimatedNumber value={budgetAmount} /></strong></span>
@@ -228,9 +229,9 @@ export default function DashboardPage() {
         </section>
         <section className="mt-8">
           <div className="flex justify-between items-end mb-8 border-b border-theme-border/30 pb-4">
-            <h3 className="font-display text-[32px] font-medium text-theme-primary">Recent Expenses</h3>
-            <Link href="/expenses" className="text-theme-accent text-[16px] font-medium hover:underline flex items-center gap-1">
-              See all <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            <h3 className="font-display text-2xl sm:text-3xl font-medium text-theme-primary">Recent Expenses</h3>
+            <Link href="/expenses" className="text-theme-accent text-sm sm:text-base font-medium hover:underline flex items-center gap-1.5">
+              See all <ArrowRight className="w-4 h-4 stroke-[2]" />
             </Link>
           </div>
           {isExpensesLoading ? (

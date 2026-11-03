@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthGuard } from '@/hooks/useAuth';
 import { useStore } from '@/store';
-import { ArrowLeft, Download, Calendar as CalendarIcon, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft, Download, Calendar as CalendarIcon, FileSpreadsheet, FileDown } from 'lucide-react';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { AnimatedGroup } from '@/components/ui/motion/animated-group';
 import { getExpensesByDateRange } from '@/lib/expenses/index';
 import { exportExpensesToExcel } from '@/lib/utils/export';
+import { generateMonthlyPDFReport } from '@/lib/export/pdfReport';
 import { subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 
 type ExportRange = 'current_month' | 'last_1_month' | 'last_3_months' | 'last_6_months' | 'custom';
@@ -16,7 +17,7 @@ type ExportRange = 'current_month' | 'last_1_month' | 'last_3_months' | 'last_6_
 export default function ExportPage() {
   const { user, isLoading } = useAuthGuard();
   const router = useRouter();
-  const { householdId, categories, addToast } = useStore();
+  const { householdId, categories, budget, expenses, addToast } = useStore();
   
   const [selectedRange, setSelectedRange] = useState<ExportRange>('current_month');
   const [customStartDate, setCustomStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
@@ -75,6 +76,32 @@ export default function ExportPage() {
       addToast({ type: 'error', message: 'Failed to export report. Please try again.' });
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      const catMap = new Map(categories.map(c => [c.id, c]));
+      const totalSpent = expenses.filter(e => e.type !== 'income').reduce((sum, e) => sum + e.amount, 0);
+      const income = budget?.totalIncome || 0;
+      const budgetAmount = budget?.budgetAmount || 0;
+      const balance = income > 0 ? income - totalSpent : budgetAmount - totalSpent;
+
+      generateMonthlyPDFReport({
+        monthName: format(new Date(), 'MMMM yyyy'),
+        userDisplayName: user?.displayName || user?.email?.split('@')[0] || 'Student',
+        householdName: householdId ? 'Shared Household' : 'Personal',
+        monthlyIncome: income,
+        totalSpent,
+        budgetAmount,
+        balance,
+        expenses,
+        categoriesMap: catMap,
+      });
+      addToast({ type: 'success', message: 'PDF statement exported successfully!' });
+    } catch (err) {
+      console.error(err);
+      addToast({ type: 'error', message: 'Failed to generate PDF statement.' });
     }
   };
 
@@ -182,27 +209,38 @@ export default function ExportPage() {
             )}
           </div>
           
-          <button
-            onClick={handleExport}
-            disabled={isExporting}
-            className={`w-full py-4 rounded-2xl font-medium text-white flex items-center justify-center gap-2 transition-all ${
-              isExporting 
-                ? 'bg-indigo-500/70 cursor-not-allowed' 
-                : 'bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] shadow-lg shadow-indigo-500/20'
-            }`}
-          >
-            {isExporting ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Generating Report...
-              </>
-            ) : (
-              <>
-                <Download className="w-5 h-5" />
-                Export Excel Report
-              </>
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <button
+              onClick={handleExport}
+              disabled={isExporting}
+              className={`flex-1 py-4 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all ${
+                isExporting 
+                  ? 'bg-indigo-500/70 cursor-not-allowed' 
+                  : 'bg-indigo-500 hover:bg-indigo-600 active:scale-[0.98] shadow-lg shadow-indigo-500/20'
+              }`}
+            >
+              {isExporting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Generating Report...
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5" />
+                  Export Excel (.xlsx)
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleExportPDF}
+              className="flex-1 py-4 rounded-2xl font-semibold text-theme-primary bg-theme-surface border border-theme-border/60 hover:bg-theme-elevated active:scale-[0.98] flex items-center justify-center gap-2 transition-all shadow-sm"
+            >
+              <FileDown className="w-5 h-5 text-theme-accent stroke-[2]" />
+              Export PDF Statement
+            </button>
+          </div>
         </div>
       </main>
     </div>

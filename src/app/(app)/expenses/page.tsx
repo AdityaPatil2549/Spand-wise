@@ -20,6 +20,7 @@ import { calculateFinancialSummary } from '@/lib/finance-math';
 import { FormattedCurrency } from '@/components/ui/FormattedCurrency';
 import type { ExpenseDocument } from '@/types/firestore';
 import { CURRENCY_SYMBOL } from '@/config/constants';
+import { Search, TrendingUp } from 'lucide-react';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -158,7 +159,10 @@ export default function ExpensesPage() {
           <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
             {/* Timeline Filter */}
-            <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
+            <div className="relative w-full md:w-auto">
+              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-theme-base to-transparent z-10 md:hidden" />
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-theme-base to-transparent z-10 md:hidden" />
+              <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x px-2">
               {recentMonths.map((m) => {
                 const isActive = selectedMonth === m.value;
                 return (
@@ -179,9 +183,10 @@ export default function ExpensesPage() {
                 );
               })}
             </nav>
+            </div>
   {/* Search/Category Filter */}
   <div className="relative w-full md:w-72 group">
-  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-theme-tertiary text-sm group-focus-within:text-theme-accent transition-colors">search</span>
+  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary group-focus-within:text-theme-accent transition-colors" />
   <input 
     value={searchQuery}
     onChange={(e) => setSearchQuery(e.target.value)}
@@ -202,7 +207,7 @@ export default function ExpensesPage() {
  {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(totalSpent)} /><span className="text-2xl text-theme-tertiary">{(totalSpent % 1 !== 0) ? (totalSpent % 1).toFixed(2).substring(1) : '.00'}</span>
  </span>
  <div className="mt-6 flex items-center gap-2 text-sm text-[#8c3c3c]">
- <span className="material-symbols-outlined text-sm">trending_up</span>
+ <TrendingUp className="w-4 h-4 stroke-[2]" />
  <span className="font-body flex items-center gap-1">+<AnimatedNumber value={0} />% from last month</span>
  </div>
  </div>

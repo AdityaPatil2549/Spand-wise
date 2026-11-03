@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store';
 import { Card } from '@/components/ui/Card';
-import { Wallet, Landmark, Plus, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Wallet, Landmark, Plus, ArrowUpCircle, ArrowDownCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useHydrated } from '@/hooks/useHydrated';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { Input } from '@/components/ui/Input';
 import { updateAccountBalance } from '@/lib/accounts';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 export default function AccountsPage() {
   const isHydrated = useHydrated();
@@ -71,8 +72,13 @@ export default function AccountsPage() {
 
   if (!isHydrated) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-theme-border border-t-theme-accent animate-spin" />
+      <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto pb-32">
+        <Skeleton className="h-8 w-48 rounded-xl" />
+        <Skeleton className="h-32 w-full rounded-2xl" />
+        <div className="space-y-4">
+          <Skeleton className="h-28 w-full rounded-2xl" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
+        </div>
       </div>
     );
   }
@@ -80,29 +86,29 @@ export default function AccountsPage() {
   const selectedAccountName = accounts.find(a => a.id === selectedAccountId)?.name || 'Account';
 
   return (
-    <div className="p-4 md:p-8 space-y-8 animate-fade-in pb-32">
-      <div className="flex items-center justify-between">
+    <div className="p-4 md:p-8 space-y-8 animate-fade-in pb-32 max-w-5xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-theme-primary tracking-tight">Accounts & Reserves</h1>
           <p className="text-sm text-theme-secondary mt-1">Total accumulated cash & bank reserves (persists continuously, not reset monthly)</p>
         </div>
         <Link 
           href="/analytics" 
-          className="text-xs font-semibold text-theme-accent bg-theme-accent/10 hover:bg-theme-accent/20 px-3 py-2 rounded-xl transition-all flex items-center gap-1.5"
+          className="text-xs font-semibold text-theme-accent bg-theme-accent/10 hover:bg-theme-accent/20 px-3.5 py-2.5 rounded-2xl transition-all inline-flex items-center gap-1.5 self-start sm:self-auto"
         >
           <span>Savings this month in Analytics</span>
-          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          <ArrowRight className="w-4 h-4 stroke-[2]" />
         </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Available Balance */}
-        <Card className="p-6 bg-gradient-to-br from-theme-elevated to-theme-base border-theme-border">
+        <Card className="p-6 bg-gradient-to-br from-theme-elevated to-theme-base border-theme-border rounded-2xl">
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-sm font-medium text-theme-secondary">Total Net Balance</h3>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Lifetime Accumulated</span>
           </div>
-          <p className="text-3xl font-bold tracking-tight text-theme-primary">
+          <p className="text-3xl font-bold tracking-tight text-theme-primary font-mono tabular-nums">
             {CURRENCY_SYMBOL} {totalBalance.toFixed(2)}
           </p>
           <p className="text-xs text-theme-tertiary mt-2">Combined balance across your UPI and Cash accounts</p>
@@ -136,18 +142,20 @@ export default function AccountsPage() {
                   <p className="text-xs text-theme-secondary">Savings</p>
                 </div>
               </div>
-              <p className="font-semibold text-theme-primary text-lg">{CURRENCY_SYMBOL} {(bankAccount?.balance || 0).toFixed(2)}</p>
+              <p className="font-semibold text-theme-primary text-lg font-mono tabular-nums">{CURRENCY_SYMBOL} {(bankAccount?.balance || 0).toFixed(2)}</p>
             </div>
             
              <div className="flex gap-2 mt-4 pt-4 border-t border-theme-border/50">
                <button 
+                 type="button"
                  onClick={() => bankAccount ? openTransactionModal(bankAccount.id, 'deposit') : addToast({ type: 'error', message: 'Account not ready, please wait or refresh' })}
-                 className="flex-1 py-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium text-sm flex items-center justify-center gap-2 hover:bg-emerald-500/20 transition-colors">
+                 className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-emerald-500/20 active:scale-98 transition-all">
                  <ArrowUpCircle className="w-4 h-4" /> Deposit
                </button>
                <button 
+                 type="button"
                  onClick={() => bankAccount ? openTransactionModal(bankAccount.id, 'withdrawal') : addToast({ type: 'error', message: 'Account not ready, please wait or refresh' })}
-                 className="flex-1 py-2 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium text-sm flex items-center justify-center gap-2 hover:bg-rose-500/20 transition-colors">
+                 className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-rose-500/20 active:scale-98 transition-all">
                  <ArrowDownCircle className="w-4 h-4" /> Withdraw
                </button>
             </div>
@@ -170,18 +178,20 @@ export default function AccountsPage() {
                   <p className="text-xs text-theme-secondary">Physical cash</p>
                 </div>
               </div>
-              <p className="font-semibold text-theme-primary text-lg">{CURRENCY_SYMBOL} {(cashAccount?.balance || 0).toFixed(2)}</p>
+              <p className="font-semibold text-theme-primary text-lg font-mono tabular-nums">{CURRENCY_SYMBOL} {(cashAccount?.balance || 0).toFixed(2)}</p>
             </div>
             
              <div className="flex gap-2 mt-4 pt-4 border-t border-theme-border/50">
                <button 
+                 type="button"
                  onClick={() => cashAccount ? openTransactionModal(cashAccount.id, 'deposit') : addToast({ type: 'error', message: 'Account not ready, please wait or refresh' })}
-                 className="flex-1 py-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium text-sm flex items-center justify-center gap-2 hover:bg-emerald-500/20 transition-colors">
+                 className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-emerald-500/20 active:scale-98 transition-all">
                  <ArrowUpCircle className="w-4 h-4" /> Add Cash
                </button>
                <button 
+                 type="button"
                  onClick={() => cashAccount ? openTransactionModal(cashAccount.id, 'withdrawal') : addToast({ type: 'error', message: 'Account not ready, please wait or refresh' })}
-                 className="flex-1 py-2 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium text-sm flex items-center justify-center gap-2 hover:bg-rose-500/20 transition-colors">
+                 className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-rose-500/20 active:scale-98 transition-all">
                  <ArrowDownCircle className="w-4 h-4" /> Remove Cash
                </button>
             </div>

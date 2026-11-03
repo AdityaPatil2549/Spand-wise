@@ -50,7 +50,7 @@ const ToolCard = ({
         <Icon className="w-6 h-6 stroke-[2]" />
       </div>
       {badge && (
-        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-theme-accent/15 text-theme-accent border border-theme-accent/25">
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-theme-accent/15 text-theme-accent border border-theme-accent/25">
           {badge}
         </span>
       )}

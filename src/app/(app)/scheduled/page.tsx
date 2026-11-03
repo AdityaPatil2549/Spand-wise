@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore } from '@/store';
 import { CalendarClock, Plus, ArrowRight, ChevronDown, RefreshCw } from 'lucide-react';
 import { useHydrated } from '@/hooks/useHydrated';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
@@ -36,10 +37,28 @@ export default function ScheduledPage() {
   const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [startDate, setStartDate] = useState(dateToInputValue());
 
+  const activeScheduled = scheduledTransactions.filter(t => t.isActive);
+
+  const totalMonthlyCommitment = useMemo(() => {
+    return activeScheduled.reduce((sum, s) => {
+      let multiplier = 1;
+      if (s.frequency === 'daily') multiplier = 30;
+      else if (s.frequency === 'weekly') multiplier = 4.33;
+      else if (s.frequency === 'yearly') multiplier = 1 / 12;
+      return sum + s.amount * multiplier;
+    }, 0);
+  }, [activeScheduled]);
+
   if (!isHydrated) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-4 border-theme-border border-t-theme-accent animate-spin" />
+      <div className="min-h-screen pb-32 pt-24 max-w-4xl mx-auto px-4 md:px-8 space-y-4">
+        <Skeleton className="h-8 w-48 rounded-xl" />
+        <Skeleton className="h-20 w-full rounded-2xl" />
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -91,26 +110,46 @@ export default function ScheduledPage() {
     }
   };
 
-  const activeScheduled = scheduledTransactions.filter(t => t.isActive);
-
   return (
     <div className="min-h-screen pb-32 pt-24 animate-fade-in">
       <div className="px-4 md:px-8 max-w-4xl mx-auto">
         
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2 tracking-tight">
               <RefreshCw className="w-6 h-6 text-indigo-500" />
-              Subscriptions
+              Subscriptions & Recurring
             </h1>
-            <p className="text-sm text-theme-secondary mt-2">
-              Manage your recurring subscriptions and bills.
+            <p className="text-sm text-theme-secondary mt-1">
+              Automated recurring bills, hostel dues, and digital subscriptions.
             </p>
           </div>
-          <button onClick={() => setIsAddOpen(true)} className="p-3 bg-theme-accent text-white rounded-xl shadow-sm hover:opacity-90 transition-opacity">
-            <Plus className="w-5 h-5" />
+          <button 
+            type="button"
+            onClick={() => setIsAddOpen(true)} 
+            className="min-h-[44px] min-w-[44px] p-3 bg-theme-accent text-theme-inverse rounded-2xl shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center"
+            aria-label="Add Subscription"
+          >
+            <Plus className="w-5 h-5 stroke-[2.5]" />
           </button>
         </div>
+
+        {/* Estimated Monthly Commitment Banner */}
+        {activeScheduled.length > 0 && (
+          <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-theme-surface/70 border border-theme-border/40 flex items-center justify-between">
+            <div>
+              <span className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider block">
+                Estimated Monthly Commitment
+              </span>
+              <span className="text-xl sm:text-2xl font-bold font-mono text-indigo-400 tabular-nums">
+                {CURRENCY_SYMBOL}{totalMonthlyCommitment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              {activeScheduled.length} active bill{activeScheduled.length > 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
 
         {activeScheduled.length === 0 ? (
           <div className="text-center py-12 bg-theme-surface border border-theme-border rounded-2xl">

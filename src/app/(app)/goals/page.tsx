@@ -301,7 +301,7 @@ export default function GoalsPage() {
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
             <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/20">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
                 <Clock className="w-3.5 h-3.5 text-theme-accent" />
                 Safe Daily Limit
               </span>
@@ -309,26 +309,26 @@ export default function GoalsPage() {
                 {CURRENCY_SYMBOL}{runway.dailySafeToSpend.toFixed(0)}
                 <span className="text-xs font-sans text-theme-secondary font-normal ml-1">/ day</span>
               </p>
-              <p className="text-[11px] text-theme-secondary mt-1">
+              <p className="text-xs text-theme-secondary mt-1">
                 For the next {runway.daysRemaining} days
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/20">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
                 <Wallet className="w-3.5 h-3.5 text-cyan-500" />
                 Remaining Budget
               </span>
               <p className="text-2xl sm:text-3xl font-display font-medium text-theme-primary">
                 {CURRENCY_SYMBOL}{runway.remainingBudget.toFixed(0)}
               </p>
-              <p className="text-[11px] text-theme-secondary mt-1">
+              <p className="text-xs text-theme-secondary mt-1">
                 Out of {CURRENCY_SYMBOL}{runway.budgetAmount.toFixed(0)} limit
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/20">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-amber-500" />
                 Current Burn Rate
               </span>
@@ -336,13 +336,13 @@ export default function GoalsPage() {
                 {CURRENCY_SYMBOL}{runway.avgDailySpend.toFixed(0)}
                 <span className="text-xs font-sans text-theme-secondary font-normal ml-1">/ day</span>
               </p>
-              <p className="text-[11px] text-theme-secondary mt-1">
+              <p className="text-xs text-theme-secondary mt-1">
                 Velocity ratio: {runway.velocityRatio.toFixed(2)}x
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/20">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-theme-secondary flex items-center gap-1.5 mb-1">
                 <Compass className="w-3.5 h-3.5 text-purple-500" />
                 Runway Pacing
               </span>
@@ -351,7 +351,7 @@ export default function GoalsPage() {
                   ? '0 Days' 
                   : `${Math.min(runway.daysRemaining, runway.daysUntilExhaust)} Days`}
               </p>
-              <p className="text-[11px] text-theme-secondary mt-1">
+              <p className="text-xs text-theme-secondary mt-1">
                 {runway.daysUntilExhaust >= runway.daysRemaining 
                   ? 'Covers month fully with surplus' 
                   : `Depletes ${runway.daysRemaining - runway.daysUntilExhaust}d before month end`}
@@ -531,7 +531,7 @@ export default function GoalsPage() {
 
                       {/* Mathematical projection */}
                       {!goal.isCompleted && dailyNeeded !== null && dailyNeeded > 0 && (
-                        <p className="text-[11px] text-theme-secondary mt-3">
+                        <p className="text-xs text-theme-secondary mt-3">
                           Save <strong className="text-theme-primary">{CURRENCY_SYMBOL}{dailyNeeded.toFixed(0)}/day</strong> to reach by target deadline.
                         </p>
                       )}

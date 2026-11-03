@@ -49,7 +49,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
           >
             SpendWise
           </h1>
-          <p className="text-[11px] text-theme-secondary font-semibold uppercase tracking-wider">
+          <p className="text-xs text-theme-secondary font-semibold uppercase tracking-wider">
             Student Finance & Budget
           </p>
         </Link>

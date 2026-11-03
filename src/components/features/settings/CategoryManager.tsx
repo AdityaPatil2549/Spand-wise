@@ -69,7 +69,7 @@ export const CategoryManager = () => {
  </div>
  
  {customCategories.length === 0 ? (
- <p className="text-sm text-theme-tertiary italic p-4 bg-theme-surface rounded-xl border border-theme-border/50">
+ <p className="text-sm text-theme-secondary p-4 bg-theme-surface rounded-xl border border-theme-border/50">
  No custom categories yet. Add one below!
  </p>
  ) : (

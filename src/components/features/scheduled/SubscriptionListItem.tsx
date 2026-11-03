@@ -69,7 +69,7 @@ export const SubscriptionListItem = ({ subscription, category, onDelete }: Subsc
           </div>
         </div>
         <div className="text-right flex-shrink-0 ml-2">
-          <div className="font-bold text-theme-primary text-lg">
+          <div className="font-bold text-theme-primary text-base sm:text-lg tabular-nums">
             {CURRENCY_SYMBOL} {subscription.amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
           </div>
         </div>

@@ -277,7 +277,7 @@ export default function SplitBillsPage() {
                     className="px-3.5 py-2 rounded-2xl bg-theme-surface border border-theme-border/40 flex items-center gap-2 text-xs font-semibold text-theme-primary shadow-sm"
                   >
                     <span>{name}</span>
-                    <span className="text-[11px] font-bold text-theme-accent bg-theme-accent/10 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-theme-accent bg-theme-accent/10 px-2 py-0.5 rounded-full">
                       {CURRENCY_SYMBOL}{calculations.perPersonShare.toFixed(0)}
                     </span>
                     {customPeople.length > 2 && (
@@ -334,7 +334,7 @@ export default function SplitBillsPage() {
 
               {/* Message Preview */}
               <div className="p-4 rounded-2xl bg-theme-surface/50 border border-theme-border/30">
-                <span className="text-[11px] font-bold text-theme-tertiary uppercase tracking-wider block mb-2">
+                <span className="text-xs font-bold text-theme-tertiary uppercase tracking-wider block mb-2">
                   WhatsApp Message Preview
                 </span>
                 <pre className="text-xs text-theme-secondary font-sans whitespace-pre-wrap leading-relaxed select-all">

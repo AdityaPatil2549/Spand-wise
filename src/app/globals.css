@@ -62,8 +62,8 @@
     --theme-style-display: normal;
     
     --theme-primary: 255 255 255; /* #ffffff */
-    --theme-secondary: 163 163 163; /* #a3a3a3 */
-    --theme-tertiary: 115 115 115; /* #737373 */
+    --theme-secondary: 178 186 196; /* #b2bac4 -> 5.2:1 contrast against surface (WCAG AA Pass) */
+    --theme-tertiary: 130 140 152; /* #828c98 */
     
     --theme-accent: 232 134 74; /* #e8864a */
     --theme-accent-hover: 194 101 42; /* #c2652a */
@@ -129,7 +129,7 @@
     --theme-tracking-display: -0.03em;
     --theme-line-height-body: 1.8;
     --theme-casing-display: none;
-    --theme-style-display: italic;
+    --theme-style-display: normal;
     
     --theme-primary: 242 245 235; /* Off-white cream */
     --theme-secondary: 173 189 179;

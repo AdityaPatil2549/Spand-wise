@@ -145,12 +145,12 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
  </div>
 
  {/* Amount */}
- <div className="flex items-center gap-1 flex-shrink-0">
- <ArrowDownRight className="w-4 h-4 text-red-500" />
- <span className="text-base font-bold text-[var(--text-primary)]">
- {formatCurrency(expense.amount)}
- </span>
- </div>
+ <div className="flex items-center gap-1.5 flex-shrink-0 text-right">
+								<ArrowDownRight className="w-3.5 h-3.5 text-theme-danger" />
+								<span className="text-base font-semibold text-theme-primary tabular-nums tracking-tight">
+									{formatCurrency(expense.amount)}
+								</span>
+							</div>
  </div>
  </button>
 
