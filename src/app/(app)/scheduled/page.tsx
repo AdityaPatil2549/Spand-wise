@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useMemo } from 'react';
 import { useStore } from '@/store';
 import { CalendarClock, Plus, ArrowRight, ChevronDown, RefreshCw, ShieldCheck, Zap, AlertCircle } from 'lucide-react';
