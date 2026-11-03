@@ -16,9 +16,12 @@ const THEMES = [
   { id: 'graphite', name: 'Graphite', icon: Hexagon, color: 'bg-gray-500/10 text-gray-400' },
 ];
 
+import { useHaptic } from '@/hooks/useHaptic';
+
 export const ThemeSelector = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const haptic = useHaptic();
 
   // Avoid hydration mismatch
   useEffect(() => {
@@ -36,26 +39,29 @@ export const ThemeSelector = () => {
   const currentTheme = theme === 'system' ? resolvedTheme : theme;
 
   return (
-    <div className="w-full bg-theme-surface rounded-xl border border-theme-border/50 p-4">
-      <h4 className="font-medium text-theme-primary mb-4">Aesthetic Theme</h4>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+    <div className="w-full bg-theme-surface rounded-2xl border border-theme-border/50 p-4 shadow-sm">
+      <h4 className="font-semibold text-theme-primary mb-4 text-sm tracking-wide">Aesthetic Theme</h4>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
         {THEMES.map((t) => {
           const isActive = currentTheme === t.id;
           const Icon = t.icon;
           return (
             <button
               key={t.id}
-              onClick={() => setTheme(t.id)}
-              className={`flex items-center gap-3 p-3 rounded-xl transition-all border ${
+              onClick={() => {
+                haptic.light();
+                setTheme(t.id);
+              }}
+              className={`flex items-center gap-3 p-3 rounded-xl transition-all border active:scale-[0.98] ${
                 isActive 
-                  ? 'border-theme-accent bg-theme-accent/10 shadow-sm' 
-                  : 'border-theme-border/30 hover:border-theme-accent/50 hover:bg-theme-elevated'
+                  ? 'border-theme-accent bg-theme-accent/10 shadow-xs ring-1 ring-theme-accent/30' 
+                  : 'border-theme-border/40 hover:border-theme-accent/50 hover:bg-theme-elevated'
               }`}
             >
               <div className={`p-2 rounded-lg ${t.color}`}>
                 <Icon className="w-4 h-4" />
               </div>
-              <span className={`text-sm font-medium ${isActive ? 'text-theme-accent' : 'text-theme-secondary'}`}>
+              <span className={`text-xs sm:text-sm font-semibold ${isActive ? 'text-theme-accent font-bold' : 'text-theme-secondary'}`}>
                 {t.name}
               </span>
             </button>

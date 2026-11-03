@@ -22,7 +22,8 @@ import {
   Sparkles, 
   TrendingUp, 
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Plus
 } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { ExpenseList } from '@/components/features/expenses/ExpenseList';
@@ -174,44 +175,44 @@ export default function CalendarPage() {
         {/* 4 Summary Metric Banners */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/30">
-            <span className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
               Total Spent
             </span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-theme-primary tabular-nums">
               {CURRENCY_SYMBOL}{monthTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
             </span>
-            <p className="text-[11px] text-theme-tertiary mt-1">This calendar month</p>
+            <p className="text-xs text-theme-tertiary mt-1">This calendar month</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/30">
-            <span className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
               Daily Average
             </span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-indigo-400 tabular-nums">
               {CURRENCY_SYMBOL}{avgDaily.toFixed(0)}
             </span>
-            <p className="text-[11px] text-theme-tertiary mt-1">Target: ~{CURRENCY_SYMBOL}{dailyTarget.toFixed(0)}/d</p>
+            <p className="text-xs text-theme-tertiary mt-1">Target: ~{CURRENCY_SYMBOL}{dailyTarget.toFixed(0)}/d</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/30">
-            <span className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
               Zero-Spend Days
             </span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-500 tabular-nums flex items-center gap-1.5">
               <Flame className="w-5 h-5 fill-emerald-500/30 text-emerald-500" />
               {zeroSpendDays}
             </span>
-            <p className="text-[11px] text-theme-tertiary mt-1">Streak resilience points</p>
+            <p className="text-xs text-theme-tertiary mt-1">Streak resilience</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-theme-surface/60 border border-theme-border/30">
-            <span className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
+            <span className="text-xs font-semibold text-theme-secondary uppercase tracking-wider block mb-1">
               Peak Outflow
             </span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-rose-500 tabular-nums">
               {peakDay.amount > 0 ? `${CURRENCY_SYMBOL}${peakDay.amount.toFixed(0)}` : 'None'}
             </span>
-            <p className="text-[11px] text-theme-tertiary mt-1 truncate">
+            <p className="text-xs text-theme-tertiary mt-1 truncate">
               {peakDay.date ? format(new Date(peakDay.date), 'dd MMM') : 'No expenses logged'}
             </p>
           </div>
@@ -243,7 +244,7 @@ export default function CalendarPage() {
         {/* Days of Week Header */}
         <div className="grid grid-cols-7 gap-1.5 sm:gap-3 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-            <div key={day} className="text-center text-[11px] sm:text-xs font-bold text-theme-secondary uppercase tracking-wider py-1.5">
+            <div key={day} className="text-center text-xs font-bold text-theme-secondary uppercase tracking-wider py-1.5">
               {day}
             </div>
           ))}
@@ -288,12 +289,12 @@ export default function CalendarPage() {
             return (
               <div 
                 key={dayStr}
-                onClick={() => hasExpenses && setSelectedDateStr(dayStr)}
+                onClick={() => isCurrentMonth && !isFuture && setSelectedDateStr(dayStr)}
                 className={`
                   relative flex flex-col items-center justify-between p-2 sm:p-2.5 rounded-2xl border min-h-[68px] sm:min-h-[92px] transition-all
                   ${isCurrentMonth ? intensityClass : 'bg-transparent border-transparent opacity-25 pointer-events-none'}
                   ${isTodayDate ? 'ring-2 ring-theme-accent border-transparent shadow-sm' : ''}
-                  ${hasExpenses ? 'cursor-pointer hover:shadow-md active:scale-95' : 'cursor-default'}
+                  ${isCurrentMonth && !isFuture ? 'cursor-pointer hover:shadow-md active:scale-95' : 'cursor-default'}
                 `}
               >
                 <div className="w-full flex items-center justify-between">
@@ -301,12 +302,12 @@ export default function CalendarPage() {
                     {format(day, 'd')}
                   </span>
                   {isTodayDate && (
-                    <span className="text-[9px] uppercase font-extrabold px-1.5 py-0.2 rounded-full bg-theme-accent text-theme-inverse">
+                    <span className="text-xs uppercase font-extrabold px-1.5 py-0.2 rounded-full bg-theme-accent text-theme-inverse">
                       Today
                     </span>
                   )}
                   {!hasExpenses && isCurrentMonth && !isFuture && (
-                    <span className="hidden sm:inline-block text-[10px] text-emerald-500 font-bold">
+                    <span className="hidden sm:inline-block text-xs text-emerald-500 font-bold">
                       🎉
                     </span>
                   )}
@@ -317,12 +318,12 @@ export default function CalendarPage() {
                     <span className={`text-xs sm:text-sm font-bold font-mono tabular-nums text-center break-all ${badgeColor}`}>
                       {CURRENCY_SYMBOL}{amount >= 1000 ? `${(amount / 1000).toFixed(1)}k` : amount.toFixed(0)}
                     </span>
-                    <span className="text-[10px] text-theme-secondary mt-0.5 font-medium">
+                    <span className="text-xs text-theme-secondary mt-0.5 font-medium">
                       {count} txn{count > 1 ? 's' : ''}
                     </span>
                   </div>
                 ) : isCurrentMonth && !isFuture ? (
-                  <span className="text-[10px] text-emerald-500/80 font-medium mt-auto">
+                  <span className="text-xs text-emerald-500/80 font-medium mt-auto">
                     ₹0 spend
                   </span>
                 ) : (
@@ -340,14 +341,38 @@ export default function CalendarPage() {
         onClose={() => setSelectedDateStr(null)}
         title={selectedDateStr ? format(new Date(selectedDateStr), 'MMMM do, yyyy') : 'Expenses'}
       >
-        <div className="pb-8">
-          <ExpenseList 
-            onEditExpense={(expense) => {
-              setSelectedDateStr(null);
-              openBottomSheetGlobal({ editingExpenseId: expense.id, initialCategoryId: expense.categoryId });
-            }} 
-            expenses={selectedDateExpenses}
-          />
+        <div className="pb-8 px-4">
+          {selectedDateExpenses.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-3">
+                <Flame className="w-8 h-8 fill-emerald-500/20" />
+              </div>
+              <h4 className="font-bold text-lg text-theme-primary mb-1">Zero Outflow Recorded</h4>
+              <p className="text-xs text-theme-secondary max-w-xs mx-auto mb-6">
+                You maintained a zero-spend day on this date, saving your budget cap.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  const targetDate = selectedDateStr;
+                  setSelectedDateStr(null);
+                  openBottomSheetGlobal();
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-theme-accent text-theme-inverse font-semibold text-xs active:scale-95 transition-all shadow-sm"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Log Transaction for this Day</span>
+              </button>
+            </div>
+          ) : (
+            <ExpenseList 
+              onEditExpense={(expense) => {
+                setSelectedDateStr(null);
+                openBottomSheetGlobal({ editingExpenseId: expense.id, initialCategoryId: expense.categoryId });
+              }} 
+              expenses={selectedDateExpenses}
+            />
+          )}
         </div>
       </BottomSheet>
     </div>

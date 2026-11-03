@@ -21,7 +21,7 @@ import { TransactionRow } from '@/components/features/ledger/TransactionRow';
 import { DropdownMenu } from '@/components/ui/DropdownMenu';
 import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Plus, BarChart3, Users, Target, SlidersHorizontal, AlertTriangle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Plus, BarChart3, Users, Target, SlidersHorizontal, AlertTriangle, CheckCircle2, ArrowRight, MoreHorizontal } from 'lucide-react';
 
 // Helper to map Lucide icon names to Material Symbols
 const getMaterialIcon = (lucideName: string = 'Package') => {
@@ -196,7 +196,15 @@ export default function DashboardPage() {
                   )}
                   <DropdownMenu 
                     align="right"
-                    trigger={<span className="material-symbols-outlined text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer p-2 -mr-2 rounded-full hover:bg-theme-surface-hover/80 active:scale-95">more_horiz</span>}
+                    trigger={
+                      <button 
+                        type="button" 
+                        aria-label="Dashboard actions"
+                        className="text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer p-2 -mr-2 rounded-full hover:bg-theme-surface-hover/80 active:scale-95 flex items-center justify-center"
+                      >
+                        <MoreHorizontal className="w-5 h-5 stroke-[2]" />
+                      </button>
+                    }
                     items={[
                       { label: 'Edit Budget Limits', icon: 'edit_note', href: '/settings/limits' },
                       { label: 'View Deep Analysis', icon: 'analytics', href: '/analytics' },
