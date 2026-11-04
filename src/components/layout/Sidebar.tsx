@@ -41,17 +41,19 @@ export const Sidebar = ({ className }: SidebarProps) => {
       )}
     >
       {/* Brand / Logo Area */}
-      <div className="p-6 pb-5 pt-6 border-b border-theme-border/20">
-        <Link href="/dashboard" className="group block">
-          <h1 
-            className="text-3xl leading-none text-theme-accent mb-1 group-hover:opacity-90 transition-opacity"
-            style={{ fontFamily: 'var(--font-pacifico), cursive' }}
-          >
-            SpendWise
-          </h1>
-          <p className="text-xs text-theme-secondary font-semibold uppercase tracking-wider">
-            Student Finance & Budget
-          </p>
+      <div className="p-5 pb-4 pt-5 border-b border-theme-border/30">
+        <Link href="/dashboard" className="group flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-theme-primary text-theme-inverse flex items-center justify-center font-display font-extrabold text-sm tracking-tight shadow-xs group-hover:scale-105 transition-transform">
+            SW
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="font-display text-base font-extrabold tracking-[-0.035em] text-theme-primary leading-tight truncate">
+              SpendWise
+            </h1>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-theme-secondary font-semibold leading-tight truncate">
+              Financial Cockpit
+            </p>
+          </div>
         </Link>
       </div>
 
@@ -64,19 +66,22 @@ export const Sidebar = ({ className }: SidebarProps) => {
               key={id}
               href={href}
               className={clsx(
-                'flex items-center gap-3 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-150',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-150 active:scale-[0.98]',
                 isActive
-                  ? 'text-theme-inverse bg-theme-accent shadow-sm shadow-theme-accent/25 font-semibold'
-                  : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-surface-hover/80'
+                  ? 'text-theme-primary bg-theme-surface border border-theme-border/60 shadow-xs font-semibold'
+                  : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-surface-hover/70'
               )}
             >
               <Icon 
                 className={clsx(
                   "w-4 h-4 shrink-0 transition-transform duration-150",
-                  isActive ? "stroke-[2.2] scale-105" : "stroke-[1.75]"
+                  isActive ? "stroke-[2.2] text-theme-primary" : "stroke-[1.75]"
                 )} 
               />
-              <span className="truncate">{label}</span>
+              <span className="truncate flex-1">{label}</span>
+              {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-theme-primary shrink-0" />
+              )}
             </Link>
           );
         })}

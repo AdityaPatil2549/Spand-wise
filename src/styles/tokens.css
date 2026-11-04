@@ -18,20 +18,20 @@
   --color-primary-900: #4c1d95;
 
   /* ── Surface / Background (Light Mode) ─────────────────── */
-  --surface-base: #f0f3f8;
-  --surface-primary: #f0f3f8;
-  --surface-secondary: #e2e8f0;
-  --surface-tertiary: #cbd5e1;
-  --surface-overlay: rgba(0, 0, 0, 0.5);
-  --surface-glass: rgba(240, 243, 248, 0.7);
-  --border-glass: rgba(255, 255, 255, 0.5);
+  --surface-base: #fafafc;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f4f4f8;
+  --surface-tertiary: #e2e8f0;
+  --surface-overlay: rgba(9, 9, 11, 0.6);
+  --surface-glass: rgba(255, 255, 255, 0.85);
+  --border-glass: rgba(226, 232, 240, 0.8);
 
   /* ── Text Colors (Light Mode) ───────────────────────────── */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-tertiary: #94a3b8;
   --text-inverse: #ffffff;
-  --text-brand: #7c3aed;
+  --text-brand: #09090b;
 
   /* ── Semantic / Financial Colors ───────────────────────── */
   --color-success: #10b981;

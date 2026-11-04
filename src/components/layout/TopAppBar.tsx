@@ -112,18 +112,18 @@ export function TopAppBar() {
     <header className="sticky top-0 z-30 flex items-center justify-between w-full px-4 sm:px-6 md:px-8 h-16 md:h-18 bg-theme-base/90 backdrop-blur-md border-b border-theme-border/30 transition-colors select-none">
       {/* Left: Mobile Branding or Desktop Breadcrumb */}
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="md:hidden flex items-center gap-2 group">
-          <span 
-            className="text-2xl text-theme-accent leading-none font-medium group-hover:opacity-90 transition-opacity"
-            style={{ fontFamily: 'var(--font-pacifico), cursive' }}
-          >
+        <Link href="/dashboard" className="md:hidden flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-xl bg-theme-primary text-theme-inverse flex items-center justify-center font-display font-extrabold text-xs tracking-tight shadow-xs group-hover:scale-105 transition-transform">
+            SW
+          </div>
+          <span className="font-display text-base font-extrabold tracking-[-0.035em] text-theme-primary leading-none">
             SpendWise
           </span>
         </Link>
-        <div className="hidden md:flex items-center gap-2 text-xs uppercase tracking-wider text-theme-tertiary font-semibold">
-          <span>SpendWise</span>
+        <div className="hidden md:flex items-center gap-2 text-xs uppercase tracking-wider text-theme-secondary font-semibold">
+          <span className="text-theme-secondary/80">SpendWise</span>
           <span className="text-theme-border font-bold">/</span>
-          <span className="text-theme-primary font-bold">
+          <span className="text-theme-primary font-bold capitalize">
             {pathname.split('/')[1] ? pathname.split('/')[1].replace('-', ' ') : 'Dashboard'}
           </span>
         </div>

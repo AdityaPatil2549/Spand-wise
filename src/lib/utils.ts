@@ -34,10 +34,13 @@ export function getMaterialIcon(iconName: string | undefined): string {
   return iconMap[iconName] || 'category';
 }
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('en-IN', {
+export const formatCurrency = (amount: number, showDecimals: boolean = false): string => {
+  if (isNaN(amount)) return '₹\u00A00';
+  const formatted = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 0, // Removes awkward .00 decimal clutter for students
+    minimumFractionDigits: showDecimals ? 2 : 0,
+    maximumFractionDigits: showDecimals ? 2 : (amount % 1 === 0 ? 0 : 2),
   }).format(amount);
+  return formatted.replace(/^₹\s*/, '₹\u00A0');
 };

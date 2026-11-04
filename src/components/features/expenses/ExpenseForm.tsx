@@ -334,10 +334,29 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
           />
         </div>
         {errors.amount && (
-        <p className="mt-1 text-xs text-red-500" role="alert">
-        {errors.amount.message}
-        </p>
+          <p className="mt-1 text-xs text-red-500" role="alert">
+            {errors.amount.message}
+          </p>
         )}
+
+        {/* Quick Increment Denominations */}
+        <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+          <span className="text-[11px] font-semibold text-theme-secondary">Quick +:</span>
+          {[50, 100, 500, 1000].map((amt) => (
+            <button
+              key={amt}
+              type="button"
+              onClick={() => {
+                const current = watch('amount') || 0;
+                setValue('amount', current + amt, { shouldValidate: true });
+                haptic.light();
+              }}
+              className="px-2.5 py-1 rounded-lg bg-theme-surface hover:bg-theme-elevated border border-theme-border/40 text-[11px] font-bold text-theme-primary tabular-nums active:scale-95 transition-all cursor-pointer"
+            >
+              +₹{amt}
+            </button>
+          ))}
+        </div>
       </div>
 
  {/* Category Picker */}

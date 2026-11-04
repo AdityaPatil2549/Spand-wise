@@ -4,14 +4,15 @@ import { CURRENCY_SYMBOL, LOCALE } from '@/config/constants';
  * Format a number as an Indian Rupee currency string.
  * Examples: 15000 → "₹15,000", 1500.50 → "₹1,500.50"
  */
-export const formatCurrency = (amount: number): string => {
- if (isNaN(amount)) return `${CURRENCY_SYMBOL}0`;
- return new Intl.NumberFormat(LOCALE, {
- style: 'currency',
- currency: 'INR',
- minimumFractionDigits: 0,
- maximumFractionDigits: 2,
- }).format(amount);
+export const formatCurrency = (amount: number, showDecimals: boolean = false): string => {
+  if (isNaN(amount)) return `${CURRENCY_SYMBOL}\u00A00`;
+  const formatted = new Intl.NumberFormat(LOCALE, {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: showDecimals ? 2 : 0,
+    maximumFractionDigits: showDecimals ? 2 : (amount % 1 === 0 ? 0 : 2),
+  }).format(amount);
+  return formatted.replace(/^₹\s*/, '₹\u00A0');
 };
 
 /**
