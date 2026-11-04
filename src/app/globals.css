@@ -321,6 +321,181 @@
     --theme-white: 20 20 20;
     --theme-inverse: 10 10 10;
   }
+
+  .earthy {
+    /* Earthy Warmth — Restored Original Cozy Artisan Theme */
+    --theme-base: 252 249 242; /* #fcf9f2 — Warm handmade paper cream */
+    --theme-surface: 255 255 255; /* #ffffff — Organic pure ivory */
+    --theme-surface-hover: 247 242 233; /* #f7f2e9 */
+    --theme-elevated: 234 226 218; /* #eadeda */
+    --theme-elevated-hover: 216 208 200; /* #d8d0c8 */
+    
+    --theme-border: 216 208 200; /* #d8d0c8 — Soft warm sandstone */
+    
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    
+    --theme-primary: 45 36 31; /* #2d241f — Deep roasted espresso */
+    --theme-secondary: 110 94 84; /* #6e5e54 — Warm cocoa */
+    --theme-tertiary: 173 158 147; /* #ad9e93 */
+    
+    --theme-accent: 217 107 20; /* #d96b14 — Terracotta clay orange */
+    --theme-accent-hover: 194 92 14; 
+    --theme-accent-light: 252 227 212;
+    
+    --theme-danger: 217 56 56;
+    --theme-danger-light: 254 226 226;
+    
+    --theme-white: 255 255 255;
+    --theme-inverse: 252 249 242;
+  }
+
+  .matcha {
+    /* Kyoto Matcha — Zen Organic Tea Ceremony */
+    --theme-base: 244 246 240; /* #f4f6f0 — Matcha linen */
+    --theme-surface: 255 255 255; /* #ffffff */
+    --theme-surface-hover: 237 241 232;
+    --theme-elevated: 228 234 221;
+    --theme-elevated-hover: 218 226 210;
+    
+    --theme-border: 209 219 200; /* #d1dbc8 */
+    
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    
+    --theme-primary: 31 45 36; /* #1f2d24 — Deep forest slate */
+    --theme-secondary: 85 107 92; /* #556b5c */
+    --theme-tertiary: 138 158 144;
+    
+    --theme-accent: 45 90 63; /* #2d5a3f — Ceremonial Jade */
+    --theme-accent-hover: 36 74 51;
+    --theme-accent-light: 230 240 233;
+    
+    --theme-danger: 225 29 72;
+    --theme-danger-light: 255 228 230;
+    
+    --theme-white: 255 255 255;
+    --theme-inverse: 244 246 240;
+  }
+
+  .sakura {
+    /* Tokyo Sakura — Twilight Blossom */
+    --theme-base: 22 15 30; /* #160f1e — Deep plum obsidian */
+    --theme-surface: 35 23 48; /* #231730 — Layered amethyst */
+    --theme-surface-hover: 48 32 66;
+    --theme-elevated: 42 28 58;
+    --theme-elevated-hover: 56 38 78;
+    
+    --theme-border: 68 46 94; /* #442e5e */
+    
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    
+    --theme-primary: 250 245 255; /* #faf5ff — Pearlescent ivory */
+    --theme-secondary: 196 181 253; /* #c4b5fd — Soft lavender */
+    --theme-tertiary: 147 122 186;
+    
+    --theme-accent: 244 114 182; /* #f472b6 — Luminous sakura blossom pink */
+    --theme-accent-hover: 236 72 153;
+    --theme-accent-light: 56 38 78;
+    
+    --theme-danger: 244 63 94;
+    --theme-danger-light: 76 5 25;
+    
+    --theme-white: 35 23 48;
+    --theme-inverse: 22 15 30;
+  }
+
+  .solaris {
+    /* Solaris Amber — Cinematic Golden Hour */
+    --theme-base: 250 246 240; /* #faf6f0 — Dune sand linen */
+    --theme-surface: 255 255 255; /* #ffffff */
+    --theme-surface-hover: 245 239 230;
+    --theme-elevated: 238 230 218;
+    --theme-elevated-hover: 226 216 202;
+    
+    --theme-border: 226 216 202; /* #e2d8ca */
+    
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    
+    --theme-primary: 56 36 21; /* #382415 — Deep espresso bronze */
+    --theme-secondary: 120 90 65; /* #785a41 */
+    --theme-tertiary: 170 140 115;
+    
+    --theme-accent: 217 119 6; /* #d97706 — Radiant Sunburst Amber */
+    --theme-accent-hover: 180 83 9;
+    --theme-accent-light: 254 243 199;
+    
+    --theme-danger: 225 29 72;
+    --theme-danger-light: 255 228 230;
+    
+    --theme-white: 255 255 255;
+    --theme-inverse: 250 246 240;
+  }
+
+  .aurora {
+    /* Nordic Aurora — Glacial Midnight */
+    --theme-base: 9 13 26; /* #090d1a — Deep fjord navy */
+    --theme-surface: 18 24 44; /* #12182c — Midnight cobalt */
+    --theme-surface-hover: 25 34 62;
+    --theme-elevated: 23 31 56;
+    --theme-elevated-hover: 31 42 75;
+    
+    --theme-border: 37 50 90; /* #25325a */
+    
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    
+    --theme-primary: 240 253 250; /* #f0fdfa — Glacial ice white */
+    --theme-secondary: 153 193 209; /* #99c1d1 */
+    --theme-tertiary: 92 130 150;
+    
+    --theme-accent: 45 212 191; /* #2dd4bf — Aurora Borealis Teal */
+    --theme-accent-hover: 20 184 166;
+    --theme-accent-light: 23 31 56;
+    
+    --theme-danger: 244 63 94;
+    --theme-danger-light: 76 5 25;
+    
+    --theme-white: 18 24 44;
+    --theme-inverse: 9 13 26;
+  }
 }
 
 @layer base {
@@ -330,11 +505,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  :root, .arctic {
+  :root, .porcelain, .light, .earthy, .arctic, .matcha, .solaris {
     color-scheme: light;
   }
   
-  .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite {
+  .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite, .sakura, .aurora {
     color-scheme: dark;
     /* Soften 3D Neumorphism shadows for dark themes */
     --shadow-3d-card: 0 4px 20px rgba(0, 0, 0, 0.4);

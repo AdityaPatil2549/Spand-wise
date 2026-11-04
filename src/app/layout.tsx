@@ -71,7 +71,7 @@ export default function RootLayout({
   attribute="class" 
   defaultTheme="light" 
   enableSystem={false}
-  themes={['light', 'dark', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro', 'neon-sunset', 'graphite']}
+  themes={['light', 'dark', 'earthy', 'matcha', 'sakura', 'solaris', 'aurora', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro', 'neon-sunset', 'graphite']}
  >
  <GlobalProviders>
  {children}

@@ -11,10 +11,28 @@ export const DashboardSkeleton: React.FC = () => {
   return (
     <div className="flex flex-col w-full pb-32 md:pb-16 animate-pulse" aria-busy="true" aria-label="Loading dashboard">
       {/* Top Header Shell */}
-      <div className="mb-6 space-y-2.5">
+      <div className="mb-5 space-y-2.5">
         <Skeleton className="h-3.5 w-32 rounded-full" />
-        <Skeleton className="h-10 w-72 sm:w-96 rounded-xl" />
-        <Skeleton className="h-4 w-60 sm:w-80 rounded-md" />
+        <Skeleton className="h-9 w-72 sm:w-96 rounded-xl" />
+        <Skeleton className="h-3.5 w-60 sm:w-80 rounded-md" />
+      </div>
+
+      {/* Primary Hero Command Row Skeleton: 1-Tap Fast-Log Bar */}
+      <div className="mb-5 rounded-[28px] p-5 bg-theme-surface/70 border border-theme-border/40 flex flex-wrap gap-2.5 items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-2xl" />
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-28 rounded-md" />
+            <Skeleton className="h-3 w-40 rounded-md" />
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Skeleton className="h-10 w-24 rounded-2xl" />
+          <Skeleton className="h-10 w-28 rounded-2xl" />
+          <Skeleton className="h-10 w-24 rounded-2xl" />
+          <Skeleton className="h-10 w-24 rounded-2xl" />
+          <Skeleton className="h-10 w-24 rounded-2xl" />
+        </div>
       </div>
 
       {/* 3-Column Bento Grid Shell */}
@@ -54,16 +72,6 @@ export const DashboardSkeleton: React.FC = () => {
             <Skeleton className="h-3.5 w-28 rounded-md" />
             <Skeleton className="h-3.5 w-20 rounded-md" />
           </div>
-        </div>
-
-        {/* Tile C: 1-Tap Fast-Log Bar (Col-Span 12) */}
-        <div className="lg:col-span-12 rounded-2xl p-4 bg-theme-surface/70 border border-theme-border/40 flex flex-wrap gap-2.5 items-center">
-          <Skeleton className="h-4 w-28 rounded-md mr-3" />
-          <Skeleton className="h-9 w-24 rounded-full" />
-          <Skeleton className="h-9 w-28 rounded-full" />
-          <Skeleton className="h-9 w-24 rounded-full" />
-          <Skeleton className="h-9 w-24 rounded-full" />
-          <Skeleton className="h-9 w-28 rounded-full" />
         </div>
 
         {/* Tile D: Recent Activity Ledger (Col-Span 8) */}

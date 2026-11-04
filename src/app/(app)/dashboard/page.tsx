@@ -15,9 +15,9 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 
 // Bento Components
 import { DashboardSkeleton } from '@/components/features/dashboard/DashboardSkeleton';
+import { BentoFastLogBar } from '@/components/features/dashboard/BentoFastLogBar';
 import { BentoHeroBalance } from '@/components/features/dashboard/BentoHeroBalance';
 import { BentoVelocitySparkline } from '@/components/features/dashboard/BentoVelocitySparkline';
-import { BentoFastLogBar } from '@/components/features/dashboard/BentoFastLogBar';
 import { BentoUpcomingSplits } from '@/components/features/dashboard/BentoUpcomingSplits';
 
 export default function DashboardPage() {
@@ -63,7 +63,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col w-full pb-32 md:pb-16 animate-in fade-in duration-300">
       {/* Top Section: Overview Header */}
-      <section className="mb-6 space-y-1">
+      <section className="mb-5 space-y-1">
         <div className="flex items-center gap-2">
           <span className="text-[11px] tracking-widest font-mono font-bold text-theme-accent uppercase px-2.5 py-0.5 rounded-full bg-theme-accent/10 border border-theme-accent/20">
             Overview • {format(new Date(), 'MMMM yyyy')}
@@ -74,7 +74,7 @@ export default function DashboardPage() {
           </span>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-1.5">
           {isOverBudget ? (
             <div>
               <h1 className="font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold text-theme-primary tracking-tight flex flex-wrap gap-x-2 text-balance leading-tight">
@@ -85,7 +85,7 @@ export default function DashboardPage() {
                   over budget.
                 </TextEffect>
               </h1>
-              <p className="text-xs sm:text-sm text-theme-secondary max-w-xl mt-1 text-pretty">
+              <p className="text-xs sm:text-sm text-theme-secondary max-w-xl mt-0.5 text-pretty">
                 Monthly expenditures have passed your allocated threshold. Adjust discretionary spending or recalibrate limits.
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
                   Track.
                 </TextEffect>
               </h1>
-              <p className="text-xs sm:text-sm text-theme-secondary max-w-xl mt-1 text-pretty">
+              <p className="text-xs sm:text-sm text-theme-secondary max-w-xl mt-0.5 text-pretty">
                 Spending velocity is healthy. Keep adhering to your daily safe runway to meet this month's savings goal.
               </p>
             </div>
@@ -107,7 +107,12 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* High-Density 3-Column Bento Grid */}
+      {/* Primary Hero Command Row: 1-Tap Fast-Log Bar (Prime Focus) */}
+      <section className="mb-5">
+        <BentoFastLogBar />
+      </section>
+
+      {/* Bento Grid: Financial Intelligence & Ledger Cockpit */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6 items-stretch">
         {/* Tile A: Hero Balance & Safe Daily Spend (Col-Span 7) */}
         <div className="lg:col-span-7 flex">
@@ -127,11 +132,6 @@ export default function DashboardPage() {
             budgetAmount={budgetAmount}
             totalSpent={totalSpent}
           />
-        </div>
-
-        {/* Tile C: Student 1-Tap Fast-Log Bar (Col-Span 12) */}
-        <div className="lg:col-span-12">
-          <BentoFastLogBar />
         </div>
 
         {/* Tile D: Recent Activity Ledger (Col-Span 8) */}
