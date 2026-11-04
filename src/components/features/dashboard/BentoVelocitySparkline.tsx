@@ -105,6 +105,14 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
   const idealEnd = getCoordinates(daysInMonth, budgetAmount);
   const idealPath = `M ${idealStart.x} ${idealStart.y} L ${idealEnd.x} ${idealEnd.y}`;
 
+  // Build predictive projection line (from today to end of month)
+  const todayPoint = actualPoints[actualPoints.length - 1];
+  const projectedPoint = getCoordinates(daysInMonth, projectedTotal);
+  const hasProjection = currentDay < daysInMonth && !!todayPoint;
+  const projectedPath = hasProjection
+    ? `M ${todayPoint.x} ${todayPoint.y} L ${projectedPoint.x} ${projectedPoint.y}`
+    : '';
+
   return (
     <div className="relative w-full rounded-[28px] p-6 sm:p-8 bg-theme-surface/70 border border-theme-border/60 flex flex-col justify-between min-h-[350px] shadow-sm">
       {/* Top Header */}
@@ -174,6 +182,19 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
           {/* Actual Gradient Fill Area */}
           {areaPath && <path d={areaPath} fill="url(#velocityGradient)" />}
 
+          {/* Predictive Run-rate Projection Curve (dashed cyan) */}
+          {projectedPath && (
+            <path
+              d={projectedPath}
+              stroke="#06b6d4"
+              strokeWidth="2"
+              strokeDasharray="3 3"
+              strokeLinecap="round"
+              fill="none"
+              opacity="0.85"
+            />
+          )}
+
           {/* Actual Cumulative Trajectory Line */}
           {actualPath && (
             <path
@@ -183,6 +204,18 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
+            />
+          )}
+
+          {/* Day 30 Projected Run-rate Pin */}
+          {hasProjection && (
+            <circle
+              cx={projectedPoint.x}
+              cy={projectedPoint.y}
+              r="3.5"
+              className="fill-cyan-400"
+              stroke="#0891b2"
+              strokeWidth="1.5"
             />
           )}
 
@@ -212,6 +245,11 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
             />{' '}
             Actual
           </span>
+          {hasProjection && (
+            <span className="flex items-center gap-1 text-cyan-600 dark:text-cyan-400">
+              <span className="w-2.5 h-0.5 bg-cyan-500 inline-block border-b border-dashed" /> Projected
+            </span>
+          )}
         </div>
       </div>
 

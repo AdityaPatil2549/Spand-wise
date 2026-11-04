@@ -4,6 +4,7 @@ import React from 'react';
 import {
   AreaChart,
   Area,
+  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -18,6 +19,7 @@ import { Flame, TrendingUp, TrendingDown, Calendar, Activity } from 'lucide-reac
 export interface AreaChartPoint {
   date: string;
   spent: number | null;
+  projected?: number | null;
 }
 
 export interface PastBudgetPoint {
@@ -98,7 +100,10 @@ export const BurnRateVelocityChart: React.FC<BurnRateVelocityChartProps> = ({
               />
               <YAxis hide />
               <Tooltip
-                formatter={(val: unknown) => [formatCurrency(Number(val) || 0), 'Cumulative Spent']}
+                formatter={(val: unknown, name: unknown) => [
+                  formatCurrency(Number(val) || 0),
+                  name === 'projected' ? 'Projected Pacing' : 'Cumulative Spent',
+                ]}
                 contentStyle={{
                   backgroundColor: 'var(--theme-surface)',
                   borderColor: 'var(--theme-border)',
@@ -113,6 +118,14 @@ export const BurnRateVelocityChart: React.FC<BurnRateVelocityChartProps> = ({
                 stroke="#10b981"
                 strokeWidth={2.5}
                 fill="url(#areaGradient)"
+              />
+              <Line
+                type="monotone"
+                dataKey="projected"
+                stroke="#06b6d4"
+                strokeWidth={2}
+                strokeDasharray="4 4"
+                dot={false}
               />
             </AreaChart>
           </ResponsiveContainer>

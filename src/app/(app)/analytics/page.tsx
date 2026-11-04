@@ -180,16 +180,24 @@ export default function AnalyticsPage() {
     const end = endOfMonth(now);
     const days = eachDayOfInterval({ start, end });
 
+    const currentDay = Math.max(1, getDate(now));
+    const avgDailyBurn = total / currentDay;
+
     let cumulative = 0;
     const area = days.map((day) => {
       const dayStr = format(day, 'yyyy-MM-dd');
       const daySpend = dayMap[dayStr] || 0;
+      const dayNum = getDate(day);
       if (day <= now) {
         cumulative += daySpend;
       }
+      const projected =
+        dayNum >= currentDay ? Math.round(total + (dayNum - currentDay) * avgDailyBurn) : null;
+
       return {
         date: format(day, 'MMM d'),
         spent: day <= now ? cumulative : null,
+        projected,
       };
     });
 

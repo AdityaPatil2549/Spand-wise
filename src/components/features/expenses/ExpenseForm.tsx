@@ -1,6 +1,8 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { Timestamp } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
+import { Sparkles } from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +18,7 @@ import { useStore } from '@/store';
 import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
 import { getLocalMonthString } from '@/lib/date-sharding';
+import { predictCategory } from '@/lib/ml/categorizer';
 import {
  MAX_EXPENSE_AMOUNT,
  MIN_EXPENSE_AMOUNT,
@@ -53,6 +56,7 @@ interface ExpenseFormProps {
 export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: ExpenseFormProps) => {
   const user = useStore((s) => s.user);
   const householdId = useStore((s) => s.householdId);
+  const categoriesMap = useStore((s) => s.categoriesMap);
   const addToast = useStore((s) => s.addToast);
   const addExpenseOptimistic = useStore((s) => s.addExpenseOptimistic);
   const updateExpenseOptimistic = useStore((s) => s.updateExpenseOptimistic);
@@ -61,6 +65,11 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
   const isEdit = !!editingExpense;
   const haptic = useHaptic();
+
+  // ML Auto-Categorization State
+  const [isAutoCategorized, setIsAutoCategorized] = useState(false);
+  const [autoCategoryName, setAutoCategoryName] = useState<string | null>(null);
+  const [userSelectedCategoryManually, setUserSelectedCategoryManually] = useState(false);
 
   const triggerConfetti = () => {
     const duration = 2000;
@@ -115,8 +124,29 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
   const currentDateTime = watch('date') || '';
   const currentType = watch('type');
+  const watchedNote = watch('note');
+  const watchedAmount = watch('amount');
   const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
   const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
+
+  // Intelligent real-time categorizer effect
+  useEffect(() => {
+    if (isEdit) return; // Never override existing transactions automatically
+    if (userSelectedCategoryManually) return; // Respect manual selection by user
+    if (!watchedNote || watchedNote.trim().length < 2) {
+      setIsAutoCategorized(false);
+      setAutoCategoryName(null);
+      return;
+    }
+
+    const prediction = predictCategory(watchedNote, watchedAmount, currentType);
+    if (prediction && prediction.confidence >= 0.65) {
+      setValue('categoryId', prediction.categoryId, { shouldValidate: true });
+      setIsAutoCategorized(true);
+      const catName = categoriesMap.get(prediction.categoryId)?.name || prediction.categoryId;
+      setAutoCategoryName(catName);
+    }
+  }, [watchedNote, watchedAmount, userSelectedCategoryManually, isEdit, currentType, categoriesMap, setValue]);
 
   const onSubmit = async (data: ExpenseFormValues) => {
     if (!user) return;
@@ -325,10 +355,17 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
                 setValue('amount', data.amount, { shouldValidate: true });
               }
               if (data.date) {
-                // We use watch('date') to grab the current state, but it might be stale in closure. 
-                // However, since it's an inline function, we can just let react-hook-form handle it.
-                // It's safer to just set the date directly to noon on that day if we can't reliably get the time.
                 setValue('date', `${data.date}T12:00`, { shouldValidate: true });
+              }
+              if (data.note) {
+                setValue('note', data.note, { shouldValidate: true });
+              }
+              if (data.categoryId) {
+                setValue('categoryId', data.categoryId, { shouldValidate: true });
+                setUserSelectedCategoryManually(false);
+                setIsAutoCategorized(true);
+                const catName = categoriesMap.get(data.categoryId)?.name || data.categoryId;
+                setAutoCategoryName(catName);
               }
             }} 
           />
@@ -359,24 +396,41 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         </div>
       </div>
 
- {/* Category Picker */}
- <div>
- <label className="text-sm font-medium text-theme-secondary mb-2 block font-body">
- Category
- </label>
- <Controller
- name="categoryId"
- control={control}
-  render={({ field }) => (
-    <CategoryPicker selectedId={field.value} onSelect={field.onChange} type={currentType} />
-  )}
- />
- {errors.categoryId && (
- <p className="mt-1 text-xs text-red-500" role="alert">
- {errors.categoryId.message}
- </p>
- )}
- </div>
+      {/* Category Picker */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-medium text-theme-secondary block font-body">
+            Category
+          </label>
+          {isAutoCategorized && autoCategoryName && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-theme-accent bg-theme-accent/10 px-2 py-0.5 rounded-full border border-theme-accent/20 animate-in fade-in duration-200">
+              <Sparkles className="w-3 h-3 stroke-[2.2]" />
+              Auto-detected: {autoCategoryName}
+            </span>
+          )}
+        </div>
+        <Controller
+          name="categoryId"
+          control={control}
+          render={({ field }) => (
+            <CategoryPicker
+              selectedId={field.value}
+              onSelect={(catId) => {
+                field.onChange(catId);
+                setUserSelectedCategoryManually(true);
+                setIsAutoCategorized(false);
+                setAutoCategoryName(null);
+              }}
+              type={currentType}
+            />
+          )}
+        />
+        {errors.categoryId && (
+          <p className="mt-1 text-xs text-red-500" role="alert">
+            {errors.categoryId.message}
+          </p>
+        )}
+      </div>
 
  {/* Note Input */}
  <Input

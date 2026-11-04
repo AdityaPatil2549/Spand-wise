@@ -178,14 +178,17 @@ export function calculateFinancialHealth(inputs: FinancialHealthInputs): Financi
   let momDelta = 0;
 
   if (prevMonthSpent > 0 && totalSpent > 0) {
-    const diff = totalSpent - prevMonthSpent;
-    momDelta = diff / prevMonthSpent;
+    // Normalized comparison: compare current daily burn rate against prior month daily baseline
+    const currentDailyBurn = totalSpent / safeDaysElapsed;
+    const prevDailyBurn = prevMonthSpent / Math.max(totalDaysInMonth, 28);
+    const diff = currentDailyBurn - prevDailyBurn;
+    momDelta = diff / prevDailyBurn;
 
     if (momDelta <= 0) {
-      // Spending contracted or stayed stable
+      // Velocity contracted or stayed stable
       momentumScore = 12 + 3 * Math.min(1, Math.abs(momDelta));
     } else {
-      // Spending expanded
+      // Velocity accelerated
       momentumScore = Math.max(0, 12 * (1 - 1.2 * momDelta));
     }
   }
