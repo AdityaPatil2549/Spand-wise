@@ -14,13 +14,13 @@
     
     --theme-border: 216 208 200;
     
-    --theme-font-sans: var(--font-nunito);
-    --theme-font-display: var(--font-pacifico);
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-outfit);
     --theme-weight-body: 400;
-    --theme-weight-display: 400;
-    --theme-tracking-body: normal;
-    --theme-tracking-display: normal;
-    --theme-line-height-body: 1.6;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
     

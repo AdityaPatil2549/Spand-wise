@@ -22,31 +22,6 @@ import type { ExpenseDocument } from '@/types/firestore';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { Search, TrendingUp } from 'lucide-react';
 
-// Helper to map Lucide icon names to Material Symbols
-const getMaterialIcon = (lucideName: string = 'Package') => {
- const map: Record<string, string> = {
- Utensils: 'restaurant',
- BusFront: 'directions_bus',
- Home: 'home',
- ShoppingCart: 'shopping_cart',
- PenTool: 'edit',
- BookOpen: 'menu_book',
- GraduationCap: 'school',
- Coffee: 'local_cafe',
- ShoppingBag: 'local_mall',
- Gamepad2: 'sports_esports',
- Pill: 'medication',
- Smartphone: 'smartphone',
- BellRing: 'notifications_active',
- Plane: 'flight',
- Siren: 'emergency',
- Gift: 'redeem',
- Package: 'category',
- Users: 'group',
- };
- return map[lucideName] || 'category';
-};
-
 // Group expenses by date (e.g. "Today, July 14", "Yesterday, July 13", "July 12")
 const groupExpensesByDate = (expenses: ExpenseDocument[]) => {
  const groups: Record<string, typeof expenses> = {};
@@ -287,46 +262,44 @@ export default function ExpensesPage() {
               />
             </div>
           ) : (
-            <AnimatedGroup preset="slide" className="space-y-4">
- {Object.entries(groupedExpenses).map(([dateLabel, dayExpenses]) => (
- <div key={dateLabel} className="space-y-4">
- <p className="font-body text-xs text-theme-tertiary uppercase tracking-widest pl-4 pt-4 pb-2">{dateLabel}</p>
- 
- {dayExpenses.map((expense) => {
- const cat = categoriesMap.get(expense.categoryId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
- return (
- <InView
- key={expense.id}
- variants={{
- hidden: { opacity: 0, y: 20, filter: 'blur(4px)' },
- visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
- }}
- transition={{ duration: 0.3, ease: 'easeOut' }}
- >
- <EditExpenseMorph expense={expense} className="w-full text-left focus:outline-none">
- <TransactionCard 
- id={expense.id}
- title={expense.note || cat?.name || 'Unknown'}
- category={cat?.name || 'Unknown'}
- amount={expense.amount}
- time={format(expense.date.toDate(), 'h:mm a')}
- icon={getMaterialIcon(cat?.icon)}
- iconColor={cat?.color || '#605850'}
- iconBgClass="bg-theme-base"
- type={expense.type || 'expense'}
- />
- </EditExpenseMorph>
- </InView>
- );
- })}
- </div>
- ))}
- 
- </AnimatedGroup>
+            <div className="space-y-6">
+              {Object.entries(groupedExpenses).map(([dateLabel, dayExpenses]) => {
+                const dayTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+                return (
+                  <div key={dateLabel} className="space-y-2">
+                    <div className="flex items-center justify-between px-1.5">
+                      <p className="text-xs font-semibold text-theme-secondary uppercase tracking-wider">{dateLabel}</p>
+                      <span className="text-xs font-mono font-medium text-theme-tertiary tabular-nums">
+                        {CURRENCY_SYMBOL}{dayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+
+                    <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-xs overflow-hidden divide-y divide-theme-border/25 shadow-xs">
+                      {dayExpenses.map((expense) => {
+                        const cat = categoriesMap.get(expense.categoryId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
+                        return (
+                          <EditExpenseMorph key={expense.id} expense={expense} className="w-full text-left focus:outline-none">
+                            <TransactionCard
+                              id={expense.id}
+                              title={expense.note || cat?.name || 'Unknown'}
+                              category={cat?.name || 'Unknown'}
+                              amount={expense.amount}
+                              time={format(expense.date.toDate(), 'h:mm a')}
+                              icon={cat?.icon || 'Package'}
+                              iconColor={cat?.color || '#605850'}
+                              type={expense.type || 'expense'}
+                            />
+                          </EditExpenseMorph>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
- 
- </div>
- </main>
- </div>
- );
+        </div>
+      </main>
+    </div>
+  );
 }

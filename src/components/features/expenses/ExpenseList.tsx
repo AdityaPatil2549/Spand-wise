@@ -12,81 +12,77 @@ import { formatCurrency } from '@/lib/utils/format';
 import type { ExpenseDocument } from '@/types/firestore';
 
 interface ExpenseListProps {
- onEditExpense: (expense: ExpenseDocument) => void;
- /** If true, shows only the first 5 expenses (for dashboard preview) */
- preview?: boolean;
- /** Optional pre-filtered expenses to display instead of the full store list */
- expenses?: ExpenseDocument[];
+  onEditExpense: (expense: ExpenseDocument) => void;
+  /** If true, shows only the first 5 expenses (for dashboard preview) */
+  preview?: boolean;
+  /** Optional pre-filtered expenses to display instead of the full store list */
+  expenses?: ExpenseDocument[];
 }
 
 /**
  * Expense timeline grouped by day.
- * Used on both the dashboard (preview=true) and the full expenses page.
+ * Formatted as an Inset Grouped list with hairlines and clean tracking.
  */
 export const ExpenseList = ({ onEditExpense, preview = false, expenses: propExpenses }: ExpenseListProps) => {
- const storeExpenses = useStore((s) => s.expenses);
- const expenses = propExpenses ?? storeExpenses;
- const isLoading = useStore((s) => s.isExpensesLoading);
+  const storeExpenses = useStore((s) => s.expenses);
+  const expenses = propExpenses ?? storeExpenses;
+  const isLoading = useStore((s) => s.isExpensesLoading);
 
- const displayedExpenses = preview ? expenses.slice(0, 5) : expenses;
+  const displayedExpenses = preview ? expenses.slice(0, 5) : expenses;
 
- const dayGroups = useMemo(
- () => groupExpensesByDay(displayedExpenses),
- [displayedExpenses]
- );
+  const dayGroups = useMemo(
+    () => groupExpensesByDay(displayedExpenses),
+    [displayedExpenses]
+  );
 
- if (isLoading) {
- return (
- <div className="divide-y divide-[var(--surface-secondary)]">
- {[...Array(4)].map((_, i) => (
- <ExpenseItemSkeleton key={i} />
- ))}
- </div>
- );
- }
+  if (isLoading) {
+    return (
+      <div className="divide-y divide-theme-border/30">
+        {[...Array(4)].map((_, i) => (
+          <ExpenseItemSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
- if (dayGroups.length === 0) {
- return (
- <EmptyState
- icon={Receipt}
- title="No expenses yet"
- description="Click the Add Expense button to log your first expense"
- />
- );
- }
+  if (dayGroups.length === 0) {
+    return (
+      <EmptyState
+        icon={Receipt}
+        title="No expenses yet"
+        description="Click the Add Expense button to log your first expense"
+      />
+    );
+  }
 
- return (
- <div className="flex flex-col">
- {dayGroups.map((group) => (
- <div key={group.dateKey}>
- {/* Sticky day header */}
- <div className="flex items-center justify-between px-4 py-2 sticky top-0 z-10 bg-[var(--surface-base)]/95 backdrop-blur-sm">
- <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
- {group.label}
- </span>
- <span className="text-xs font-medium text-[var(--text-tertiary)]">
- {formatCurrency(group.totalAmount)}
- </span>
- </div>
+  return (
+    <div className="flex flex-col gap-6">
+      {dayGroups.map((group) => (
+        <div key={group.dateKey} className="space-y-2">
+          {/* Sticky day header */}
+          <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 sticky top-0 z-10 bg-theme-base/90 backdrop-blur-md">
+            <span className="text-xs font-semibold text-theme-secondary uppercase tracking-wider">
+              {group.label}
+            </span>
+            <span className="text-xs font-mono font-medium text-theme-tertiary tabular-nums">
+              {formatCurrency(group.totalAmount)}
+            </span>
+          </div>
 
- {/* Expense items */}
- <div className="bg-[var(--surface-primary)] rounded-2xl overflow-hidden mx-4 mb-3 shadow-[var(--shadow-card)]">
- <AnimatePresence>
- {group.expenses.map((expense, idx) => (
- <div key={expense.id}>
- <ExpenseListItem
- expense={expense}
- onEdit={onEditExpense}
- />
- {idx < group.expenses.length - 1 && (
- <div className="h-px bg-[var(--surface-secondary)] mx-4" />
- )}
- </div>
- ))}
- </AnimatePresence>
- </div>
- </div>
- ))}
- </div>
- );
+          {/* Unified Inset Group */}
+          <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-xs overflow-hidden mx-1 sm:mx-4 divide-y divide-theme-border/25 shadow-xs">
+            <AnimatePresence initial={false}>
+              {group.expenses.map((expense) => (
+                <ExpenseListItem
+                  key={expense.id}
+                  expense={expense}
+                  onEdit={onEditExpense}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { getMaterialIcon, formatCurrency } from '@/lib/utils';
 import { FormattedCurrency } from '@/components/ui/FormattedCurrency';
+import { CategoryIcon } from '@/components/shared/CategoryIcon';
 
 interface TransactionRowProps {
   title: string;
@@ -10,34 +10,64 @@ interface TransactionRowProps {
   categoryColor: string;
   iconName?: string;
   type?: 'expense' | 'income';
+  isStandalone?: boolean;
 }
 
 export const TransactionRow: React.FC<TransactionRowProps> = ({
-  title, categoryName, amount, formattedTime, categoryColor, iconName, type = 'expense'
+  title,
+  categoryName,
+  amount,
+  formattedTime,
+  categoryColor,
+  iconName,
+  type = 'expense',
+  isStandalone = false,
 }) => {
   const isIncome = type === 'income';
-  
+
   return (
-    <span className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-[var(--surface-base)] border border-[var(--border-light)] hover:bg-black/5 transition-colors">
-      <span className="flex items-center gap-3.5 min-w-0">
-        <span 
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: `${categoryColor}15`, color: categoryColor }}
+    <div
+      className={`flex items-center justify-between py-3 px-4 transition-colors hover:bg-theme-surface-hover/70 ${
+        isStandalone
+          ? 'rounded-2xl bg-theme-surface/70 border border-theme-border/40 shadow-xs'
+          : 'bg-transparent'
+      }`}
+    >
+      <div className="flex items-center gap-3.5 min-w-0">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
+          style={{
+            backgroundColor: `${categoryColor}18`,
+            color: categoryColor,
+            border: `1px solid ${categoryColor}25`,
+          }}
+          aria-hidden="true"
         >
-          <span className="material-symbols-outlined text-[20px]">{getMaterialIcon(iconName)}</span>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-manrope font-medium text-sm text-[var(--text-primary)] truncate">{title}</span>
-          <span className="block font-manrope text-xs text-[var(--text-secondary)]">{categoryName} • {formattedTime}</span>
-        </span>
-      </span>
-      <span className="text-right flex-shrink-0 pl-4">
-        {/* Tabular numbers ensure Rupee digits never shift column alignment */}
-        <span className={`font-semibold text-sm ${isIncome ? 'text-[#10b981]' : 'text-[var(--text-primary)]'}`}>
-          {isIncome ? '+' : ''}
+          <CategoryIcon iconName={iconName} size={18} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-sans font-medium text-sm text-theme-primary truncate">
+            {title}
+          </p>
+          <p className="font-sans text-xs text-theme-secondary flex items-center gap-1.5 mt-0.5">
+            <span>{categoryName}</span>
+            <span className="text-theme-tertiary/60">•</span>
+            <span>{formattedTime}</span>
+          </p>
+        </div>
+      </div>
+      <div className="text-right flex-shrink-0 pl-4">
+        {/* Tabular numbers ensure digits never shift column alignment */}
+        <span
+          className={`font-semibold text-sm tabular-nums tracking-tight ${
+            isIncome ? 'text-emerald-500' : 'text-theme-primary'
+          }`}
+        >
+          {isIncome ? '+' : '-'}
           <FormattedCurrency amount={amount} />
         </span>
-      </span>
-    </span>
+      </div>
+    </div>
   );
 };
+

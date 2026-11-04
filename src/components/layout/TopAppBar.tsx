@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { useMemo } from 'react';
 import { useStore } from '@/store';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
+import { Bell, User, Settings, LogOut, AlertTriangle, PieChart, Sparkles } from 'lucide-react';
 
 export function TopAppBar() {
   const { addToast, expenses, budget, categoriesMap, user } = useStore();
@@ -44,7 +44,7 @@ export function TopAppBar() {
   }, []);
 
   const alerts = useMemo(() => {
-    const newAlerts: Array<{ id: string, title: string, message: string, icon: string, color: string }> = [];
+    const newAlerts: Array<{ id: string; title: string; message: string; icon: 'warning' | 'pie_chart' | 'sparkles'; color: string }> = [];
     if (!budget) return newAlerts;
 
     // Check overall budget
@@ -56,7 +56,7 @@ export function TopAppBar() {
           title: 'Overall Budget Alert',
           message: `You've used ${percent.toFixed(0)}% of your total budget this month.`,
           icon: 'warning',
-          color: 'theme-danger'
+          color: 'text-rose-500 bg-rose-500/10'
         });
       }
     }
@@ -78,7 +78,7 @@ export function TopAppBar() {
               title: `${catName} Budget Alert`,
               message: `You've used ${percent.toFixed(0)}% of your ${catName} budget.`,
               icon: 'pie_chart',
-              color: 'theme-accent'
+              color: 'text-amber-500 bg-amber-500/10'
             });
           }
         }
@@ -94,9 +94,9 @@ export function TopAppBar() {
       {
         id: 'static-feature',
         title: 'New Feature',
-        message: 'Try our new analytics dashboard to spot trends!',
-        icon: 'tips_and_updates',
-        color: 'theme-accent'
+        message: 'Explore our refreshed analysis dashboard to spot velocity trends.',
+        icon: 'sparkles' as const,
+        color: 'text-theme-accent bg-theme-accent/10'
       }
     ];
   }, [alerts]);
@@ -105,12 +105,12 @@ export function TopAppBar() {
     ? allNotifications 
     : allNotifications.slice(0, 3);
 
-  // If we have actual dynamic alerts that haven't been read, show the red dot
+  // If we have actual dynamic alerts that haven't been read, show the indicator dot
   const hasUnread = allNotifications.some((a) => !readAlerts.includes(a.id));
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between w-full px-4 sm:px-6 md:px-8 h-16 md:h-18 bg-theme-base/90 backdrop-blur-md border-b border-theme-border/30 transition-colors select-none">
-      {/* Left: Mobile Branding or Desktop Section Breadcrumb */}
+      {/* Left: Mobile Branding or Desktop Breadcrumb */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard" className="md:hidden flex items-center gap-2 group">
           <span 
@@ -134,10 +134,11 @@ export function TopAppBar() {
         <div className="relative" ref={notificationsRef}>
           <button 
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center relative"
+            className="text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer flex items-center justify-center w-9 h-9 rounded-full hover:bg-theme-surface-hover/80 active:scale-95 relative"
+            aria-label="View notifications"
           >
-            <span className="material-symbols-outlined text-xl">notifications</span>
-            {hasUnread && <span className="absolute -top-1 -right-1 w-2 h-2 bg-theme-danger rounded-full"></span>}
+            <Bell className="w-4 h-4 stroke-[2]" />
+            {hasUnread && <span className="absolute 1 top-2 right-2 w-2 h-2 bg-rose-500 rounded-full" />}
           </button>
 
           <AnimatePresence>
@@ -146,11 +147,11 @@ export function TopAppBar() {
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-4 w-80 bg-theme-white border border-theme-border/50 shadow-2xl rounded-2xl overflow-hidden origin-top-right"
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute right-0 mt-3 w-80 bg-theme-surface border border-theme-border/60 shadow-xl rounded-2xl overflow-hidden origin-top-right z-50"
               >
-                <div className="p-4 border-b border-theme-border/30 flex justify-between items-center bg-theme-surface/30">
-                  <h4 className="font-headline font-medium text-theme-primary">Notifications</h4>
+                <div className="p-4 border-b border-theme-border/30 flex justify-between items-center bg-theme-surface/50">
+                  <h4 className="font-sans font-semibold text-sm text-theme-primary">Notifications</h4>
                   <button 
                     onClick={() => {
                       const allIds = allNotifications.map(a => a.id);
@@ -161,20 +162,26 @@ export function TopAppBar() {
                       setIsNotificationsOpen(false);
                       addToast({ type: 'success', message: 'All notifications marked as read' });
                     }}
-                    className="text-xs text-theme-accent hover:opacity-80"
+                    className="text-xs text-theme-accent hover:opacity-80 font-medium"
                   >
                     Mark all read
                   </button>
                 </div>
-                <div className="max-h-[300px] overflow-y-auto p-2">
+                <div className="max-h-[300px] overflow-y-auto p-2 divide-y divide-theme-border/15">
                   {visibleNotifications.map((alert) => (
-                    <div key={alert.id} className="p-3 hover:bg-theme-surface-hover rounded-xl transition-colors cursor-pointer flex gap-3">
-                      <div className={`w-8 h-8 rounded-full bg-${alert.color}/10 flex items-center justify-center text-${alert.color} shrink-0`}>
-                        <span className="material-symbols-outlined text-sm">{alert.icon}</span>
+                    <div key={alert.id} className="p-3 hover:bg-theme-surface-hover/70 rounded-xl transition-colors cursor-pointer flex gap-3">
+                      <div className={`w-8 h-8 rounded-xl ${alert.color} flex items-center justify-center shrink-0`}>
+                        {alert.icon === 'warning' ? (
+                          <AlertTriangle className="w-4 h-4" />
+                        ) : alert.icon === 'pie_chart' ? (
+                          <PieChart className="w-4 h-4" />
+                        ) : (
+                          <Sparkles className="w-4 h-4" />
+                        )}
                       </div>
-                      <div>
-                        <p className="font-body text-sm text-theme-primary font-medium">{alert.title}</p>
-                        <p className="font-body text-xs text-theme-secondary mt-0.5">{alert.message}</p>
+                      <div className="min-w-0">
+                        <p className="font-sans text-xs font-semibold text-theme-primary">{alert.title}</p>
+                        <p className="font-sans text-xs text-theme-secondary mt-0.5 leading-relaxed">{alert.message}</p>
                       </div>
                     </div>
                   ))}
@@ -182,7 +189,7 @@ export function TopAppBar() {
                   {allNotifications.length > 3 && (
                     <button 
                       onClick={() => setShowAllNotifications(!showAllNotifications)}
-                      className="w-full mt-2 py-2 text-center text-sm font-medium text-theme-accent hover:bg-theme-accent/5 rounded-lg transition-colors"
+                      className="w-full mt-2 py-2 text-center text-xs font-semibold text-theme-accent hover:bg-theme-accent/5 rounded-lg transition-colors"
                     >
                       {showAllNotifications ? 'Show less' : `Show ${allNotifications.length - 3} more`}
                     </button>
@@ -197,13 +204,14 @@ export function TopAppBar() {
         <div className="relative" ref={profileRef}>
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="text-theme-tertiary hover:text-theme-accent transition-colors cursor-pointer flex items-center"
+            className="text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer flex items-center"
+            aria-label="Open user profile menu"
           >
             {user?.photoURL ? (
               <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full border border-theme-border/50 object-cover" />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
-                <span className="material-symbols-outlined text-theme-accent text-xl">account_circle</span>
+              <div className="w-8 h-8 rounded-full bg-theme-surface border border-theme-border/60 flex items-center justify-center text-theme-secondary">
+                <User className="w-4 h-4 stroke-[2]" />
               </div>
             )}
           </button>
@@ -214,26 +222,26 @@ export function TopAppBar() {
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-                className="absolute right-0 mt-4 w-72 bg-theme-white border border-theme-border/50 shadow-2xl rounded-2xl overflow-hidden origin-top-right"
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="absolute right-0 mt-3 w-72 bg-theme-surface border border-theme-border/60 shadow-xl rounded-2xl overflow-hidden origin-top-right z-50"
               >
                 {/* ID Card Header */}
-                <div className="p-5 border-b border-theme-border/30 bg-theme-surface/30">
+                <div className="p-4 border-b border-theme-border/30 bg-theme-surface/50">
                   <div className="flex items-center gap-3">
                     {user?.photoURL ? (
-                      <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-12 h-12 rounded-full border border-theme-border/50 object-cover" />
+                      <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-10 h-10 rounded-full border border-theme-border/50 object-cover" />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
-                        <span className="font-headline text-lg text-theme-accent">
+                      <div className="w-10 h-10 rounded-full bg-theme-accent/10 flex items-center justify-center border border-theme-accent/20">
+                        <span className="font-sans font-semibold text-sm text-theme-accent">
                           {user?.displayName ? user.displayName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
                         </span>
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-headline text-theme-primary font-medium truncate">
-                        {user?.displayName || 'Welcome back'}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-sans font-semibold text-sm text-theme-primary truncate">
+                        {user?.displayName || 'SpendWise Student'}
                       </p>
-                      <p className="font-body text-xs text-theme-secondary truncate">
+                      <p className="font-sans text-xs text-theme-secondary truncate">
                         {user?.email}
                       </p>
                     </div>
@@ -243,20 +251,20 @@ export function TopAppBar() {
                 {/* Financial Snapshot */}
                 {budget && budget.budgetAmount > 0 && (
                   <div className="p-4 border-b border-theme-border/30">
-                    <p className="text-xs font-medium text-theme-secondary uppercase tracking-widest mb-2">Monthly Budget</p>
-                    <div className="flex justify-between items-baseline mb-1">
-                      <span className="font-headline text-sm text-theme-primary">
+                    <p className="text-[11px] font-semibold text-theme-secondary uppercase tracking-wider mb-2">Monthly Budget</p>
+                    <div className="flex justify-between items-baseline mb-1 text-xs tabular-nums font-mono">
+                      <span className="font-semibold text-theme-primary">
                         {CURRENCY_SYMBOL}{budget.totalSpent.toLocaleString()}
                       </span>
-                      <span className="text-xs text-theme-tertiary">
+                      <span className="text-theme-tertiary">
                         of {CURRENCY_SYMBOL}{budget.budgetAmount.toLocaleString()}
                       </span>
                     </div>
-                    <div className="w-full bg-theme-surface rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-theme-elevated/70 rounded-full h-1.5 overflow-hidden">
                       <div 
-                        className={`h-full rounded-full transition-all duration-700 ${(budget.totalSpent / budget.budgetAmount) > 0.85 ? 'bg-theme-danger' : 'bg-theme-accent'}`} 
+                        className={`h-full rounded-full transition-all duration-500 ${(budget.totalSpent / budget.budgetAmount) > 0.85 ? 'bg-rose-500' : 'bg-theme-accent'}`} 
                         style={{ width: `${Math.min(100, (budget.totalSpent / budget.budgetAmount) * 100)}%` }}
-                      ></div>
+                      />
                     </div>
                   </div>
                 )}
@@ -266,9 +274,9 @@ export function TopAppBar() {
                   <Link 
                     href="/settings"
                     onClick={() => setIsProfileOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-surface-hover text-theme-primary transition-colors text-sm font-medium"
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-theme-surface-hover/80 text-theme-primary transition-colors text-xs font-semibold"
                   >
-                    <span className="material-symbols-outlined text-[20px] text-theme-tertiary">settings</span>
+                    <Settings className="w-4 h-4 text-theme-secondary" />
                     Account Settings
                   </Link>
                   <button 
@@ -281,9 +289,9 @@ export function TopAppBar() {
                         addToast({ type: 'error', message: 'Failed to sign out.' });
                       }
                     }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-theme-danger/10 hover:text-theme-danger text-theme-primary transition-colors text-sm font-medium"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-500/10 text-rose-500 transition-colors text-xs font-semibold"
                   >
-                    <span className="material-symbols-outlined text-[20px] text-theme-danger/70">logout</span>
+                    <LogOut className="w-4 h-4" />
                     Sign Out
                   </button>
                 </div>

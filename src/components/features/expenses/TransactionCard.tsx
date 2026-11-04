@@ -1,16 +1,16 @@
 import React from 'react';
-import { AnimatedNumber } from '@/components/ui/motion/animated-number';
-import { CURRENCY_SYMBOL } from '@/config/constants';
+import { FormattedCurrency } from '@/components/ui/FormattedCurrency';
+import { CategoryIcon } from '@/components/shared/CategoryIcon';
 
 export interface TransactionCardProps {
- id: string;
- title: string;
- category: string;
- amount: number;
- time: string;
- icon: string;
+  id: string;
+  title: string;
+  category: string;
+  amount: number;
+  time: string;
+  icon: string;
   iconColor?: string;
-  iconBgClass: string;
+  iconBgClass?: string;
   type?: 'expense' | 'income';
 }
 
@@ -20,28 +20,46 @@ export function TransactionCard({
   amount,
   time,
   icon,
-  iconColor,
-  iconBgClass,
+  iconColor = '#605850',
   type = 'expense',
 }: TransactionCardProps) {
   const isIncome = type === 'income';
 
   return (
-    <div className="group bg-theme-surface hover:bg-theme-surface-hover transition-colors duration-300 rounded-xl p-5 flex items-center gap-6 cursor-pointer border border-transparent hover:border-theme-border/40">
-      <div className={`w-12 h-12 rounded-full ${iconBgClass} flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`} style={{ color: iconColor }}>
-        <span className="material-symbols-outlined">{icon}</span>
+    <div className="group bg-transparent hover:bg-theme-surface-hover/70 transition-colors duration-150 py-3 px-4 flex items-center justify-between cursor-pointer">
+      <div className="flex items-center gap-3.5 min-w-0">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105"
+          style={{
+            backgroundColor: `${iconColor}18`,
+            color: iconColor,
+            border: `1px solid ${iconColor}25`,
+          }}
+          aria-hidden="true"
+        >
+          <CategoryIcon iconName={icon} size={18} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-sans font-medium text-sm text-theme-primary truncate">
+            {title}
+          </p>
+          <p className="font-sans text-xs text-theme-secondary flex items-center gap-1.5 mt-0.5">
+            <span>{category}</span>
+            <span className="text-theme-tertiary/60">•</span>
+            <span>{time}</span>
+          </p>
+        </div>
       </div>
-      <div className="flex-1">
-        <h4 className="font-headline text-xl text-theme-primary mb-0.5">{title}</h4>
-        <p className="font-body text-sm text-theme-secondary">{category}</p>
+      <div className="text-right flex-shrink-0 pl-4">
+        <span
+          className={`font-semibold text-sm tabular-nums tracking-tight ${
+            isIncome ? 'text-emerald-500' : 'text-theme-primary'
+          }`}
+        >
+          {isIncome ? '+' : '-'}
+          <FormattedCurrency amount={amount} />
+        </span>
       </div>
-      <div className="text-right">
-        <p className={`font-body text-lg font-medium flex justify-end items-center gap-[1px] ${isIncome ? 'text-[#10b981]' : 'text-theme-primary'}`}>
-          {isIncome ? '+' : '-'}{CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(amount)} />
-          {(amount % 1 !== 0) ? (amount % 1).toFixed(2).substring(1) : ''}
-        </p>
- <p className="font-body text-xs text-theme-tertiary">{time}</p>
- </div>
- </div>
- );
+    </div>
+  );
 }

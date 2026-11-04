@@ -183,50 +183,53 @@ export default function TransactionsPage() {
         </div>
 
         {/* Quick Filter Rail */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-semibold">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar text-xs font-medium">
           <button
             type="button"
             onClick={() => setQuickFilter('all')}
-            className={`px-3 py-1.5 rounded-full transition-all flex-shrink-0 ${
+            className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'all'
-                ? 'bg-theme-accent text-theme-inverse shadow-xs'
-                : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
-            All Activity
+            <span>All Activity</span>
           </button>
           <button
             type="button"
             onClick={() => setQuickFilter('upi')}
-            className={`px-3 py-1.5 rounded-full transition-all flex-shrink-0 ${
+            className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'upi'
-                ? 'bg-indigo-500 text-white shadow-xs'
-                : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
-            UPI Only
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" aria-hidden="true" />
+            <span>UPI Only</span>
           </button>
           <button
             type="button"
             onClick={() => setQuickFilter('cash')}
-            className={`px-3 py-1.5 rounded-full transition-all flex-shrink-0 ${
+            className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'cash'
-                ? 'bg-emerald-500 text-white shadow-xs'
-                : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
-            Cash Only
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+            <span>Cash Only</span>
           </button>
           <button
             type="button"
             onClick={() => setQuickFilter('high')}
-            className={`px-3 py-1.5 rounded-full transition-all flex-shrink-0 ${
+            className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'high'
-                ? 'bg-rose-500 text-white shadow-xs'
-                : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
-            Large (&gt; ₹500)
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true" />
+            <span>Large (&gt; ₹500)</span>
           </button>
         </div>
 
