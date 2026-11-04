@@ -7,6 +7,7 @@ import { BorderTrail } from '@/components/ui/motion/border-trail';
 import { DropdownMenu } from '@/components/ui/DropdownMenu';
 import { AlertTriangle, CheckCircle2, MoreHorizontal, Sparkles, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { CURRENCY_SYMBOL } from '@/config/constants';
 
 interface BentoHeroBalanceProps {
   balance: number;
@@ -90,9 +91,12 @@ export const BentoHeroBalance: React.FC<BentoHeroBalanceProps> = ({
         <p className="text-xs uppercase tracking-widest text-theme-secondary font-semibold">
           {isOverBudget ? 'Budget Deficit' : 'Available Balance'}
         </p>
-        <div className="flex items-baseline gap-2">
-          <h2 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-semibold leading-none text-theme-primary tracking-tight tabular-nums flex items-center">
-            {isOverBudget ? '-' : ''}
+        <div className="flex items-baseline gap-1.5">
+          <h2 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-semibold leading-none text-theme-primary tracking-tight tabular-nums flex items-baseline">
+            {isOverBudget && <span className="mr-1 text-rose-500 font-bold">-</span>}
+            <span className="font-sans text-3xl sm:text-4xl lg:text-5xl font-semibold text-theme-secondary mr-1 select-none">
+              {CURRENCY_SYMBOL}
+            </span>
             <AnimatedNumber value={Math.abs(balance)} />
           </h2>
         </div>
@@ -115,22 +119,22 @@ export const BentoHeroBalance: React.FC<BentoHeroBalanceProps> = ({
       {/* Metrics Split & Progress Bar */}
       <div className="relative z-10 space-y-2.5 pt-4 border-t border-theme-border/30">
         <div className="flex justify-between text-xs tabular-nums">
-          <span className="text-theme-secondary flex items-center gap-1.5">
+          <span className="text-theme-secondary flex items-center gap-1">
             Spent:{' '}
             <strong className="text-theme-primary font-semibold">
-              <AnimatedNumber value={totalSpent} />
+              {CURRENCY_SYMBOL}&nbsp;<AnimatedNumber value={totalSpent} />
             </strong>
           </span>
-          <span className="text-theme-secondary flex items-center gap-1.5">
+          <span className="text-theme-secondary flex items-center gap-1">
             Income:{' '}
             <strong className="text-emerald-500 font-semibold">
-              <AnimatedNumber value={totalIncome} />
+              {CURRENCY_SYMBOL}&nbsp;<AnimatedNumber value={totalIncome} />
             </strong>
           </span>
-          <span className="text-theme-secondary flex items-center gap-1.5">
+          <span className="text-theme-secondary flex items-center gap-1">
             Limit:{' '}
             <strong className="text-theme-primary font-semibold">
-              <AnimatedNumber value={budgetAmount} />
+              {CURRENCY_SYMBOL}&nbsp;<AnimatedNumber value={budgetAmount} />
             </strong>
           </span>
         </div>

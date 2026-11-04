@@ -16,7 +16,7 @@ import { DropdownMenu } from '@/components/ui/DropdownMenu';
 import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 import { SubscriptionListItem } from '@/components/features/scheduled/SubscriptionListItem';
 import { dateToInputValue } from '@/lib/utils/date';
-import { addScheduledTransaction, deleteScheduledTransaction } from '@/lib/scheduled';
+import { addScheduledTransaction, deleteScheduledTransaction, updateScheduledTransaction } from '@/lib/scheduled';
 import { addExpense } from '@/lib/expenses';
 import { Timestamp } from 'firebase/firestore';
 
@@ -33,14 +33,26 @@ export default function ScheduledPage() {
   const addToast = useStore(s => s.addToast);
   
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'bills' | 'subscriptions'>('all');
   
   // Form State
+  const [note, setNote] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [frequency, setFrequency] = useState<'one-time' | 'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [startDate, setStartDate] = useState(dateToInputValue());
 
   const activeScheduled = scheduledTransactions.filter(t => t.isActive);
+
+  const filteredScheduled = useMemo(() => {
+    if (activeTab === 'bills') {
+      return activeScheduled.filter(s => s.frequency === 'one-time');
+    }
+    if (activeTab === 'subscriptions') {
+      return activeScheduled.filter(s => s.frequency !== 'one-time');
+    }
+    return activeScheduled;
+  }, [activeScheduled, activeTab]);
 
   const totalMonthlyCommitment = useMemo(() => {
     return activeScheduled.reduce((sum, s) => {
@@ -92,7 +104,9 @@ export default function ScheduledPage() {
       amount: parseFloat(amount),
       categoryId,
       frequency,
-      note: '',
+      note: note.trim() || null,
+      payee: note.trim() || null,
+      type: frequency === 'one-time' ? ('bill' as const) : ('subscription' as const),
       startDate: nextDueDate,
       nextDueDate,
       isActive: true,
@@ -109,6 +123,7 @@ export default function ScheduledPage() {
 
     setIsAddOpen(false);
     setAmount('');
+    setNote('');
     setCategoryId('');
     setStartDate(dateToInputValue());
     
@@ -119,6 +134,7 @@ export default function ScheduledPage() {
     if (!user) return;
     const cat = categories.find(c => c.id === subscription.categoryId);
     const catName = cat?.name || 'Subscription';
+    const billTitle = subscription.note || catName;
     const now = new Date();
     const month = format(now, 'yyyy-MM');
     const tempId = `temp-sub-paid-${Date.now()}`;
@@ -128,7 +144,7 @@ export default function ScheduledPage() {
       categoryId: subscription.categoryId,
       date: Timestamp.now(),
       month,
-      note: `${catName} scheduled dues`,
+      note: `${billTitle} (${subscription.frequency === 'one-time' ? 'Bill Paid' : 'Scheduled'})`,
       paymentMode: 'bank' as const,
       isShared: false,
       isSettlement: false,
@@ -144,9 +160,19 @@ export default function ScheduledPage() {
       id: tempId,
     });
 
+    // If it's a one-time bill/IOU, mark it inactive so it moves to settled
+    if (subscription.frequency === 'one-time') {
+      removeScheduledOptimistic(subscription.id);
+      try {
+        await updateScheduledTransaction(householdId || user.uid, subscription.id, { isActive: false });
+      } catch (err) {
+        console.error('Failed to complete one-time bill:', err);
+      }
+    }
+
     addToast({
       type: 'success',
-      message: `Logged payment of ${CURRENCY_SYMBOL}${subscription.amount} for ${catName}`,
+      message: `Marked "${billTitle}" as paid (${CURRENCY_SYMBOL}${subscription.amount})`,
     });
 
     try {
@@ -154,7 +180,7 @@ export default function ScheduledPage() {
         amount: subscription.amount,
         categoryId: subscription.categoryId,
         date: now.toISOString(),
-        note: `${catName} scheduled dues`,
+        note: `${billTitle} (${subscription.frequency === 'one-time' ? 'Bill Paid' : 'Scheduled'})`,
         accountId: 'bank',
       });
       addExpenseOptimistic(created);
@@ -179,23 +205,61 @@ export default function ScheduledPage() {
     <div className="min-h-screen pb-36 pt-24 animate-fade-in">
       <div className="px-4 md:px-8 max-w-4xl mx-auto">
         
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2 tracking-tight font-display">
               <RefreshCw className="w-6 h-6 text-indigo-500" />
-              Subscriptions & Recurring
+              Commitments & Bills
             </h1>
             <p className="text-sm text-theme-secondary mt-1">
-              Automate upcoming hostel dues, utilities, and digital subscriptions.
+              Track upcoming friend dues, hostel rent, utilities, and recurring subscriptions.
             </p>
           </div>
           <button 
             type="button"
             onClick={() => setIsAddOpen(true)} 
-            className="min-h-[44px] min-w-[44px] p-3 bg-theme-accent text-theme-inverse rounded-2xl shadow-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center"
-            aria-label="Add Subscription"
+            className="px-4 py-2.5 bg-theme-accent hover:bg-theme-accent-hover text-theme-inverse rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 font-bold text-xs cursor-pointer self-start sm:self-auto"
+            aria-label="Add Commitment or Bill"
           >
-            <Plus className="w-5 h-5 stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>+ Add Bill / Due</span>
+          </button>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 mb-6 p-1 rounded-2xl bg-theme-surface border border-theme-border/50 w-fit">
+          <button
+            type="button"
+            onClick={() => setActiveTab('all')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'all'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'text-theme-secondary hover:text-theme-primary'
+            }`}
+          >
+            All Commitments ({activeScheduled.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('bills')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'bills'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'text-theme-secondary hover:text-theme-primary'
+            }`}
+          >
+            Bills & IOUs ({activeScheduled.filter(s => s.frequency === 'one-time').length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('subscriptions')}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'subscriptions'
+                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                : 'text-theme-secondary hover:text-theme-primary'
+            }`}
+          >
+            Subscriptions ({activeScheduled.filter(s => s.frequency !== 'one-time').length})
           </button>
         </div>
 
@@ -211,7 +275,7 @@ export default function ScheduledPage() {
                   {CURRENCY_SYMBOL}{totalMonthlyCommitment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </span>
                 <span className="text-xs text-theme-tertiary block mt-0.5">
-                  Across {activeScheduled.length} active bill{activeScheduled.length > 1 ? 's' : ''}
+                  Across {activeScheduled.length} active commitment{activeScheduled.length > 1 ? 's' : ''}
                 </span>
               </div>
 
@@ -255,17 +319,19 @@ export default function ScheduledPage() {
           </div>
         )}
 
-        {activeScheduled.length === 0 ? (
+        {filteredScheduled.length === 0 ? (
           <div className="text-center py-16 bg-theme-surface border border-theme-border/50 rounded-3xl p-6">
             <RefreshCw className="w-12 h-12 text-theme-tertiary mx-auto mb-4 opacity-40" />
-            <h3 className="text-lg font-semibold text-theme-primary mb-1">No active subscriptions</h3>
+            <h3 className="text-lg font-semibold text-theme-primary mb-1">
+              {activeTab === 'bills' ? 'No pending bills or friend dues' : activeTab === 'subscriptions' ? 'No active subscriptions' : 'No active commitments'}
+            </h3>
             <p className="text-theme-secondary text-sm max-w-md mx-auto">
-              Automate tracking for flat rent, WiFi, Spotify, gym memberships, or recurring mess bills.
+              Add friend dues (e.g. Pay Rohan ₹200), hostel mess bills, flat rent, or recurring subscriptions.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
-            {activeScheduled.map((st) => {
+            {filteredScheduled.map((st) => {
               const category = categories.find(c => c.id === st.categoryId);
               return (
                 <SubscriptionListItem
@@ -282,8 +348,16 @@ export default function ScheduledPage() {
 
       </div>
 
-      <BottomSheet isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Add Subscription">
+      <BottomSheet isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="Add Bill or Commitment">
         <div className="flex flex-col gap-4 pb-8 px-4">
+          <Input 
+            label="Title / Payee" 
+            type="text" 
+            value={note} 
+            onChange={(e) => setNote(e.target.value)} 
+            placeholder="e.g. Pay Rohan for Canteen, Hostel Mess, Wi-Fi" 
+          />
+
           <Input 
             label="Amount" 
             type="number" 
@@ -301,20 +375,23 @@ export default function ScheduledPage() {
           </div>
 
           <div className="relative z-50">
-            <label className="block text-sm font-medium text-theme-secondary mb-2">Frequency</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Frequency / Type</label>
             <DropdownMenu 
               align="left"
               trigger={
-                <div className="w-full bg-theme-surface border border-theme-border rounded-xl px-4 py-3 text-theme-primary focus:border-theme-accent outline-none flex items-center justify-between">
-                  <span className="capitalize">{frequency}</span>
+                <div className="w-full bg-theme-surface border border-theme-border rounded-xl px-4 py-3 text-theme-primary focus:border-theme-accent outline-none flex items-center justify-between cursor-pointer">
+                  <span className="capitalize">
+                    {frequency === 'one-time' ? 'One-Time Bill / IOU' : frequency}
+                  </span>
                   <ChevronDown className="w-4 h-4 text-theme-tertiary" />
                 </div>
               }
               items={[
-                { label: 'Daily', onClick: () => setFrequency('daily') },
-                { label: 'Weekly', onClick: () => setFrequency('weekly') },
-                { label: 'Monthly', onClick: () => setFrequency('monthly') },
-                { label: 'Yearly', onClick: () => setFrequency('yearly') },
+                { label: 'One-Time (Due / Bill / IOU)', onClick: () => setFrequency('one-time') },
+                { label: 'Monthly (Rent, Subscriptions)', onClick: () => setFrequency('monthly') },
+                { label: 'Weekly (Mess, Grocery)', onClick: () => setFrequency('weekly') },
+                { label: 'Daily (Milk, Daily passes)', onClick: () => setFrequency('daily') },
+                { label: 'Yearly (Annual gym, Domain)', onClick: () => setFrequency('yearly') },
               ]}
               className="w-full"
               menuClassName="w-full"
@@ -322,7 +399,7 @@ export default function ScheduledPage() {
           </div>
 
           <div className="z-40">
-            <label className="block text-sm font-medium text-theme-secondary mb-2">Start Date</label>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">Due Date</label>
             <AnimatedDatePicker 
               value={startDate} 
               onChange={setStartDate} 

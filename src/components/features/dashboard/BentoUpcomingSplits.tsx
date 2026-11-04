@@ -17,9 +17,10 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import type { ScheduledTransactionDocument } from '@/types/firestore';
+import { updateScheduledTransaction } from '@/lib/scheduled';
 
 export const BentoUpcomingSplits: React.FC = () => {
-  const { user, householdId, scheduledTransactions, addToast, categoriesMap } = useStore();
+  const { user, householdId, scheduledTransactions, addToast, categoriesMap, removeScheduledOptimistic } = useStore();
   const [payingId, setPayingId] = useState<string | null>(null);
 
   // Filter scheduled items due within the next 7 days
@@ -44,14 +45,19 @@ export const BentoUpcomingSplits: React.FC = () => {
       await addExpense(householdId || user.uid, user.uid, {
         amount: bill.amount,
         categoryId: bill.categoryId,
-        note: `Recurring: ${bill.note || 'Subscription'}`,
+        note: bill.note || (bill.frequency === 'one-time' ? 'One-Time Bill' : 'Recurring Bill'),
         date: new Date().toISOString(),
       });
+
+      if (bill.frequency === 'one-time') {
+        removeScheduledOptimistic(bill.id);
+        updateScheduledTransaction(householdId || user.uid, bill.id, { isActive: false }).catch(() => {});
+      }
 
       triggerHaptic('heavy');
       addToast({
         type: 'success',
-        message: `Marked "${bill.note || 'Bill'}" as paid today (${formatCurrency(bill.amount)})`,
+        message: `Marked "${bill.note || 'Bill'}" as paid (${formatCurrency(bill.amount)})`,
       });
     } catch (err) {
       console.error('Failed to log recurring bill:', err);
@@ -91,12 +97,18 @@ export const BentoUpcomingSplits: React.FC = () => {
       {/* Section 1: Upcoming Subscriptions (Next 7 Days) */}
       <div className="space-y-2.5 my-3 flex-1">
         {upcomingBills.length === 0 ? (
-          <div className="p-4 rounded-2xl bg-theme-base/50 border border-theme-border/30 text-center space-y-1.5 my-auto">
+          <div className="p-4 rounded-2xl bg-theme-base/50 border border-theme-border/30 text-center space-y-2 my-auto">
             <Sparkles className="w-4 h-4 text-theme-accent mx-auto" />
             <p className="text-xs font-semibold text-theme-primary">No bills due this week</p>
             <p className="text-[11px] text-theme-secondary">
-              All monthly subscriptions and rent commitments are clear.
+              Friend IOUs, hostel rent, and recurring subscriptions are clear.
             </p>
+            <Link
+              href="/scheduled"
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-theme-accent hover:underline pt-1"
+            >
+              <span>+ Add Bill / IOU</span>
+            </Link>
           </div>
         ) : (
           upcomingBills.slice(0, 2).map((bill) => {
@@ -111,15 +123,24 @@ export const BentoUpcomingSplits: React.FC = () => {
                 className="p-3 rounded-2xl bg-theme-base/70 border border-theme-border/40 flex items-center justify-between gap-3"
               >
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-theme-primary truncate">
-                    {bill.note || cat?.name || 'Recurring Bill'}
-                  </h4>
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold text-theme-primary truncate">
+                      {bill.note || cat?.name || 'Upcoming Bill'}
+                    </h4>
+                    {bill.frequency === 'one-time' && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-500 whitespace-nowrap">
+                        IOU
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-[10px] text-theme-secondary">
                       {daysLeft === 0
                         ? 'Due Today'
                         : daysLeft === 1
                         ? 'Due Tomorrow'
+                        : daysLeft < 0
+                        ? 'Overdue'
                         : `Due in ${daysLeft}d`}
                     </span>
                     <span className="text-xs font-semibold text-theme-primary tabular-nums">

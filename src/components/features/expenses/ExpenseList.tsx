@@ -35,7 +35,7 @@ export const ExpenseList = ({ onEditExpense, preview = false, expenses: propExpe
     [displayedExpenses]
   );
 
-  if (isLoading) {
+  if (isLoading && displayedExpenses.length === 0) {
     return (
       <div className="divide-y divide-theme-border/30">
         {[...Array(4)].map((_, i) => (

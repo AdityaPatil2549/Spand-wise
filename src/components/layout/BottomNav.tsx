@@ -29,11 +29,8 @@ export const BottomNav = () => {
       className="fixed bottom-0 left-0 right-0 w-full z-[var(--z-nav)] md:hidden pointer-events-none"
       aria-label="Main navigation"
     >
-      {/* Subtle upward gradient fade */}
-      <div className="h-6 bg-gradient-to-t from-theme-base/80 to-transparent pointer-events-none" />
-
       <div 
-        className="mx-3 mb-2 sm:mx-5 sm:mb-3 rounded-[1.75rem] bg-theme-base/95 backdrop-blur-lg border border-theme-border/60 shadow-xl px-2 pt-1.5 pointer-events-auto"
+        className="mx-3 mb-2 sm:mx-5 sm:mb-3 rounded-[2rem] bg-theme-surface/90 backdrop-blur-xl border border-theme-border/60 shadow-2xl px-2 py-1.5 pointer-events-auto"
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)' }}
       >
         <ul className="flex items-center justify-around">
@@ -50,10 +47,10 @@ export const BottomNav = () => {
                         haptic.medium();
                         openBottomSheet();
                       }}
-                      className="absolute -top-7 w-14 h-14 rounded-2xl flex items-center justify-center bg-theme-accent hover:bg-theme-accent-hover text-theme-inverse shadow-lg shadow-theme-accent/30 active:scale-95 transition-transform"
+                      className="absolute -top-6 w-13 h-13 rounded-2xl flex items-center justify-center bg-theme-accent hover:bg-theme-accent-hover text-theme-inverse shadow-lg shadow-theme-accent/25 active:scale-95 transition-transform"
                       aria-label="Add Expense"
                     >
-                      <Plus className="w-7 h-7 stroke-[2.5]" aria-hidden="true" />
+                      <Plus className="w-6 h-6 stroke-[2.5]" aria-hidden="true" />
                     </button>
                   </li>
                 )}
@@ -62,13 +59,13 @@ export const BottomNav = () => {
                     href={href}
                     onClick={() => haptic.light()}
                     className={clsx(
-                      'flex flex-col items-center justify-center gap-1 py-1.5 px-2 rounded-2xl',
+                      'flex flex-col items-center justify-center gap-1 py-1.5 px-2 rounded-xl',
                       'transition-all duration-150 ease-out active:scale-95',
-                      'min-h-[48px] min-w-[48px] touch-target',
+                      'min-h-[44px] min-w-[44px] touch-target',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent',
                       isActive
-                        ? 'text-theme-inverse bg-theme-accent shadow-sm'
-                        : 'text-theme-secondary hover:text-theme-primary active:bg-theme-elevated/50'
+                        ? 'text-theme-accent bg-theme-accent/10 font-bold'
+                        : 'text-theme-secondary hover:text-theme-primary active:bg-theme-elevated/40 font-medium'
                     )}
                     aria-label={label}
                     aria-current={isActive ? 'page' : undefined}

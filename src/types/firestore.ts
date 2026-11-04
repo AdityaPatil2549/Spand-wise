@@ -131,7 +131,9 @@ export interface ScheduledTransactionDocument {
   categoryId: string;
   accountId?: string;
   note: string | null;
-  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  payee?: string | null;
+  type?: 'bill' | 'subscription' | 'iou';
+  frequency: 'one-time' | 'daily' | 'weekly' | 'monthly' | 'yearly';
   startDate: Timestamp;
   nextDueDate: Timestamp;
   isActive: boolean;

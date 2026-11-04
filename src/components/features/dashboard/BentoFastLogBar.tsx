@@ -113,8 +113,8 @@ export const BentoFastLogBar: React.FC = () => {
         </div>
       </div>
 
-      {/* Preset Physical Keys */}
-      <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+      {/* Preset Physical Keys Carousel (Horizontal Scroll Snap on Mobile, Smooth Row on Desktop) */}
+      <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar w-full lg:w-auto flex-nowrap py-1 scroll-smooth shrink-0 -mx-1 px-1">
         {activePresets.map((preset) => {
           const isBusy = loadingId === preset.id;
 
@@ -124,7 +124,7 @@ export const BentoFastLogBar: React.FC = () => {
               onClick={() => handleQuickAdd(preset)}
               disabled={loadingId !== null}
               type="button"
-              className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-theme-base/90 hover:bg-theme-surface border border-theme-border/60 hover:border-theme-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all shadow-xs disabled:opacity-50 text-xs font-semibold text-theme-primary cursor-pointer"
+              className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-theme-base/90 hover:bg-theme-surface border border-theme-border/60 hover:border-theme-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all shadow-xs disabled:opacity-50 text-xs font-semibold text-theme-primary cursor-pointer shrink-0"
             >
               <span className="w-7 h-7 rounded-xl bg-theme-surface border border-theme-border/40 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                 {preset.id === 'chai' ? (
@@ -140,9 +140,9 @@ export const BentoFastLogBar: React.FC = () => {
                 )}
               </span>
 
-              <span className="font-bold">{preset.note}</span>
+              <span className="font-bold whitespace-nowrap">{preset.note}</span>
 
-              <span className="px-2 py-0.5 rounded-lg bg-theme-elevated text-theme-primary font-mono font-bold text-[11px] tabular-nums">
+              <span className="px-2 py-0.5 rounded-lg bg-theme-elevated text-theme-primary font-mono font-bold text-[11px] tabular-nums whitespace-nowrap">
                 ₹{preset.amount}
               </span>
 
@@ -157,10 +157,10 @@ export const BentoFastLogBar: React.FC = () => {
         <AddExpenseMorph>
           <button
             type="button"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-theme-primary hover:opacity-90 text-theme-inverse transition-all font-bold text-xs shadow-sm active:scale-95 cursor-pointer ml-auto sm:ml-0"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-theme-primary hover:opacity-90 text-theme-inverse transition-all font-bold text-xs shadow-sm active:scale-95 cursor-pointer shrink-0 whitespace-nowrap"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>+ Custom</span>
+            <span>Custom</span>
           </button>
         </AddExpenseMorph>
       </div>

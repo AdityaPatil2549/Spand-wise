@@ -74,10 +74,22 @@ export const SubscriptionListItem = ({
           </div>
           <div className="min-w-0">
             <h4 className="font-semibold text-theme-primary truncate text-sm sm:text-base">
-              {category?.name || 'Subscription'}
+              {subscription.note || category?.name || 'Subscription'}
             </h4>
             <div className="text-xs font-medium text-theme-secondary mt-1 flex flex-wrap items-center gap-1.5">
-              <span className="capitalize text-indigo-400 font-semibold">{subscription.frequency}</span>
+              <span className={`capitalize font-semibold px-2 py-0.5 rounded-md text-[11px] ${
+                subscription.frequency === 'one-time'
+                  ? 'bg-amber-500/10 text-amber-500'
+                  : 'bg-indigo-500/10 text-indigo-400'
+              }`}>
+                {subscription.frequency === 'one-time' ? 'One-Time Bill' : subscription.frequency}
+              </span>
+              {subscription.note && category?.name && (
+                <>
+                  <span className="text-theme-tertiary">•</span>
+                  <span className="text-theme-secondary text-[11px]">{category.name}</span>
+                </>
+              )}
               <span className="text-theme-tertiary">•</span>
               <span className={`inline-flex items-center gap-1 font-medium ${
                 isDueToday || isPastDue 

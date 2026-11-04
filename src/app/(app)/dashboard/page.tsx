@@ -156,7 +156,7 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {isExpensesLoading ? (
+            {isExpensesLoading && recentExpenses.length === 0 ? (
               <TransactionSkeletonGroup count={4} />
             ) : recentExpenses.length === 0 ? (
               <EmptyState
