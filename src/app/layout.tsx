@@ -1,11 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Nunito, Pacifico, Inter, Outfit, Work_Sans, Comfortaa, Merriweather, Fraunces, JetBrains_Mono, Orbitron, DM_Sans, Cinzel, Space_Grotesk, Syne, Rubik, Bungee, Manrope, Anton } from 'next/font/google';
+import { Nunito, Inter, Outfit, Work_Sans, Comfortaa, Merriweather, Fraunces, JetBrains_Mono, Orbitron, DM_Sans, Cinzel, Space_Grotesk, Syne, Rubik, Bungee, Manrope, Anton } from 'next/font/google';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import './globals.css';
 import { GlobalProviders } from '@/components/layout/GlobalProviders';
 
 const nunito = Nunito({ subsets: ['latin'], variable: '--font-nunito', display: 'swap' });
-const pacifico = Pacifico({ weight: '400', subsets: ['latin'], variable: '--font-pacifico', display: 'swap' });
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
@@ -32,52 +31,68 @@ const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', displa
 const anton = Anton({ weight: '400', subsets: ['latin'], variable: '--font-anton', display: 'swap' });
 
 export const metadata: Metadata = {
- title: {
- default: 'SpendWise — Student Expense Tracker',
- template: '%s | SpendWise',
- },
- description:
- 'Track your daily college spends in 3 seconds. See your remaining budget instantly. No bank linking required.',
- keywords: ['expense tracker', 'student budget', 'college expenses', 'spending tracker'],
- authors: [{ name: 'SpendWise' }],
- appleWebApp: {
- capable: true,
- statusBarStyle: 'black-translucent',
- title: 'SpendWise',
- },
+  title: {
+    default: 'SpendWise — Student Expense Tracker',
+    template: '%s | SpendWise',
+  },
+  description:
+    'Track your daily college spends in 3 seconds. See your remaining budget instantly. No bank linking required.',
+  keywords: ['expense tracker', 'student budget', 'college expenses', 'spending tracker'],
+  authors: [{ name: 'SpendWise' }],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'SpendWise',
+  },
 };
 
 export const viewport: Viewport = {
- width: 'device-width',
- initialScale: 1,
- maximumScale: 1,
- userScalable: false,
- viewportFit: 'cover',
- themeColor: '#faf5ee',
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#faf5ee',
 };
 
 export default function RootLayout({
- children,
+  children,
 }: Readonly<{
- children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
- return (
- <html lang="en" suppressHydrationWarning className={`${nunito.variable} ${pacifico.variable} ${inter.variable} ${outfit.variable} ${workSans.variable} ${comfortaa.variable} ${merriweather.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${syne.variable} ${rubik.variable} ${bungee.variable} ${manrope.variable} ${anton.variable}`}>
- <head>
- <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
- </head>
- <body className="font-sans antialiased">
- <ThemeProvider 
-  attribute="class" 
-  defaultTheme="light" 
-  enableSystem={false}
-  themes={['light', 'dark', 'earthy', 'matcha', 'sakura', 'solaris', 'aurora', 'ocean', 'forest', 'cyberpunk', 'arctic', 'oled-pro', 'neon-sunset', 'graphite']}
- >
- <GlobalProviders>
- {children}
- </GlobalProviders>
- </ThemeProvider>
- </body>
- </html>
- );
+  return (
+    <html lang="en" suppressHydrationWarning className={`${nunito.variable} ${inter.variable} ${outfit.variable} ${workSans.variable} ${comfortaa.variable} ${merriweather.variable} ${fraunces.variable} ${jetbrainsMono.variable} ${orbitron.variable} ${dmSans.variable} ${cinzel.variable} ${spaceGrotesk.variable} ${syne.variable} ${rubik.variable} ${bungee.variable} ${manrope.variable} ${anton.variable}`}>
+      <body className="font-sans antialiased">
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="dark" 
+          enableSystem={true}
+          themes={[
+            'light', 
+            'dark', 
+            'atelier-paper',
+            'savile-rebel',
+            'dune-terminal',
+            'cyber-velocity',
+            'riviera-maritime',
+            'bio-alchemical',
+            'earthy', 
+            'matcha', 
+            'sakura', 
+            'solaris', 
+            'aurora', 
+            'ocean', 
+            'forest', 
+            'cyberpunk', 
+            'arctic', 
+            'oled-pro', 
+            'neon-sunset', 
+            'graphite'
+          ]}
+        >
+          <GlobalProviders>
+            {children}
+          </GlobalProviders>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }

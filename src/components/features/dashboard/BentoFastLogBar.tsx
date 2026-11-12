@@ -7,7 +7,7 @@ import { addExpense } from '@/lib/expenses/index';
 import { getLocalMonthString } from '@/lib/date-sharding';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
-import { Plus, Zap, Coffee, Utensils, Bus, FileText, ShoppingBag, Sparkles } from 'lucide-react';
+import { Plus, Zap, Coffee, Utensils, Bus, FileText, ShoppingBag } from 'lucide-react';
 import { AddExpenseMorph } from '@/components/features/expenses/AddExpenseMorph';
 import type { ExpenseDocument, QuickAddPreset } from '@/types/firestore';
 
@@ -27,7 +27,6 @@ export const BentoFastLogBar: React.FC = () => {
     removeExpenseOptimistic,
     adjustTotalSpentOptimistic,
     addToast,
-    categoriesMap,
     quickAddPresets,
   } = useStore();
 
@@ -92,29 +91,29 @@ export const BentoFastLogBar: React.FC = () => {
   };
 
   return (
-    <div className="w-full rounded-[28px] p-5 sm:p-6 bg-gradient-to-r from-theme-surface via-theme-surface to-theme-base border border-theme-border/70 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+    <div className="w-full rounded-3xl p-5 sm:p-6 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
       {/* Title & Quick Guidance */}
       <div className="flex items-center gap-3 flex-shrink-0">
-        <div className="w-10 h-10 rounded-2xl bg-theme-accent text-theme-inverse flex items-center justify-center shadow-xs">
-          <Zap className="w-5 h-5 fill-current" />
+        <div className="w-9 h-9 rounded-xl bg-theme-accent text-theme-on-accent flex items-center justify-center shadow-sm">
+          <Zap className="w-4 h-4 fill-current" />
         </div>
         <div>
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-sm sm:text-base font-extrabold text-theme-primary tracking-tight leading-none">
-              1-Tap Fast Log
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-bold text-theme-primary tracking-tight leading-none">
+              Quick Log
             </h3>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400 font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10">
+            <span className="text-[10px] font-sans uppercase tracking-wider text-theme-accent font-semibold px-2 py-0.5 rounded-md bg-theme-accent/10 border border-theme-accent/20">
               Instant
             </span>
           </div>
           <p className="text-xs text-theme-secondary mt-1">
-            Tap any preset to log immediately with zero friction
+            Tap any preset to record immediately
           </p>
         </div>
       </div>
 
       {/* Preset Physical Keys Carousel (Horizontal Scroll Snap on Mobile, Smooth Row on Desktop) */}
-      <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar w-full lg:w-auto flex-nowrap py-1 scroll-smooth shrink-0 -mx-1 px-1">
+      <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto py-0.5">
         {activePresets.map((preset) => {
           const isBusy = loadingId === preset.id;
 
@@ -124,9 +123,9 @@ export const BentoFastLogBar: React.FC = () => {
               onClick={() => handleQuickAdd(preset)}
               disabled={loadingId !== null}
               type="button"
-              className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-theme-base/90 hover:bg-theme-surface border border-theme-border/60 hover:border-theme-accent/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all shadow-xs disabled:opacity-50 text-xs font-semibold text-theme-primary cursor-pointer shrink-0"
+              className="group relative flex items-center gap-2 px-3 py-2 rounded-xl bg-theme-base/80 hover:bg-theme-surface border border-theme-border/60 hover:border-theme-accent/40 active:scale-95 transition-all shadow-sm disabled:opacity-50 text-xs font-semibold text-theme-primary cursor-pointer shrink-0"
             >
-              <span className="w-7 h-7 rounded-xl bg-theme-surface border border-theme-border/40 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <span className="w-6 h-6 rounded-lg bg-theme-surface border border-theme-border/40 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                 {preset.id === 'chai' ? (
                   <Coffee className="w-3.5 h-3.5 text-amber-500" />
                 ) : preset.id === 'canteen' ? (
@@ -136,13 +135,13 @@ export const BentoFastLogBar: React.FC = () => {
                 ) : preset.id === 'xerox' ? (
                   <FileText className="w-3.5 h-3.5 text-purple-500" />
                 ) : (
-                  <ShoppingBag className="w-3.5 h-3.5 text-pink-500" />
+                  <ShoppingBag className="w-3.5 h-3.5 text-rose-400" />
                 )}
               </span>
 
-              <span className="font-bold whitespace-nowrap">{preset.note}</span>
+              <span className="font-semibold whitespace-nowrap">{preset.note}</span>
 
-              <span className="px-2 py-0.5 rounded-lg bg-theme-elevated text-theme-primary font-mono font-bold text-[11px] tabular-nums whitespace-nowrap">
+              <span className="px-1.5 py-0.5 rounded-md bg-theme-elevated text-theme-primary font-mono font-bold text-[11px] tabular-nums whitespace-nowrap">
                 ₹{preset.amount}
               </span>
 
@@ -154,14 +153,9 @@ export const BentoFastLogBar: React.FC = () => {
         })}
 
         {/* Custom Expense Trigger */}
-        <AddExpenseMorph>
-          <button
-            type="button"
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-theme-primary hover:opacity-90 text-theme-inverse transition-all font-bold text-xs shadow-sm active:scale-95 cursor-pointer shrink-0 whitespace-nowrap"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>Custom</span>
-          </button>
+        <AddExpenseMorph className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-theme-primary hover:opacity-90 text-theme-on-primary transition-all font-bold text-xs shadow-sm active:scale-95 cursor-pointer shrink-0 whitespace-nowrap">
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>Custom</span>
         </AddExpenseMorph>
       </div>
     </div>

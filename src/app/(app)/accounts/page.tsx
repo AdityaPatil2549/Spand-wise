@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/store';
 import { Card } from '@/components/ui/Card';
-import { Wallet, Landmark, Plus, ArrowUpCircle, ArrowDownCircle, ArrowRight, ArrowLeftRight, Copy, Check, ShieldCheck } from 'lucide-react';
+import { Wallet, Landmark, ArrowUpCircle, ArrowDownCircle, ArrowRight, ArrowLeftRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useHydrated } from '@/hooks/useHydrated';
 import { CURRENCY_SYMBOL } from '@/config/constants';
+import { formatCurrency } from '@/lib/utils';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { updateAccountBalance } from '@/lib/accounts';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -30,17 +31,23 @@ export default function AccountsPage() {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [transferDirection, setTransferDirection] = useState<'bank_to_cash' | 'cash_to_bank'>('bank_to_cash');
   const [transferAmount, setTransferAmount] = useState('');
-  const [copiedUPI, setCopiedUPI] = useState(false);
 
-  const cashAccount = accounts.find(a => a.type === 'cash' || (a.name && a.name.toLowerCase().includes('cash'))) || accounts[1];
-  const bankAccount = accounts.find(a => a.type === 'bank' || (a.name && a.name.toLowerCase().includes('bank'))) || accounts[0];
-  
+  const cashAccount =
+    accounts.find((a) => a.id === 'cash') ||
+    accounts.find((a) => a.type === 'cash' || (a.name && a.name.toLowerCase().includes('cash')));
+  const bankAccount =
+    accounts.find((a) => a.id === 'bank') ||
+    accounts.find((a) => a.type === 'bank' || (a.name && (a.name.toLowerCase().includes('bank') || a.name.toLowerCase().includes('upi'))));
+
   const bankBalance = bankAccount?.balance || 0;
   const cashBalance = cashAccount?.balance || 0;
   const totalBalance = bankBalance + cashBalance;
 
-  const bankPercent = totalBalance > 0 ? Math.max(0, Math.min(100, Math.round((bankBalance / totalBalance) * 100))) : 50;
-  const cashPercent = 100 - bankPercent;
+  const positiveBank = Math.max(0, bankBalance);
+  const positiveCash = Math.max(0, cashBalance);
+  const positiveSum = positiveBank + positiveCash;
+  const bankPercent = positiveSum > 0 ? Math.round((positiveBank / positiveSum) * 100) : 0;
+  const cashPercent = positiveSum > 0 ? 100 - bankPercent : 0;
 
   const handleTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,9 +70,9 @@ export default function AccountsPage() {
       addToast({ type: 'success', message: 'Account balance updated' });
       setSelectedAccountId(null);
       setAmount('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      const errorMessage = error?.message || 'Unknown error';
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       addToast({ type: 'error', message: `Failed to update balance: ${errorMessage}` });
       updateAccountInStore(selectedAccountId, -amountChange);
     } finally {
@@ -102,11 +109,11 @@ export default function AccountsPage() {
       haptic.success();
       addToast({
         type: 'success',
-        message: `Transferred ${CURRENCY_SYMBOL}${numAmount.toFixed(2)} from ${source.name} to ${target.name}`,
+        message: `Transferred ${formatCurrency(numAmount, numAmount % 1 !== 0)} from ${source.name} to ${target.name}`,
       });
       setIsTransferOpen(false);
       setTransferAmount('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       updateAccountInStore(source.id, numAmount);
       updateAccountInStore(target.id, -numAmount);
@@ -114,14 +121,6 @@ export default function AccountsPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCopyUPI = () => {
-    haptic.light();
-    navigator.clipboard.writeText('student@spendwise');
-    setCopiedUPI(true);
-    addToast({ type: 'info', message: 'UPI ID copied to clipboard' });
-    setTimeout(() => setCopiedUPI(false), 2000);
   };
 
   const openTransactionModal = (accountId: string, type: 'deposit' | 'withdrawal') => {
@@ -188,7 +187,7 @@ export default function AccountsPage() {
           </span>
         </div>
         <p className="text-3xl sm:text-4xl font-bold tracking-tight text-theme-primary font-mono tabular-nums">
-          {CURRENCY_SYMBOL} {totalBalance.toFixed(2)}
+          {formatCurrency(totalBalance, totalBalance % 1 !== 0)}
         </p>
         <p className="text-xs text-theme-tertiary mt-2">Combined liquidity across your digital UPI and physical Cash accounts</p>
 
@@ -197,25 +196,31 @@ export default function AccountsPage() {
           <div className="flex justify-between items-center text-xs font-semibold mb-2.5">
             <span className="flex items-center gap-1.5 text-indigo-400">
               <Landmark className="w-3.5 h-3.5" />
-              UPI / Bank: {bankPercent}% ({CURRENCY_SYMBOL}{bankBalance.toFixed(0)})
+              UPI / Bank: {bankPercent}% ({formatCurrency(bankBalance)})
             </span>
             <span className="flex items-center gap-1.5 text-emerald-400">
               <Wallet className="w-3.5 h-3.5" />
-              Cash: {cashPercent}% ({CURRENCY_SYMBOL}{cashBalance.toFixed(0)})
+              Cash: {cashPercent}% ({formatCurrency(cashBalance)})
             </span>
           </div>
-          <div className="h-2.5 w-full bg-theme-border/30 rounded-full overflow-hidden flex">
-            <div 
-              style={{ width: `${bankPercent}%` }} 
-              className="bg-indigo-500 h-full transition-all duration-500" 
-              title={`Bank ${bankPercent}%`}
-            />
-            <div 
-              style={{ width: `${cashPercent}%` }} 
-              className="bg-emerald-500 h-full transition-all duration-500" 
-              title={`Cash ${cashPercent}%`}
-            />
-          </div>
+          {positiveSum === 0 ? (
+            <div className="h-2.5 w-full bg-theme-border/30 rounded-full overflow-hidden flex items-center justify-center">
+              <span className="sr-only">No positive funds allocated yet</span>
+            </div>
+          ) : (
+            <div className="h-2.5 w-full bg-theme-border/30 rounded-full overflow-hidden flex">
+              <div 
+                style={{ width: `${bankPercent}%` }} 
+                className="bg-indigo-500 h-full transition-all duration-500" 
+                title={`Bank ${bankPercent}%`}
+              />
+              <div 
+                style={{ width: `${cashPercent}%` }} 
+                className="bg-emerald-500 h-full transition-all duration-500" 
+                title={`Cash ${cashPercent}%`}
+              />
+            </div>
+          )}
         </div>
       </Card>
 
@@ -233,14 +238,9 @@ export default function AccountsPage() {
                   <h3 className="font-semibold text-theme-primary text-base">
                     {bankAccount?.name === 'Bank Account' ? 'UPI Account' : (bankAccount?.name || 'UPI Account')}
                   </h3>
-                  <button
-                    type="button"
-                    onClick={handleCopyUPI}
-                    className="text-xs text-theme-secondary hover:text-indigo-400 flex items-center gap-1 mt-0.5 transition-colors group"
-                  >
-                    <span>student@spendwise</span>
-                    {copiedUPI ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-theme-tertiary group-hover:text-indigo-400" />}
-                  </button>
+                  <p className="text-xs text-theme-secondary mt-0.5">
+                    Digital Bank &amp; UPI Transfers
+                  </p>
                 </div>
               </div>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -251,7 +251,7 @@ export default function AccountsPage() {
             <div className="my-4">
               <span className="text-xs text-theme-tertiary uppercase tracking-wider block">Available Balance</span>
               <p className="font-bold text-theme-primary text-2xl sm:text-3xl font-mono tabular-nums tracking-tight">
-                {CURRENCY_SYMBOL} {bankBalance.toFixed(2)}
+                {formatCurrency(bankBalance, bankBalance % 1 !== 0)}
               </p>
             </div>
           </div>
@@ -297,7 +297,7 @@ export default function AccountsPage() {
             <div className="my-4">
               <span className="text-xs text-theme-tertiary uppercase tracking-wider block">Available Cash</span>
               <p className="font-bold text-theme-primary text-2xl sm:text-3xl font-mono tabular-nums tracking-tight">
-                {CURRENCY_SYMBOL} {cashBalance.toFixed(2)}
+                {formatCurrency(cashBalance, cashBalance % 1 !== 0)}
               </p>
             </div>
           </div>
@@ -382,7 +382,7 @@ export default function AccountsPage() {
                 onClick={() => setTransferDirection('bank_to_cash')}
                 className={`py-3 px-3 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ${
                   transferDirection === 'bank_to_cash'
-                    ? 'bg-theme-accent text-theme-inverse shadow-sm'
+                    ? 'bg-theme-accent text-theme-on-accent shadow-sm'
                     : 'text-theme-secondary hover:text-theme-primary'
                 }`}
               >
@@ -394,7 +394,7 @@ export default function AccountsPage() {
                 onClick={() => setTransferDirection('cash_to_bank')}
                 className={`py-3 px-3 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ${
                   transferDirection === 'cash_to_bank'
-                    ? 'bg-theme-accent text-theme-inverse shadow-sm'
+                    ? 'bg-theme-accent text-theme-on-accent shadow-sm'
                     : 'text-theme-secondary hover:text-theme-primary'
                 }`}
               >

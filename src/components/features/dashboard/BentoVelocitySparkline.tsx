@@ -18,6 +18,8 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
   totalSpent,
 }) => {
   const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
   const daysInMonth = getDaysInMonth(now);
   const currentDay = Math.max(1, getDate(now));
 
@@ -34,11 +36,11 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
       try {
         const expDate = exp.date.toDate();
         // Check if same month and year
-        if (expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear()) {
+        if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
           const day = getDate(expDate);
           dailyMap.set(day, (dailyMap.get(day) || 0) + exp.amount);
         }
-      } catch (err) {
+      } catch {
         // Fallback for mock or string dates
       }
     });
@@ -69,7 +71,7 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
       dailyAverage: avg,
       projectedTotal: projected,
     };
-  }, [expenses, budgetAmount, totalSpent, currentDay, daysInMonth, now]);
+  }, [expenses, budgetAmount, totalSpent, currentDay, daysInMonth, currentMonth, currentYear]);
 
   // Generate SVG path coordinates
   const svgWidth = 320;
@@ -114,16 +116,16 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
     : '';
 
   return (
-    <div className="relative w-full rounded-[28px] p-6 sm:p-8 bg-theme-surface/70 border border-theme-border/60 flex flex-col justify-between min-h-[350px] shadow-sm">
+    <div className="relative w-full rounded-3xl p-6 sm:p-8 bg-theme-surface/70 border border-theme-border/60 flex flex-col justify-between min-h-[350px] shadow-sm">
       {/* Top Header */}
       <div className="flex justify-between items-start">
         <div className="space-y-1">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-theme-secondary uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-theme-secondary uppercase tracking-wider">
             <Activity className="w-3.5 h-3.5 text-theme-accent" />
-            <span>Velocity Pacing</span>
+            <span>Spending Pace</span>
           </div>
           <h3 className="font-sans text-xl font-bold text-theme-primary tracking-tight">
-            30-Day Trajectory
+            Monthly Projection
           </h3>
         </div>
 

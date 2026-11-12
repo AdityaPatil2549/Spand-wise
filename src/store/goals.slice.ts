@@ -55,7 +55,7 @@ export const createGoalsSlice: StateCreator<
         updatedAt: now,
       };
 
-      const docRef = await addDoc(goalsColRef(householdId), payload as any);
+      const docRef = await addDoc(goalsColRef(householdId), payload as unknown as GoalDocument);
       const createdGoal: GoalDocument = {
         id: docRef.id,
         ...payload,

@@ -18,38 +18,50 @@ export const useAuthListener = (): void => {
   const { setUser, setAuthLoading, setOnboardingComplete, setHouseholdId, setQuickAddPresets } = useStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthChange(async (user) => {
+    let activeSessionId = 0;
+
+    const unsubscribe = onAuthChange((user) => {
+      activeSessionId += 1;
+      const sessionId = activeSessionId;
+
       if (user) {
         setUser(user);
-        // Fetch onboarding status and householdId from Firestore
-        try {
-          const snap = await getDoc(userDocRef(user.uid));
-          if (snap.exists()) {
-            const data = snap.data() as UserDocument;
-            setOnboardingComplete(data.onboardingComplete ?? false);
-            setHouseholdId(data.householdId ?? user.uid); // Fallback to uid if missing
-            setQuickAddPresets(data.quickAddPresets ?? null);
-          } else {
-            // Edge case: User doc not created yet, default household to uid
+        setHouseholdId(user.uid);
+        // Unblock the authenticated shell immediately; user prefs hydrate asynchronously below.
+        setAuthLoading(false);
+
+        void getDoc(userDocRef(user.uid))
+          .then((snap) => {
+            if (sessionId !== activeSessionId) return;
+            if (snap.exists()) {
+              const data = snap.data() as UserDocument;
+              setOnboardingComplete(data.onboardingComplete ?? false);
+              setHouseholdId(data.householdId ?? user.uid);
+              setQuickAddPresets(data.quickAddPresets ?? null);
+            } else {
+              setHouseholdId(user.uid);
+              setQuickAddPresets(null);
+            }
+          })
+          .catch(() => {
+            if (sessionId !== activeSessionId) return;
+            setOnboardingComplete(false);
             setHouseholdId(user.uid);
             setQuickAddPresets(null);
-          }
-        } catch {
-          // Non-fatal — default to incomplete and uid
-          setOnboardingComplete(false);
-          setHouseholdId(user.uid);
-          setQuickAddPresets(null);
-        }
+          });
       } else {
         setUser(null);
         setOnboardingComplete(false);
         setHouseholdId(null);
         setQuickAddPresets(null);
+        setAuthLoading(false);
       }
- setAuthLoading(false);
- });
+    });
 
-  return () => unsubscribe();
+    return () => {
+      activeSessionId += 1;
+      unsubscribe();
+    };
   }, [setUser, setAuthLoading, setOnboardingComplete, setHouseholdId, setQuickAddPresets]);
 };
 

@@ -3,6 +3,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { SlidersHorizontal, BarChart3, Download, Sparkles } from 'lucide-react';
+
+function renderDropdownIcon(icon?: string) {
+  switch (icon) {
+    case 'edit_note':
+      return <SlidersHorizontal className="w-4 h-4 shrink-0" />;
+    case 'analytics':
+      return <BarChart3 className="w-4 h-4 shrink-0" />;
+    case 'download':
+      return <Download className="w-4 h-4 shrink-0" />;
+    default:
+      return <Sparkles className="w-4 h-4 shrink-0" />;
+  }
+}
 
 export type DropdownMenuItem = {
   label: string;
@@ -38,9 +52,7 @@ export function DropdownMenu({ trigger, items, align = 'right', className, menuC
     <div className={cn('relative inline-block text-left', className)} ref={menuRef}>
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer select-none outline-none"
-        role="button"
-        tabIndex={0}
+        className="inline-flex cursor-pointer select-none outline-none"
       >
         {trigger}
       </div>
@@ -69,11 +81,7 @@ export function DropdownMenu({ trigger, items, align = 'right', className, menuC
 
                 const innerContent = (
                   <>
-                    {item.icon && (
-                      <span className="material-symbols-outlined text-[18px]">
-                        {item.icon}
-                      </span>
-                    )}
+                    {item.icon && renderDropdownIcon(item.icon)}
                     <span className="font-medium">{item.label}</span>
                   </>
                 );

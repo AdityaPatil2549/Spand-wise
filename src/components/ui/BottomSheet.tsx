@@ -119,7 +119,7 @@ export const BottomSheet = ({ isOpen, onClose, title, children }: BottomSheetPro
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[var(--z-overlay)] bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 z-[var(--z-overlay)] bg-black/60 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />

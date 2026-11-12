@@ -14,19 +14,15 @@ import {
   Plus,
   Flame,
   Calendar,
-  Sparkles,
   CheckCircle2,
   Trash2,
-  Edit3,
   TrendingUp,
   AlertTriangle,
-  ArrowRight,
   ShieldCheck,
   Sliders,
   Wallet,
   Clock,
   Compass,
-  DollarSign
 } from 'lucide-react';
 import type { GoalDocument } from '@/types/firestore';
 
@@ -58,7 +54,7 @@ export default function GoalsPage() {
   const [newInitialAmount, setNewInitialAmount] = useState('');
   const [newTargetDate, setNewTargetDate] = useState('');
   const [newIcon, setNewIcon] = useState('🎯');
-  const [newColor, setNewColor] = useState('#6366f1');
+  const [newColor] = useState('#6366f1');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Simulation Slider State (Extra spend today)
@@ -255,7 +251,7 @@ export default function GoalsPage() {
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-theme-accent hover:bg-theme-accent-hover text-theme-white font-medium text-sm shadow-lg shadow-theme-accent/20 active:scale-95 transition-all self-start sm:self-auto cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-theme-accent hover:bg-theme-accent-hover text-theme-on-accent font-medium text-sm shadow-lg shadow-theme-accent/20 active:scale-95 transition-all self-start sm:self-auto cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             New Goal
@@ -415,7 +411,7 @@ export default function GoalsPage() {
                   onClick={() => setFilter(tab)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all cursor-pointer ${
                     filter === tab
-                      ? 'bg-theme-accent text-theme-white shadow-sm'
+                      ? 'bg-theme-accent text-theme-on-accent shadow-sm'
                       : 'text-theme-secondary hover:text-theme-primary'
                   }`}
                 >
@@ -450,7 +446,7 @@ export default function GoalsPage() {
                 let daysToTarget = null;
                 let dailyNeeded = null;
                 if (goal.targetDate) {
-                  const targetTime = goal.targetDate.toDate ? goal.targetDate.toDate().getTime() : (goal.targetDate as any).seconds * 1000;
+                  const targetTime = goal.targetDate.toDate ? goal.targetDate.toDate().getTime() : (goal.targetDate as { seconds: number }).seconds * 1000;
                   const msDiff = targetTime - Date.now();
                   daysToTarget = Math.max(1, Math.ceil(msDiff / (1000 * 60 * 60 * 24)));
                   dailyNeeded = remaining / daysToTarget;
@@ -545,7 +541,7 @@ export default function GoalsPage() {
                           setContributionType('deposit');
                           setContributionAmount('');
                         }}
-                        className="flex-1 py-2 px-3 rounded-xl bg-theme-accent/10 hover:bg-theme-accent text-theme-accent hover:text-theme-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
+                        className="flex-1 py-2 px-3 rounded-xl bg-theme-accent/10 hover:bg-theme-accent text-theme-accent hover:text-theme-on-accent text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         Deposit
@@ -684,7 +680,7 @@ export default function GoalsPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3.5 px-4 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-theme-white font-semibold text-sm shadow-md shadow-theme-accent/25 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-theme-on-accent font-semibold text-sm shadow-md shadow-theme-accent/25 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
                     >
                       {isSubmitting ? 'Creating...' : 'Save & Start Tracking'}
                     </button>
@@ -756,7 +752,7 @@ export default function GoalsPage() {
                   <div className="pt-2">
                     <button
                       onClick={handleContributionSubmit}
-                      className="w-full py-3.5 px-4 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-theme-white font-semibold text-sm shadow-md shadow-theme-accent/25 active:scale-[0.98] transition-all cursor-pointer"
+                      className="w-full py-3.5 px-4 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-theme-on-accent font-semibold text-sm shadow-md shadow-theme-accent/25 active:scale-[0.98] transition-all cursor-pointer"
                     >
                       Confirm {contributionType === 'deposit' ? 'Deposit' : 'Withdrawal'}
                     </button>

@@ -20,7 +20,7 @@ export const RecurringVsVariableSplit: React.FC<RecurringVsVariableSplitProps> =
   expenses,
   categoriesMap,
 }) => {
-  const { recurringTotal, variableTotal, totalSpent, recurringPct, variablePct, recurringCats, variableCats } =
+  const { recurringTotal, variableTotal, recurringPct, variablePct, recurringCats, variableCats } =
     useMemo(() => {
       let rTotal = 0;
       let vTotal = 0;
@@ -66,11 +66,11 @@ export const RecurringVsVariableSplit: React.FC<RecurringVsVariableSplitProps> =
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="p-1.5 rounded-lg bg-theme-surface border border-theme-border/40 text-theme-accent shadow-xs">
+            <span className="p-1.5 rounded-lg bg-theme-surface border border-theme-border/40 text-theme-accent shadow-sm">
               <RefreshCw className="w-4 h-4 stroke-[2]" />
             </span>
             <span className="text-xs font-bold text-theme-secondary uppercase tracking-widest">
-              Tier 2.7 Analytical Split
+              Recurring Cost Breakdown
             </span>
           </div>
           <h3 className="font-display text-2xl sm:text-3xl font-bold text-theme-primary tracking-tight">

@@ -54,7 +54,7 @@ export const BudgetHeroCard = () => {
  return (
  <motion.div
  layout
- className="rounded-2xl p-6 text-theme-inverse overflow-hidden relative mx-4 shadow-2xl"
+ className="rounded-2xl p-6 text-theme-on-accent overflow-hidden relative mx-4 shadow-2xl"
  style={{ 
  background: HERO_GRADIENTS[budgetState],
  boxShadow: HERO_GLOWS[budgetState],
@@ -73,7 +73,7 @@ export const BudgetHeroCard = () => {
  {/* Label */}
  <div className="flex items-center gap-2 mb-1">
  <Wallet className="w-5 h-5 opacity-90 drop-shadow-sm" aria-hidden="true" />
- <span className="text-sm font-medium opacity-90 tracking-wide text-theme-inverse/90">
+ <span className="text-sm font-medium opacity-90 tracking-wide text-theme-on-accent/90">
  {HERO_LABELS[budgetState]}
  </span>
  {budgetState === 'warning' && (

@@ -5,25 +5,28 @@ import {
  Timestamp,
  deleteDoc,
  doc,
+ writeBatch,
 } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { categoriesColRef, categoryDocRef } from '@/lib/firebase/firestore';
 import { PRESET_CATEGORIES } from '@/config/categories';
 import type { CategoryDocument } from '@/types/firestore';
 
 /**
  * Seed preset categories into the user's categories subcollection.
- * Called once during onboarding. Uses setDoc with merge:true to be idempotent.
+ * Called once during onboarding. Uses writeBatch for a single atomic fast write.
  */
 export const seedCategories = async (householdId: string): Promise<void> => {
+ const batch = writeBatch(db);
  const now = serverTimestamp() as Timestamp;
- const promises = PRESET_CATEGORIES.map((cat) =>
- setDoc(
- categoryDocRef(householdId, cat.id),
- { ...cat, createdAt: now },
- { merge: true }
- )
- );
- await Promise.all(promises);
+ PRESET_CATEGORIES.forEach((cat) => {
+  batch.set(
+   categoryDocRef(householdId, cat.id),
+   { ...cat, createdAt: now },
+   { merge: true }
+  );
+ });
+ await batch.commit();
 };
 
 /**

@@ -32,7 +32,7 @@ export const QuickAddManager: React.FC = () => {
       await updateQuickAddPresets(user.uid, updated);
       setQuickAddPresets(updated);
       addToast({ type: 'success', message: 'Preset removed.' });
-    } catch (e: any) {
+    } catch {
       addToast({ type: 'error', message: 'Failed to remove preset.' });
     }
   };
@@ -61,7 +61,7 @@ export const QuickAddManager: React.FC = () => {
       setNewAmount('');
       setNewNote('');
       addToast({ type: 'success', message: 'Preset added.' });
-    } catch (e: any) {
+    } catch {
       addToast({ type: 'error', message: 'Failed to add preset.' });
     }
   };
@@ -130,7 +130,7 @@ export const QuickAddManager: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium bg-theme-accent text-theme-inverse rounded-lg hover:bg-theme-accent-hover transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-theme-accent text-theme-on-accent rounded-lg hover:bg-theme-accent-hover transition-colors"
             >
               Save Preset
             </button>

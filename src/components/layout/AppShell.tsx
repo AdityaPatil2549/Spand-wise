@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 import { useStore } from '@/store';
 import { useExpensesListener } from '@/hooks/useExpenses';
@@ -36,7 +35,6 @@ export const AppShell = ({ children }: AppShellProps) => {
   const closeBottomSheet = useStore((s) => s.closeBottomSheet);
 
   const expenses = useStore((s) => s.expenses);
-  const pathname = usePathname();
   const isHydrated = useHydrated();
 
   // Desktop keyboard shortcuts: 'N' for new transaction, 'Escape' to close

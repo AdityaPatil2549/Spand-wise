@@ -21,7 +21,6 @@ interface CategorySpendDonutProps {
 export const CategorySpendDonut: React.FC<CategorySpendDonutProps> = ({
   pieData,
   totalSpent,
-  categoriesMap,
 }) => {
   return (
     <div className="w-full rounded-[28px] p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between">

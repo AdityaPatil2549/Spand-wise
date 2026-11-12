@@ -75,8 +75,8 @@ export const CategoryForm = ({ editingCategory, type, onClose }: CategoryFormPro
  addToast({ type: 'success', message: 'Category added' });
  }
  onClose();
- } catch (err: any) {
- addToast({ type: 'error', message: err.message || 'Failed to save category' });
+ } catch (err: unknown) {
+ addToast({ type: 'error', message: err instanceof Error ? err.message : 'Failed to save category' });
  }
  };
 
@@ -121,7 +121,7 @@ export const CategoryForm = ({ editingCategory, type, onClose }: CategoryFormPro
        type="button"
        onClick={() => setValue('icon', iconName)}
        className={`h-10 rounded-xl flex items-center justify-center transition-all ${
-         isSelected ? 'bg-theme-accent text-theme-inverse scale-105 shadow-sm' : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:bg-theme-elevated hover:text-theme-primary'
+         isSelected ? 'bg-theme-accent text-theme-on-accent scale-105 shadow-sm' : 'bg-theme-surface border border-theme-border/50 text-theme-secondary hover:bg-theme-elevated hover:text-theme-primary'
        }`}
        aria-label={`Select icon ${iconName}`}
      >

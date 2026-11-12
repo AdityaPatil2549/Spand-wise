@@ -9,7 +9,6 @@ import { Search, Filter, Loader2, Download } from 'lucide-react';
 import { useHydrated } from '@/hooks/useHydrated';
 import { format, subMonths, parse } from 'date-fns';
 import { TransactionSkeletonGroup } from '@/components/ui/Skeleton';
-import { CURRENCY_SYMBOL } from '@/config/constants';
 import { formatCurrency } from '@/lib/utils';
 
 function TransactionsContent() {
@@ -25,11 +24,13 @@ function TransactionsContent() {
   const addLoadedMonth = useStore((s) => s.addLoadedMonth);
   const isExpensesLoading = useStore((s) => s.isExpensesLoading);
 
-  // Read initial states from URL search params
+  // Read initial states from URL search params with strict validation
   const initialSearch = searchParams.get('q') || '';
   const initialCategory = searchParams.get('cat') || 'all';
   const initialMode = searchParams.get('mode') || 'all';
-  const initialQuick = (searchParams.get('quick') as 'all' | 'upi' | 'cash' | 'high') || 'all';
+  const rawQuick = searchParams.get('quick');
+  const initialQuick: 'all' | 'upi' | 'cash' | 'high' =
+    rawQuick === 'upi' || rawQuick === 'cash' || rawQuick === 'high' ? rawQuick : 'all';
 
   const [search, setSearch] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
@@ -38,6 +39,17 @@ function TransactionsContent() {
   const [showFilters, setShowFilters] = useState(
     initialCategory !== 'all' || initialMode !== 'all'
   );
+
+  const isFiltered = Boolean(
+    search.trim() || selectedCategory !== 'all' || selectedMode !== 'all' || quickFilter !== 'all'
+  );
+
+  const handleClearFilters = () => {
+    setSearch('');
+    setSelectedCategory('all');
+    setSelectedMode('all');
+    setQuickFilter('all');
+  };
 
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -197,7 +209,7 @@ function TransactionsContent() {
               placeholder="Search by amount, note, or merchant..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-theme-surface border border-theme-border/60 rounded-2xl pl-10 pr-9 py-3 text-sm text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:border-theme-accent transition-colors shadow-xs"
+              className="w-full bg-theme-surface border border-theme-border/60 rounded-2xl pl-10 pr-9 py-3 text-sm text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:border-theme-accent transition-colors shadow-sm"
             />
             {search && (
               <button
@@ -215,8 +227,8 @@ function TransactionsContent() {
             onClick={() => setShowFilters(!showFilters)}
             className={`min-h-[44px] min-w-[44px] px-3.5 border rounded-2xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] ${
               showFilters
-                ? 'bg-theme-accent text-theme-inverse border-theme-accent shadow-sm'
-                : 'bg-theme-surface border-theme-border/60 text-theme-secondary hover:text-theme-primary shadow-xs'
+                ? 'bg-theme-accent text-theme-on-accent border-theme-accent shadow-sm'
+                : 'bg-theme-surface border-theme-border/60 text-theme-secondary hover:text-theme-primary shadow-sm'
             }`}
             aria-label="Toggle transaction filters"
           >
@@ -232,7 +244,7 @@ function TransactionsContent() {
             onClick={() => setQuickFilter('all')}
             className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'all'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -243,7 +255,7 @@ function TransactionsContent() {
             onClick={() => setQuickFilter('upi')}
             className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'upi'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -255,7 +267,7 @@ function TransactionsContent() {
             onClick={() => setQuickFilter('cash')}
             className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'cash'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -267,7 +279,7 @@ function TransactionsContent() {
             onClick={() => setQuickFilter('high')}
             className={`px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 flex-shrink-0 active:scale-[0.98] ${
               quickFilter === 'high'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'bg-theme-surface/80 border border-theme-border/50 text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -329,6 +341,8 @@ function TransactionsContent() {
             })
           }
           expenses={filteredExpenses}
+          isFiltered={isFiltered}
+          onClearFilters={handleClearFilters}
         />
 
         {/* Infinite Scroll Loader */}

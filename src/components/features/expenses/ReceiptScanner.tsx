@@ -2,7 +2,6 @@
 
 import React, { useRef, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
-import Tesseract from 'tesseract.js';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useStore } from '@/store';
 
@@ -172,11 +171,11 @@ export const ReceiptScanner = ({ onScanComplete }: ReceiptScannerProps) => {
     
     try {
       addToast({ type: 'info', message: 'Scanning receipt... this may take a moment.' });
-      
+
+      const { default: Tesseract } = await import('tesseract.js');
       const result = await Tesseract.recognize(file, 'eng');
       const text = result.data.text;
-      
-      console.log('OCR Raw Text:', text);
+
       const { amount, date, note, categoryId } = parseOCR(text);
       
       if (!amount && !date) {

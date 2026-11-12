@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getCategories } from '@/lib/categories/index';
 import { useStore } from '@/store';
 import type { CategoryDocument } from '@/types/firestore';
-import { PRESET_CATEGORIES } from '@/config/categories';
 
 /**
  * useCategoriesLoader — Loads categories from Firestore into the Zustand store.

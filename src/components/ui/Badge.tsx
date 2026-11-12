@@ -22,7 +22,7 @@ export const Badge = ({ emoji, icon, name, color, size = 'md', className }: Badg
       className={clsx(
         'inline-flex items-center gap-1.5 font-sans font-medium rounded-full',
         'bg-theme-surface/90 border border-theme-border/60 text-theme-primary',
-        'whitespace-nowrap shadow-xs',
+        'whitespace-nowrap shadow-sm',
         size === 'sm' && 'px-2 py-0.5 text-[11px]',
         size === 'md' && 'px-2.5 py-1 text-xs',
         className

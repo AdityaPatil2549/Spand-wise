@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import type { AppStore } from './index';
 import type { AccountDocument } from '@/types/firestore';
-import { getAccounts } from '@/lib/accounts';
+import { getAccounts, normalizeAccounts } from '@/lib/accounts';
 
 export interface AccountsSlice {
   accounts: AccountDocument[];
@@ -18,7 +18,7 @@ export const createAccountsSlice: StateCreator<
   [['zustand/devtools', never]],
   [],
   AccountsSlice
-> = (set, get) => ({
+> = (set) => ({
   accounts: [],
   isAccountsLoading: false,
 
@@ -35,7 +35,7 @@ export const createAccountsSlice: StateCreator<
   },
 
   setAccounts: (accounts: AccountDocument[]) => {
-    set({ accounts });
+    set({ accounts: normalizeAccounts(accounts) });
   },
 
   updateAccountInStore: (accountId: string, amountChange: number) => {

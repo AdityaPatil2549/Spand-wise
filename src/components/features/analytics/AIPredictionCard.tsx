@@ -50,11 +50,11 @@ export const AIPredictionCard = () => {
  return (
  <Card padding="md" className="mb-4 relative overflow-hidden group">
  {/* Background decoration */}
- <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+ <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
  
  <div className="flex items-center gap-3 mb-4 relative z-10">
- <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shrink-0 shadow-sm">
- <Bot className="w-5 h-5 text-theme-inverse" />
+ <div className="w-10 h-10 rounded-xl bg-theme-accent flex items-center justify-center shrink-0 shadow-sm">
+ <Bot className="w-5 h-5 text-theme-on-accent" />
  </div>
  <div>
  <h3 className="font-bold text-[var(--text-primary)]">AI Insights</h3>

@@ -53,22 +53,24 @@ export default function TagsPage() {
     <div className="min-h-screen pb-32 animate-fade-in">
       <div className="px-4 py-6 md:px-8 max-w-4xl mx-auto">
         
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2 tracking-tight">
-            <Hash className="w-6 h-6 text-indigo-500" />
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2.5 tracking-tight font-sans">
+            <div className="w-8 h-8 rounded-xl bg-theme-accent/10 flex items-center justify-center text-theme-accent">
+              <Hash className="w-4 h-4 stroke-[2.2]" />
+            </div>
             Tags Overview
           </h1>
-          <p className="text-sm text-theme-secondary mt-2">
-            Add hashtags like #vacation or #birthday to your expense notes to automatically group them here.
+          <p className="text-xs text-theme-secondary mt-1">
+            Hashtags added in notes (e.g. #trip, #birthday) are automatically aggregated here.
           </p>
         </div>
 
         {tagsData.length === 0 ? (
-          <div className="text-center py-12 bg-theme-surface border border-theme-border rounded-2xl">
-            <Hash className="w-12 h-12 text-theme-tertiary mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-theme-primary mb-1">No tags found</h3>
-            <p className="text-theme-secondary text-sm px-4">
-              When you create an expense, add a hashtag in the Note field (e.g. "Dinner #food") to start tracking tags.
+          <div className="text-center py-12 bg-theme-surface/70 border border-theme-border/60 rounded-3xl p-8 shadow-sm">
+            <Hash className="w-10 h-10 text-theme-tertiary mx-auto mb-3" />
+            <h3 className="text-base font-semibold text-theme-primary mb-1">No tags found</h3>
+            <p className="text-theme-secondary text-xs max-w-sm mx-auto">
+              Add a hashtag in any expense note (e.g. &ldquo;Dinner #canteen&rdquo;) to automatically track grouped spends here.
             </p>
           </div>
         ) : (
@@ -77,18 +79,18 @@ export default function TagsPage() {
               <div 
                 key={data.tag}
                 onClick={() => setSelectedTag(data.tag)}
-                className="bg-theme-surface border border-theme-border rounded-2xl p-5 cursor-pointer hover:border-theme-accent hover:shadow-sm transition-all group"
+                className="bg-theme-surface/70 border border-theme-border/60 rounded-2xl p-5 cursor-pointer hover:border-theme-accent/50 hover:bg-theme-surface transition-all active:scale-[0.98] group shadow-sm"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold text-sm">
+                  <div className="inline-flex items-center justify-center px-2.5 py-1 rounded-md bg-theme-accent/15 text-theme-accent font-semibold text-xs border border-theme-accent/20">
                     {data.tag}
                   </div>
-                  <span className="text-xs font-medium text-theme-secondary bg-theme-elevated px-2 py-1 rounded-md">
+                  <span className="text-[11px] font-semibold text-theme-secondary bg-theme-base/80 border border-theme-border/40 px-2 py-0.5 rounded-md">
                     {data.count} txns
                   </span>
                 </div>
-                <div className="text-2xl font-bold text-theme-primary tracking-tight">
-                  {CURRENCY_SYMBOL} {data.total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+                <div className="text-2xl font-bold text-theme-primary tracking-tight font-mono tabular-nums">
+                  {CURRENCY_SYMBOL}&nbsp;{data.total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                 </div>
               </div>
             ))}

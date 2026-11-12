@@ -55,12 +55,12 @@ const CategoryChip = ({ category, isSelected, onSelect }: CategoryChipProps) => 
       'touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent active:scale-[0.97]',
       isSelected
         ? 'scale-[1.02] shadow-sm'
-        : 'opacity-70 hover:opacity-100 hover:bg-theme-border/20'
+        : 'opacity-80 hover:opacity-100 bg-theme-elevated/80 hover:bg-theme-surface-hover'
     )}
     style={{
-      backgroundColor: isSelected ? `${category.color}22` : '#eae2da',
+      backgroundColor: isSelected ? `${category.color}22` : undefined,
       border: isSelected
-        ? `2px solid ${category.color}88`
+        ? `2px solid ${category.color}`
         : '2px solid transparent',
     }}
   >
@@ -68,8 +68,11 @@ const CategoryChip = ({ category, isSelected, onSelect }: CategoryChipProps) => 
       {category.icon ? <CategoryIcon iconName={category.icon} size={24} /> : category.emoji}
     </div>
     <span
-      className="text-[10px] font-medium leading-tight text-center font-body truncate max-w-[70px]"
-      style={{ color: isSelected ? category.color : '#605850' }}
+      className={clsx(
+        'text-[10px] font-medium leading-tight text-center font-body truncate max-w-[70px]',
+        !isSelected && 'text-theme-secondary'
+      )}
+      style={{ color: isSelected ? category.color : undefined }}
     >
       {category.name}
     </span>

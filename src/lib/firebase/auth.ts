@@ -4,6 +4,7 @@ import {
  signInWithEmailAndPassword,
  createUserWithEmailAndPassword,
  sendEmailVerification,
+ sendPasswordResetEmail,
  signOut as firebaseSignOut,
  onAuthStateChanged,
  updateProfile,
@@ -43,12 +44,27 @@ export const signInWithEmail = async (
  */
 export const signUpWithEmail = async (
  email: string,
- password: string
+ password: string,
+ displayName?: string
 ): Promise<User> => {
  const result = await createUserWithEmailAndPassword(auth, email, password);
+ if (displayName && result.user) {
+  try {
+   await updateProfile(result.user, { displayName });
+  } catch (e) {
+   console.warn('Failed to set displayName during signup', e);
+  }
+ }
  await sendEmailVerification(result.user);
  await upsertUserProfile(result.user);
  return result.user;
+};
+
+/**
+ * Send password reset email.
+ */
+export const sendPasswordReset = async (email: string): Promise<void> => {
+ await sendPasswordResetEmail(auth, email);
 };
 
 /**

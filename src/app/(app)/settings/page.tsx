@@ -5,39 +5,30 @@ import { useAuthGuard } from '@/hooks/useAuth';
 import { useStore } from '@/store';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
-import { 
-  Settings as SettingsIcon, 
-  LogOut, 
-  Users, 
-  Star, 
-  MessageSquare, 
-  HelpCircle, 
-  Info,
-  Calendar,
-  LayoutGrid,
-  List,
-  Crown,
-  Hash,
+import {
+  LogOut,
   Download,
   Palette,
-  CalendarRange,
-  RefreshCw
+  FolderKanban,
+  SlidersHorizontal,
+  ChevronRight,
+  Tags,
+  Sparkles,
 } from 'lucide-react';
 import { ThemeSelector } from '@/components/shared/ThemeSelector';
-import { BottomSheet } from '@/components/ui/BottomSheet';
-import { CategoryBudgetsSheet } from '@/components/features/budget/CategoryBudgetsSheet';
 
-export default function MorePage() {
+export default function SettingsPage() {
   const { user, isLoading } = useAuthGuard();
   const router = useRouter();
   const addToast = useStore((s) => s.addToast);
-  const expenses = useStore((s) => s.expenses);
-  const categories = useStore((s) => s.categories);
-  const [isThemesExpanded, setIsThemesExpanded] = useState(false);
+  const [isThemesExpanded, setIsThemesExpanded] = useState(true);
 
   const handleSignOut = async () => {
     try {
       await signOut();
+      const { useStore } = await import('@/store');
+      useStore.getState().setUser(null);
+      useStore.getState().setHouseholdId(null);
       router.push('/login');
     } catch {
       addToast({ type: 'error', message: 'Sign out failed.' });
@@ -47,170 +38,145 @@ export default function MorePage() {
   if (isLoading) return null;
 
   return (
-    <div className="bg-theme-base text-theme-primary flex flex-col min-h-screen font-body w-full pb-32">
-      <div className="px-6 md:px-8 pt-24 pb-8 md:max-w-4xl md:mx-auto w-full flex-1">
-        
-        {/* Profile Section */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-full bg-theme-accent/20 flex items-center justify-center text-theme-accent text-2xl font-bold shadow-sm">
-            {user?.displayName ? user.displayName[0].toUpperCase() : 'U'}
+    <div className="text-theme-primary flex flex-col w-full pb-32 md:pb-12">
+      <div className="px-4 sm:px-6 md:px-8 py-4 max-w-5xl mx-auto w-full flex-1 space-y-6">
+        {/* Profile Identity Card */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-3xl bg-theme-surface/80 border border-theme-border/60 shadow-sm">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-14 h-14 rounded-2xl bg-theme-accent/15 border border-theme-accent/30 flex items-center justify-center text-theme-accent text-xl font-bold shadow-sm shrink-0">
+              {user?.displayName ? user.displayName[0].toUpperCase() : 'U'}
+            </div>
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-theme-accent mb-0.5">
+                <Sparkles className="w-3 h-3" />
+                <span>SpendWise Studio</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-display font-bold tracking-tight text-theme-primary truncate">
+                {user?.displayName || 'SpendWise User'}
+              </h1>
+              <p className="text-theme-secondary text-xs sm:text-sm truncate font-sans">
+                {user?.email}
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold tracking-tight text-theme-primary">{user?.displayName || 'User'}</h1>
-            <p className="text-theme-secondary text-sm">{user?.email}</p>
-          </div>
-        </div>
 
-        {/* Backup Warning Section */}
-        <div className="bg-theme-surface border border-theme-border rounded-2xl p-4 flex items-center justify-between mb-8 shadow-sm">
-          <div className="flex items-center gap-3 text-theme-primary">
-            <Download className="w-5 h-5 text-indigo-500" />
-            <span className="font-medium text-sm">Download your data</span>
-          </div>
-          <button onClick={() => router.push('/settings/export')} className="text-sm font-bold text-indigo-500 hover:text-indigo-600 transition-colors">
-            Download
-          </button>
-        </div>
-
-        {/* Top Actions Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <button 
-            onClick={() => router.push('/tags')}
-            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
+          <button
+            type="button"
+            onClick={() => router.push('/settings/export')}
+            className="inline-flex items-center justify-center gap-2 text-xs font-bold px-4 py-2.5 rounded-xl bg-theme-base hover:bg-theme-elevated border border-theme-border/60 text-theme-primary transition-all active:scale-95 cursor-pointer shrink-0 self-start sm:self-center"
           >
-            <Hash className="w-5 h-5 text-indigo-400" />
-            <span className="font-medium text-[10px] sm:text-xs">Tags</span>
-          </button>
-          <button 
-            onClick={() => router.push('/transactions')}
-            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
-          >
-            <List className="w-5 h-5 text-indigo-400" />
-            <span className="font-medium text-[10px] sm:text-xs">History</span>
-          </button>
-          <button 
-            onClick={() => router.push('/scheduled')}
-            className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 hover:bg-theme-elevated transition-colors"
-          >
-            <RefreshCw className="w-5 h-5 text-indigo-400" />
-            <span className="font-medium text-[10px] sm:text-xs">Subscriptions</span>
+            <Download className="w-4 h-4 text-theme-accent" />
+            <span>Export CSV / PDF</span>
           </button>
         </div>
 
-        {/* Views Section */}
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold text-theme-secondary mb-4 uppercase tracking-wider">Views</h2>
-          <div className="grid grid-cols-3 gap-3">
-            <button 
-              onClick={() => router.push('/day')}
-              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+        {/* Dedicated Theme Studio (Expanded by Default) */}
+        <section className="rounded-3xl bg-theme-surface/80 border border-theme-border/60 p-4 sm:p-5 shadow-sm">
+          <button
+            type="button"
+            onClick={() => setIsThemesExpanded((prev) => !prev)}
+            className="w-full flex items-center justify-between gap-3 text-left cursor-pointer group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-theme-accent/15 text-theme-accent flex items-center justify-center">
+                <Palette className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="font-display font-bold text-base sm:text-lg text-theme-primary">
+                  Theme Studio
+                </h2>
+                <p className="text-xs text-theme-secondary">
+                  20 distinct personal styles with calibrated contrast, typography &amp; mood
+                </p>
+              </div>
+            </div>
+            <ChevronRight
+              className={`w-5 h-5 text-theme-secondary transition-transform duration-200 ${
+                isThemesExpanded ? 'rotate-90' : ''
+              }`}
+            />
+          </button>
+
+          {isThemesExpanded && (
+            <div className="mt-5 pt-4 border-t border-theme-border/40 animate-in fade-in duration-150">
+              <ThemeSelector />
+            </div>
+          )}
+        </section>
+
+        {/* Budget, Categories & Account Controls */}
+        <section className="space-y-2">
+          <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider px-1">
+            Preferences &amp; Controls
+          </h2>
+          <div className="space-y-1.5 rounded-3xl bg-theme-surface/80 border border-theme-border/60 p-2 shadow-sm">
+            <button
+              type="button"
+              onClick={() => router.push('/settings/categories')}
+              className="w-full flex items-center justify-between p-3.5 hover:bg-theme-surface-hover rounded-2xl transition-all cursor-pointer group"
             >
-              <List className="w-5 h-5 text-theme-primary" />
-              <span className="text-xs font-medium text-theme-primary">Day</span>
+              <div className="flex items-center gap-3.5 text-theme-primary">
+                <FolderKanban className="w-4 h-4 text-theme-secondary group-hover:text-theme-accent transition-colors" />
+                <div className="text-left">
+                  <span className="font-semibold text-sm block">Manage Categories</span>
+                  <span className="text-xs text-theme-secondary">
+                    Customize icons, colors, and income categories
+                  </span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-theme-secondary opacity-70" />
             </button>
-            <button 
-              onClick={() => router.push('/calendar')}
-              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+
+            <button
+              type="button"
+              onClick={() => router.push('/settings/limits')}
+              className="w-full flex items-center justify-between p-3.5 hover:bg-theme-surface-hover rounded-2xl transition-all cursor-pointer group"
             >
-              <Calendar className="w-5 h-5 text-theme-primary" />
-              <span className="text-xs font-medium text-theme-primary">Calendar</span>
+              <div className="flex items-center gap-3.5 text-theme-primary">
+                <SlidersHorizontal className="w-4 h-4 text-theme-secondary group-hover:text-theme-accent transition-colors" />
+                <div className="text-left">
+                  <span className="font-semibold text-sm block">Adjust Category Limits</span>
+                  <span className="text-xs text-theme-secondary">
+                    Tune monthly allowance and per-category caps
+                  </span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-theme-secondary opacity-70" />
             </button>
-            <button 
-              onClick={() => router.push('/custom')}
-              className="bg-theme-surface border border-theme-border rounded-2xl py-4 flex flex-col items-center gap-2 hover:bg-theme-elevated transition-colors"
+
+            <button
+              type="button"
+              onClick={() => router.push('/tags')}
+              className="w-full flex items-center justify-between p-3.5 hover:bg-theme-surface-hover rounded-2xl transition-all cursor-pointer group"
             >
-              <CalendarRange className="w-5 h-5 text-theme-primary" />
-              <span className="text-xs font-medium text-theme-primary text-center leading-tight">Date<br/>Range</span>
+              <div className="flex items-center gap-3.5 text-theme-primary">
+                <Tags className="w-4 h-4 text-theme-secondary group-hover:text-theme-accent transition-colors" />
+                <div className="text-left">
+                  <span className="font-semibold text-sm block">Hashtag &amp; Event Labels</span>
+                  <span className="text-xs text-theme-secondary">
+                    Review auto-grouped #hashtags from transaction notes
+                  </span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-theme-secondary opacity-70" />
+            </button>
+
+            <div className="h-px bg-theme-border/40 my-1 mx-2" />
+
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-between p-3.5 hover:bg-rose-500/10 rounded-2xl transition-all cursor-pointer group text-rose-500"
+            >
+              <div className="flex items-center gap-3.5">
+                <LogOut className="w-4 h-4" />
+                <span className="font-semibold text-sm">Sign Out</span>
+              </div>
+              <ChevronRight className="w-4 h-4 opacity-50" />
             </button>
           </div>
-        </div>
-
-
-
-        {/* More Options List */}
-        <div>
-          <h2 className="text-sm font-semibold text-theme-secondary mb-4 uppercase tracking-wider">More options</h2>
-          <div className="space-y-1">
-            <button 
-              onClick={() => setIsThemesExpanded(!isThemesExpanded)} 
-              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
-            >
-              <div className="flex items-center gap-4 text-theme-primary">
-                <Palette className="w-5 h-5 text-theme-secondary group-hover:text-theme-primary transition-colors" />
-                <span className="font-medium">Theme</span>
-              </div>
-              <ChevronRightIcon className={`transition-transform duration-300 ${isThemesExpanded ? 'rotate-90' : ''}`} />
-            </button>
-
-            {isThemesExpanded && (
-              <div className="p-4 bg-theme-surface/30 rounded-2xl mb-2 animate-fade-in">
-                <ThemeSelector />
-              </div>
-            )}
-
-            <button 
-              onClick={() => router.push('/settings/categories')} 
-              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
-            >
-              <div className="flex items-center gap-4 text-theme-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-theme-secondary group-hover:text-theme-primary transition-colors"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span className="font-medium">Manage Categories</span>
-              </div>
-              <ChevronRightIcon className={`transition-transform duration-300`} />
-            </button>
-
-            <button 
-              onClick={() => router.push('/settings/limits')} 
-              className="w-full flex items-center justify-between p-4 hover:bg-theme-surface rounded-2xl transition-colors group"
-            >
-              <div className="flex items-center gap-4 text-theme-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-theme-secondary group-hover:text-theme-primary transition-colors"><line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="14" y2="14"/><line x1="4" x2="20" y1="7" y2="7"/><polyline points="14 11 18 7 22 11"/><polyline points="2 18 6 14 10 18"/></svg>
-                <span className="font-medium">Adjust Category Limits</span>
-              </div>
-              <ChevronRightIcon className={`transition-transform duration-300`} />
-            </button>
-            
-            <div className="h-px bg-theme-border my-2"></div>
-            
-            <button 
-              onClick={async () => {
-                const { getAuth, signOut } = await import('firebase/auth');
-                const auth = getAuth();
-                await signOut(auth);
-                const { useStore } = await import('@/store');
-                useStore.getState().setUser(null);
-                useStore.getState().setHouseholdId(null);
-                window.location.href = '/login';
-              }}
-              className="w-full flex items-center justify-between p-4 hover:bg-theme-danger/10 rounded-2xl transition-colors group mt-4"
-            >
-              <div className="flex items-center gap-4 text-theme-danger">
-                <LogOut className="w-5 h-5 group-hover:text-theme-danger transition-colors" />
-                <span className="font-medium">Sign out</span>
-              </div>
-              <ChevronRightIcon className="text-theme-danger opacity-50" />
-            </button>
-          </div>
-        </div>
-
+        </section>
       </div>
     </div>
   );
 }
-
-const ChevronRightIcon = ({ className = "text-theme-secondary opacity-50" }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={`w-5 h-5 ${className}`}
-  >
-    <path d="m9 18 6-6-6-6"/>
-  </svg>
-);

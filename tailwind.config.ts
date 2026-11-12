@@ -6,7 +6,10 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: ['class', ':is(.dark, .ocean, .forest, .cyberpunk)'],
+  darkMode: [
+    'class',
+    ':is(.dark, .savile-rebel, .dune-terminal, .cyber-velocity, .bio-alchemical, .solaris, .aurora, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite)',
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -29,6 +32,12 @@ const config: Config = {
           accent: "rgb(var(--theme-accent) / <alpha-value>)",
           "accent-hover": "rgb(var(--theme-accent-hover) / <alpha-value>)",
           "accent-light": "rgb(var(--theme-accent-light) / <alpha-value>)",
+          "on-accent": "rgb(var(--theme-on-accent) / <alpha-value>)",
+          "on-primary": "rgb(var(--theme-on-primary) / <alpha-value>)",
+          positive: "rgb(var(--theme-positive) / <alpha-value>)",
+          "positive-light": "rgb(var(--theme-positive-light) / <alpha-value>)",
+          warning: "rgb(var(--theme-warning) / <alpha-value>)",
+          "warning-light": "rgb(var(--theme-warning-light) / <alpha-value>)",
           danger: "rgb(var(--theme-danger) / <alpha-value>)",
           "danger-light": "rgb(var(--theme-danger-light) / <alpha-value>)",
           white: "rgb(var(--theme-white) / <alpha-value>)",
@@ -40,7 +49,7 @@ const config: Config = {
         "4xl": "2rem",
       },
       boxShadow: {
-        fab: "0 8px 16px -4px rgba(139, 92, 246, 0.45)",
+        fab: "0 10px 24px -4px rgb(var(--theme-accent) / 0.36)",
         card: "0 2px 8px rgba(0, 0, 0, 0.08)",
       },
       animation: {

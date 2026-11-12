@@ -1,59 +1,82 @@
-import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  Timestamp,
+  query,
+  orderBy,
+} from 'firebase/firestore';
+import { addDays, addWeeks, addMonths, addYears } from 'date-fns';
 import { db } from '../firebase/index';
 import type { ScheduledTransactionDocument } from '@/types/firestore';
 
-/**
- * Fetches all scheduled transactions for a household.
- */
-export async function getScheduledTransactions(householdId: string): Promise<ScheduledTransactionDocument[]> {
-  const ref = collection(db, `users/${householdId}/scheduled_transactions`);
-  const snap = await getDocs(ref);
-  return snap.docs.map(doc => doc.data() as ScheduledTransactionDocument);
+export function computeNextDueDate(
+  fromDate: Date,
+  frequency: ScheduledTransactionDocument['frequency']
+): Date {
+  switch (frequency) {
+    case 'daily':
+      return addDays(fromDate, 1);
+    case 'weekly':
+      return addWeeks(fromDate, 1);
+    case 'monthly':
+      return addMonths(fromDate, 1);
+    case 'yearly':
+      return addYears(fromDate, 1);
+    default:
+      return fromDate;
+  }
 }
 
-/**
- * Creates a new scheduled transaction.
- */
+export async function getScheduledTransactions(
+  householdId: string
+): Promise<ScheduledTransactionDocument[]> {
+  const ref = collection(db, 'households', householdId, 'scheduled_transactions');
+  const q = query(ref, orderBy('nextDueDate', 'asc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  })) as ScheduledTransactionDocument[];
+}
+
 export async function addScheduledTransaction(
   householdId: string,
-  data: Omit<ScheduledTransactionDocument, 'id' | 'createdAt' | 'updatedAt'>
+  transaction: Omit<ScheduledTransactionDocument, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<ScheduledTransactionDocument> {
-  const collectionRef = collection(db, `users/${householdId}/scheduled_transactions`);
-  const docRef = doc(collectionRef);
-  const id = docRef.id;
   const now = Timestamp.now();
-  
-  const payload: ScheduledTransactionDocument = {
-    ...data,
-    id,
+  const data = {
+    ...transaction,
     createdAt: now,
     updatedAt: now,
   };
-  
-  await setDoc(docRef, payload);
-  return payload;
+  const collectionRef = collection(db, 'households', householdId, 'scheduled_transactions');
+  const docRef = await addDoc(collectionRef, data);
+  return {
+    id: docRef.id,
+    ...data,
+  } as ScheduledTransactionDocument;
 }
 
-/**
- * Updates an existing scheduled transaction.
- */
 export async function updateScheduledTransaction(
   householdId: string,
   id: string,
-  data: Partial<Omit<ScheduledTransactionDocument, 'id' | 'createdAt'>>
+  updates: Partial<ScheduledTransactionDocument>
 ): Promise<void> {
-  const docRef = doc(db, `users/${householdId}/scheduled_transactions/${id}`);
-  const payload = { ...data, updatedAt: Timestamp.now() };
-  await updateDoc(docRef, payload);
+  const docRef = doc(db, 'households', householdId, 'scheduled_transactions', id);
+  await updateDoc(docRef, {
+    ...updates,
+    updatedAt: Timestamp.now(),
+  });
 }
 
-/**
- * Deletes a scheduled transaction.
- */
 export async function deleteScheduledTransaction(
   householdId: string,
   id: string
 ): Promise<void> {
-  const docRef = doc(db, `users/${householdId}/scheduled_transactions/${id}`);
+  const docRef = doc(db, 'households', householdId, 'scheduled_transactions', id);
   await deleteDoc(docRef);
 }

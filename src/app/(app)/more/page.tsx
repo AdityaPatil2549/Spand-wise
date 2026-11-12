@@ -169,8 +169,8 @@ export default function MoreToolsPage() {
       iconBg: 'bg-blue-500/10'
     },
     {
-      title: 'Themes & Preferences',
-      description: 'Personalize themes (Graphite, Sepia, Emerald), manage notifications & profile.',
+      title: 'Themes & Studio',
+      description: 'Explore all 20 distinct theme signatures, 60-30-10 color ratios, and typography pairings.',
       href: '/settings',
       icon: Palette,
       iconColor: 'text-pink-500',
@@ -180,25 +180,25 @@ export default function MoreToolsPage() {
 
   return (
     <div className="w-full">
-      <main className="flex-1 w-full px-4 sm:px-6 pt-8 pb-32 md:pb-12 max-w-6xl mx-auto">
-        <div className="mb-8">
+      <div className="flex-1 w-full px-4 sm:px-6 pt-4 sm:pt-6 pb-32 md:pb-12 max-w-6xl mx-auto">
+        <div className="mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-accent/10 text-theme-accent text-xs font-semibold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Workspace & Features</span>
+            <span>Workspace &amp; Tools</span>
           </div>
-          <TextEffect as="h1" preset="fade" className="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-none tracking-tight text-theme-primary mb-2">
-            More Tools & Accounts
+          <TextEffect as="h1" preset="fade" className="font-display text-2xl sm:text-3xl md:text-4xl font-bold leading-tight tracking-tight text-theme-primary mb-1.5">
+            More Tools &amp; Accounts
           </TextEffect>
-          <TextEffect as="p" preset="fade" className="text-base sm:text-lg text-theme-secondary max-w-2xl">
-            Access your cumulative savings, calendar timelines, recurring bills, and budget limits all in one centralized hub.
+          <TextEffect as="p" preset="fade" className="text-sm sm:text-base text-theme-secondary max-w-2xl">
+            Manage wallets, roommate bill splits, savings goals, recurring subscriptions, and appearance settings.
           </TextEffect>
         </div>
 
-        <section className="mb-10">
-          <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider mb-4 px-1">
+        <section className="mb-8">
+          <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider mb-3 px-1">
             Core Financial Tools
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {PRIMARY_TOOLS.map((tool) => (
               <ToolCard key={tool.title} {...tool} />
             ))}
@@ -206,16 +206,16 @@ export default function MoreToolsPage() {
         </section>
 
         <section>
-          <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider mb-4 px-1">
-            Data, Views & Customization
+          <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider mb-3 px-1">
+            Data, Views &amp; Customization
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {SECONDARY_TOOLS.map((tool) => (
               <ToolCard key={tool.title} {...tool} />
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

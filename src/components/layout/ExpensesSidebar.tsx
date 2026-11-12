@@ -2,10 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useStore } from '@/store';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { AddExpenseMorph } from '@/components/features/expenses/AddExpenseMorph';
-import { LayoutDashboard, Wallet, LineChart, Plus } from 'lucide-react';
+import { LayoutDashboard, Wallet, LineChart, Plus, Settings } from 'lucide-react';
 
 const SIDEBAR_LINKS = [
  { label: 'Dashboard', path: '/dashboard', Icon: LayoutDashboard },
@@ -15,7 +14,6 @@ const SIDEBAR_LINKS = [
 
 export function ExpensesSidebar() {
  const pathname = usePathname();
- const openBottomSheet = useStore((s) => s.openBottomSheet);
 
  return (
  <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-theme-base border-r border-theme-border/60 shadow-sm py-8 px-6 z-50">
@@ -55,7 +53,7 @@ export function ExpensesSidebar() {
  
  <div className="mt-auto mb-6">
  <AddExpenseMorph>
- <span className="w-full bg-theme-accent text-theme-white py-3 px-4 rounded-lg font-body text-sm font-medium hover:bg-theme-accent/90 transition-colors shadow-sm flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+ <span className="w-full bg-theme-accent text-theme-on-accent py-3 px-4 rounded-lg font-body text-sm font-medium hover:bg-theme-accent/90 transition-colors shadow-sm flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
  <Plus className="w-5 h-5" strokeWidth={2.5} />
  <span>Add Expense</span>
  </span>
@@ -64,7 +62,7 @@ export function ExpensesSidebar() {
  
  <div className="border-t border-theme-border/30 pt-4 space-y-1">
  <Link className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-colors duration-200 group active:scale-95 ${pathname === '/settings' ? 'text-theme-accent font-bold bg-theme-accent-light/50' : 'text-theme-secondary hover:bg-theme-surface-hover'}`} href="/settings">
- <span className="material-symbols-outlined text-xl group-hover:text-theme-accent transition-colors">settings</span>
+ <Settings className="w-5 h-5 group-hover:text-theme-accent transition-colors" />
  <span className="font-body text-sm">Settings</span>
  </Link>
  </div>

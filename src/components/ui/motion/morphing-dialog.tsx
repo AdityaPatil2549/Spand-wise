@@ -89,6 +89,7 @@ export type MorphingDialogTriggerProps = {
  className?: string;
  style?: React.CSSProperties;
  triggerRef?: React.RefObject<HTMLButtonElement>;
+ ariaLabel?: string;
 };
 
 function MorphingDialogTrigger({
@@ -96,6 +97,7 @@ function MorphingDialogTrigger({
  className,
  style,
  triggerRef,
+ ariaLabel,
 }: MorphingDialogTriggerProps) {
  const { setIsOpen, isOpen, uniqueId } = useMorphingDialog();
 
@@ -115,6 +117,7 @@ function MorphingDialogTrigger({
 
  return (
  <motion.button
+ type='button'
  ref={triggerRef}
  layoutId={`dialog-${uniqueId}`}
  className={cn('relative cursor-pointer', className)}
@@ -124,7 +127,7 @@ function MorphingDialogTrigger({
  aria-haspopup='dialog'
  aria-expanded={isOpen}
  aria-controls={`motion-ui-morphing-dialog-content-${uniqueId}`}
- aria-label={`Open dialog ${uniqueId}`}
+ {...(ariaLabel ? { 'aria-label': ariaLabel } : {})}
  >
  {children}
  </motion.button>
@@ -242,7 +245,7 @@ function MorphingDialogContainer({ children }: MorphingDialogContainerProps) {
  <>
  <motion.div
  key={`backdrop-${uniqueId}`}
- className='fixed inset-0 h-full w-full bg-theme-white/40 backdrop-blur-xs dark:bg-black/40'
+ className='fixed inset-0 h-full w-full bg-theme-white/40 backdrop-blur-sm dark:bg-black/40'
  initial={{ opacity: 0 }}
  animate={{ opacity: 1 }}
  exit={{ opacity: 0 }}
@@ -419,4 +422,5 @@ export {
  MorphingDialogSubtitle,
  MorphingDialogDescription,
  MorphingDialogImage,
+ useMorphingDialog,
 };

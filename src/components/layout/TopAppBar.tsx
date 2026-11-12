@@ -21,12 +21,14 @@ import {
   TrendingDown, 
   ArrowRight 
 } from 'lucide-react';
-import { differenceInDays, getDaysInMonth, getDate } from 'date-fns';
+import { differenceInCalendarDays, getDaysInMonth, getDate } from 'date-fns';
 import { formatCurrency } from '@/lib/utils';
 import { addExpense } from '@/lib/expenses';
-import { updateScheduledTransaction } from '@/lib/scheduled';
+import { computeNextDueDate, updateScheduledTransaction } from '@/lib/scheduled';
+import { Timestamp } from 'firebase/firestore';
 import { triggerHaptic } from '@/lib/haptics';
 import type { ScheduledTransactionDocument } from '@/types/firestore';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 export function TopAppBar() {
   const { 
@@ -35,8 +37,10 @@ export function TopAppBar() {
     budget, 
     categoriesMap, 
     user, 
+    accounts,
     scheduledTransactions, 
     removeScheduledOptimistic, 
+    updateScheduledOptimistic,
     householdId 
   } = useStore();
   
@@ -56,7 +60,7 @@ export function TopAppBar() {
     try {
       const stored = localStorage.getItem('spendwise_read_alerts');
       if (stored) setReadAlerts(JSON.parse(stored));
-    } catch (e) {}
+    } catch {}
   }, []);
 
   const markAlertsAsRead = (ids: string[]) => {
@@ -64,7 +68,7 @@ export function TopAppBar() {
     setReadAlerts(updated);
     try {
       localStorage.setItem('spendwise_read_alerts', JSON.stringify(updated));
-    } catch (e) {}
+    } catch {}
   };
 
   const dismissAlert = (id: string, e: React.MouseEvent) => {
@@ -93,6 +97,12 @@ export function TopAppBar() {
   const handleQuickPayBill = async (bill: ScheduledTransactionDocument, alertId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user) return;
+    const targetHousehold = householdId || user.uid;
+    const accountId =
+      bill.accountId ||
+      accounts.find((a) => a.id === 'bank' || a.type === 'bank')?.id ||
+      'bank';
+
     triggerHaptic('medium');
     setPayingBillId(bill.id);
 
@@ -100,16 +110,23 @@ export function TopAppBar() {
       const cat = categoriesMap.get(bill.categoryId);
       const title = bill.note || cat?.name || 'Bill';
       
-      await addExpense(householdId || user.uid, user.uid, {
+      await addExpense(targetHousehold, user.uid, {
         amount: bill.amount,
         categoryId: bill.categoryId,
         note: `${title} (${bill.frequency === 'one-time' ? 'Bill Paid' : 'Scheduled'})`,
         date: new Date().toISOString(),
+        accountId,
       });
 
       if (bill.frequency === 'one-time') {
         removeScheduledOptimistic(bill.id);
-        updateScheduledTransaction(householdId || user.uid, bill.id, { isActive: false }).catch(() => {});
+        updateScheduledTransaction(targetHousehold, bill.id, { isActive: false }).catch(() => {});
+      } else {
+        const nextDue = Timestamp.fromDate(
+          computeNextDueDate(bill.nextDueDate.toDate(), bill.frequency)
+        );
+        updateScheduledOptimistic({ ...bill, nextDueDate: nextDue });
+        updateScheduledTransaction(targetHousehold, bill.id, { nextDueDate: nextDue }).catch(() => {});
       }
 
       markAlertsAsRead([alertId]);
@@ -146,7 +163,7 @@ export function TopAppBar() {
       .forEach((b) => {
         try {
           const dueDate = b.nextDueDate.toDate();
-          const diff = differenceInDays(dueDate, now);
+          const diff = differenceInCalendarDays(dueDate, now);
           const cat = categoriesMap.get(b.categoryId);
           const title = b.note || cat?.name || 'Bill';
 
@@ -268,13 +285,8 @@ export function TopAppBar() {
     <header className="sticky top-0 z-30 flex items-center justify-between w-full px-4 sm:px-6 md:px-8 h-16 md:h-18 bg-theme-base/90 backdrop-blur-md border-b border-theme-border/30 transition-colors select-none">
       {/* Left: Mobile Branding or Desktop Breadcrumb */}
       <div className="flex items-center gap-3">
-        <Link href="/dashboard" className="md:hidden flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-theme-primary text-theme-inverse flex items-center justify-center font-display font-extrabold text-xs tracking-tight shadow-xs group-hover:scale-105 transition-transform">
-            SW
-          </div>
-          <span className="font-display text-base font-extrabold tracking-[-0.035em] text-theme-primary leading-none">
-            SpendWise
-          </span>
+        <Link href="/dashboard" className="md:hidden flex items-center group focus:outline-none">
+          <BrandLogo size="sm" showText={true} />
         </Link>
         <div className="hidden md:flex items-center gap-2 text-xs uppercase tracking-wider text-theme-secondary font-semibold">
           <span className="text-theme-secondary/80">SpendWise</span>
@@ -295,7 +307,7 @@ export function TopAppBar() {
           >
             <Bell className="w-4 h-4 stroke-[2]" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] h-[18px] rounded-full bg-rose-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shadow-xs">
+              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 min-w-[18px] h-[18px] rounded-full bg-rose-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shadow-sm">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -308,7 +320,7 @@ export function TopAppBar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15, ease: 'easeOut' }}
-                className="absolute right-0 mt-3 w-88 sm:w-96 bg-theme-surface border border-theme-border/60 shadow-2xl rounded-2xl overflow-hidden origin-top-right z-50"
+                className="absolute right-0 mt-3 w-80 sm:w-96 bg-theme-surface border border-theme-border/60 shadow-2xl rounded-2xl overflow-hidden origin-top-right z-50"
               >
                 {/* Header & Tabs */}
                 <div className="p-3.5 border-b border-theme-border/30 bg-theme-surface/70 space-y-2.5">
@@ -341,7 +353,7 @@ export function TopAppBar() {
                       onClick={() => setNotifTab('all')}
                       className={`flex-1 py-1 rounded-lg font-semibold transition-all cursor-pointer text-center ${
                         notifTab === 'all'
-                          ? 'bg-theme-surface text-theme-primary shadow-2xs'
+                          ? 'bg-theme-surface text-theme-primary shadow-sm'
                           : 'text-theme-secondary hover:text-theme-primary'
                       }`}
                     >
@@ -351,7 +363,7 @@ export function TopAppBar() {
                       onClick={() => setNotifTab('actionable')}
                       className={`flex-1 py-1 rounded-lg font-semibold transition-all cursor-pointer text-center ${
                         notifTab === 'actionable'
-                          ? 'bg-theme-surface text-theme-primary shadow-2xs'
+                          ? 'bg-theme-surface text-theme-primary shadow-sm'
                           : 'text-theme-secondary hover:text-theme-primary'
                       }`}
                     >
@@ -422,7 +434,7 @@ export function TopAppBar() {
                                   type="button"
                                   onClick={(e) => handleQuickPayBill(alert.billItem!, alert.id, e)}
                                   disabled={payingBillId === alert.billItem.id}
-                                  className="px-2.5 py-1 rounded-lg bg-theme-primary text-theme-inverse text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-2xs hover:opacity-90 cursor-pointer"
+                                  className="px-2.5 py-1 rounded-lg bg-theme-primary text-theme-on-primary text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-all shadow-sm hover:opacity-90 cursor-pointer"
                                 >
                                   <Check className="w-3 h-3 stroke-[2.5]" />
                                   <span>{payingBillId === alert.billItem.id ? 'Recording...' : 'Mark as Paid'}</span>

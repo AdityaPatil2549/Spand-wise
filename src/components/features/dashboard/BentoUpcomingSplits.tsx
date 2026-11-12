@@ -6,7 +6,7 @@ import { useStore } from '@/store';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
 import { addExpense } from '@/lib/expenses/index';
-import { format, differenceInDays } from 'date-fns';
+import { differenceInCalendarDays } from 'date-fns';
 import {
   CalendarClock,
   Check,
@@ -14,13 +14,13 @@ import {
   Share2,
   ArrowRight,
   Sparkles,
-  ExternalLink,
 } from 'lucide-react';
 import type { ScheduledTransactionDocument } from '@/types/firestore';
-import { updateScheduledTransaction } from '@/lib/scheduled';
+import { computeNextDueDate, updateScheduledTransaction } from '@/lib/scheduled';
+import { Timestamp } from 'firebase/firestore';
 
 export const BentoUpcomingSplits: React.FC = () => {
-  const { user, householdId, scheduledTransactions, addToast, categoriesMap, removeScheduledOptimistic } = useStore();
+  const { user, householdId, accounts, scheduledTransactions, addToast, categoriesMap, removeScheduledOptimistic, updateScheduledOptimistic } = useStore();
   const [payingId, setPayingId] = useState<string | null>(null);
 
   // Filter scheduled items due within the next 7 days
@@ -29,7 +29,7 @@ export const BentoUpcomingSplits: React.FC = () => {
     if (!bill.isActive) return false;
     try {
       const dueDate = bill.nextDueDate.toDate();
-      const diff = differenceInDays(dueDate, now);
+      const diff = differenceInCalendarDays(dueDate, now);
       return diff >= 0 && diff <= 7;
     } catch {
       return false;
@@ -38,20 +38,33 @@ export const BentoUpcomingSplits: React.FC = () => {
 
   const handleMarkPaid = async (bill: ScheduledTransactionDocument) => {
     if (!user) return;
+    const targetHousehold = householdId || user.uid;
+    const accountId =
+      bill.accountId ||
+      accounts.find((a) => a.id === 'bank' || a.type === 'bank')?.id ||
+      'bank';
+
     triggerHaptic('medium');
     setPayingId(bill.id);
 
     try {
-      await addExpense(householdId || user.uid, user.uid, {
+      await addExpense(targetHousehold, user.uid, {
         amount: bill.amount,
         categoryId: bill.categoryId,
         note: bill.note || (bill.frequency === 'one-time' ? 'One-Time Bill' : 'Recurring Bill'),
         date: new Date().toISOString(),
+        accountId,
       });
 
       if (bill.frequency === 'one-time') {
         removeScheduledOptimistic(bill.id);
-        updateScheduledTransaction(householdId || user.uid, bill.id, { isActive: false }).catch(() => {});
+        updateScheduledTransaction(targetHousehold, bill.id, { isActive: false }).catch(() => {});
+      } else {
+        const nextDue = Timestamp.fromDate(
+          computeNextDueDate(bill.nextDueDate.toDate(), bill.frequency)
+        );
+        updateScheduledOptimistic({ ...bill, nextDueDate: nextDue });
+        updateScheduledTransaction(targetHousehold, bill.id, { nextDueDate: nextDue }).catch(() => {});
       }
 
       triggerHaptic('heavy');
@@ -76,13 +89,13 @@ export const BentoUpcomingSplits: React.FC = () => {
   };
 
   return (
-    <div className="w-full rounded-[28px] p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between min-h-[350px]">
+    <div className="w-full rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between min-h-[350px]">
       {/* Top Header */}
       <div className="flex justify-between items-center pb-3 border-b border-theme-border/30">
         <div className="flex items-center gap-2">
           <CalendarClock className="w-4 h-4 text-theme-accent" />
           <h3 className="font-sans text-base font-bold text-theme-primary tracking-tight">
-            Upcoming Commitments
+            Upcoming Bills & IOUs
           </h3>
         </div>
         <Link
@@ -114,7 +127,7 @@ export const BentoUpcomingSplits: React.FC = () => {
           upcomingBills.slice(0, 2).map((bill) => {
             const cat = categoriesMap.get(bill.categoryId);
             const dueDate = bill.nextDueDate.toDate();
-            const daysLeft = differenceInDays(dueDate, now);
+            const daysLeft = differenceInCalendarDays(dueDate, now);
             const isBusy = payingId === bill.id;
 
             return (
@@ -198,7 +211,7 @@ export const BentoUpcomingSplits: React.FC = () => {
 
             <Link
               href="/split"
-              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-theme-primary text-theme-inverse text-xs font-semibold transition-all hover:opacity-90 active:scale-95"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-theme-primary text-theme-on-primary text-xs font-semibold transition-all hover:opacity-90 active:scale-95"
             >
               <span>+ Split Bill</span>
             </Link>

@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Wallet, ChevronRight, ArrowLeft, Trash2 } from 'lucide-react';
+import { Wallet, ChevronRight, ArrowLeft, Trash2, Calendar } from 'lucide-react';
+import { CategoryIcon } from '@/components/shared/CategoryIcon';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useStore } from '@/store';
 import { setBudgetAmount } from '@/lib/budget/index';
-import { updateDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/index';
 import { MIN_BUDGET_AMOUNT, MAX_BUDGET_AMOUNT, CURRENCY_SYMBOL } from '@/config/constants';
 import { format } from 'date-fns';
@@ -71,14 +72,20 @@ export const BudgetSetupCard = () => {
         if (val > 0) cleanedLimits[key] = val;
       });
 
-      // Save total amount
-      await setBudgetAmount(householdId || user.uid, data.budgetAmount);
-      
-      // Save category limits to Firestore directly since setBudgetAmount doesn't handle it yet
+      // Save total amount for the selected month
+      await setBudgetAmount(householdId || user.uid, data.budgetAmount, selectedMonth);
+
+      // Save category limits safely with merge
       const budgetRef = doc(db, 'households', householdId || user.uid, 'budgets', selectedMonth);
-      await updateDoc(budgetRef, {
-        categoryBudgets: cleanedLimits
-      });
+      await setDoc(
+        budgetRef,
+        {
+          id: selectedMonth,
+          categoryBudgets: cleanedLimits,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
 
       if (budget) {
         setBudget({ ...budget, budgetAmount: data.budgetAmount, categoryBudgets: cleanedLimits });
@@ -87,7 +94,7 @@ export const BudgetSetupCard = () => {
       addToast({ type: 'success', message: 'Budget saved! 🎯' });
       setIsExpanded(false);
       setStep(1);
-    } catch (e) {
+    } catch {
       addToast({ type: 'error', message: 'Failed to save budget. Try again.' });
     }
   };
@@ -104,8 +111,8 @@ export const BudgetSetupCard = () => {
     return (
       <div className="mx-4 bg-theme-surface rounded-3xl p-5 shadow-[var(--shadow-3d-card)] border border-theme-border/50 flex justify-between items-center transition-transform active:scale-[0.98]">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center shadow-lg">
-            <Wallet className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 rounded-2xl bg-theme-accent text-theme-on-accent flex items-center justify-center shadow-lg">
+            <Wallet className="w-6 h-6" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-theme-primary tracking-tight">Monthly Budget</h2>
@@ -147,13 +154,13 @@ export const BudgetSetupCard = () => {
             <div className="bg-theme-base p-4 rounded-2xl border border-theme-border/40">
               <label className="text-sm font-semibold text-theme-primary mb-2 block">Budget for</label>
               <div className="flex items-center gap-2 bg-theme-surface rounded-xl p-3 border border-theme-border/50 text-theme-primary font-medium">
-                <span className="material-symbols-outlined text-theme-secondary text-xl">calendar_today</span>
+                <Calendar className="w-5 h-5 text-theme-secondary shrink-0" />
                 {format(new Date(selectedMonth + '-01'), 'MMMM yyyy')}
               </div>
             </div>
 
             <div className="bg-theme-base p-4 rounded-2xl border border-theme-border/40">
-              <label className="text-sm font-semibold text-theme-primary mb-2 block">What's your total budget limit?</label>
+              <label className="text-sm font-semibold text-theme-primary mb-2 block">What&apos;s your total budget limit?</label>
               <Input
                 prefix={CURRENCY_SYMBOL}
                 type="number"
@@ -182,7 +189,7 @@ export const BudgetSetupCard = () => {
                       className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-sm"
                       style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
                     >
-                      <span className="material-symbols-outlined">{cat.icon}</span>
+                      <CategoryIcon iconName={cat.icon} size={22} />
                     </div>
                     <span className="text-[10px] text-theme-secondary text-center leading-tight">{cat.name}</span>
                   </div>
@@ -233,7 +240,7 @@ export const BudgetSetupCard = () => {
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
                       style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
                     >
-                      <span className="material-symbols-outlined">{cat.icon}</span>
+                      <CategoryIcon iconName={cat.icon} size={18} />
                     </div>
                     <span className="font-medium text-theme-primary">{cat.name}</span>
                   </div>

@@ -8,7 +8,6 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { format } from 'date-fns';
-import { CURRENCY_SYMBOL } from '@/config/constants';
 import type { ExpenseDocument } from '@/types/firestore';
 import type { FinancialHealthResult } from '@/lib/algorithms/financialHealth';
 
@@ -32,7 +31,6 @@ export function generateMonthlyPDFReport(data: MonthlyReportData): void {
     householdName = 'Personal',
     monthlyIncome,
     totalSpent,
-    budgetAmount,
     balance,
     expenses,
     categoriesMap,
@@ -236,8 +234,11 @@ export function generateMonthlyPDFReport(data: MonthlyReportData): void {
     },
   });
 
-  // Retrieve position after Category table
-  const finalCatY = (doc as any).lastAutoTable?.finalY || y + 100;
+  const docExt = doc as unknown as {
+    lastAutoTable?: { finalY?: number };
+    internal: { getNumberOfPages: () => number };
+  };
+  const finalCatY = docExt.lastAutoTable?.finalY || y + 100;
   y = finalCatY + 24;
 
   // Check page height for Section 3
@@ -297,7 +298,7 @@ export function generateMonthlyPDFReport(data: MonthlyReportData): void {
   });
 
   // ── Footer ────────────────────────────────────────────────────
-  const pageCount = (doc as any).internal.getNumberOfPages();
+  const pageCount = docExt.internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFont('helvetica', 'normal');

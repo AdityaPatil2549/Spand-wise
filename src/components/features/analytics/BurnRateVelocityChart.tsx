@@ -14,7 +14,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { Flame, TrendingUp, TrendingDown, Calendar, Activity } from 'lucide-react';
+import { Flame, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 
 export interface AreaChartPoint {
   date: string;

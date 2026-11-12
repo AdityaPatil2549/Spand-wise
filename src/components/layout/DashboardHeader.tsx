@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Wallet, Bell } from 'lucide-react';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 
 const NAV_LINKS = [
@@ -17,8 +18,8 @@ export function DashboardHeader() {
  return (
  <header className="flex items-center justify-between whitespace-nowrap border-b border-theme-border/30 px-10 py-4 glass-panel sticky top-0 z-50">
  <div className="flex items-center gap-4 text-theme-primary">
- <div className="w-6 h-6 text-theme-accent">
- <span className="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+ <div className="w-6 h-6 text-theme-accent flex items-center justify-center">
+ <Wallet className="w-6 h-6" />
  </div>
  <h2 className="text-theme-primary text-[24px] font-display font-medium tracking-tight">SpendWise</h2>
  </div>
@@ -43,8 +44,8 @@ export function DashboardHeader() {
  </nav>
  
  <div className="flex items-center gap-6">
- <button className="text-theme-secondary hover:text-theme-accent transition-colors">
- <span className="material-symbols-outlined text-[24px]">notifications</span>
+ <button type="button" aria-label="Notifications" className="text-theme-secondary hover:text-theme-accent transition-colors">
+ <Bell className="w-5 h-5" />
  </button>
  <div className="flex items-center gap-3">
  <div className="flex flex-col items-end hidden sm:flex">

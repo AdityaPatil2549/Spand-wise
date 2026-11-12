@@ -175,7 +175,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
  onClick={() => handleDateSelect(day)}
  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200
  ${isSelected 
- ? 'bg-theme-accent text-theme-inverse shadow-md scale-110' 
+ ? 'bg-theme-accent text-theme-on-accent shadow-md scale-110' 
  : isTodayDate
  ? 'bg-theme-elevated text-theme-accent border border-theme-accent/30'
  : isCurrentMonth
@@ -196,7 +196,7 @@ export const AnimatedDatePicker = ({ value, onChange, label, error }: AnimatedDa
  <button
  type="button"
  onClick={handleConfirm}
- className="w-full py-4 bg-theme-accent text-theme-inverse font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
+ className="w-full py-4 bg-theme-accent text-theme-on-accent font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
  >
  Confirm Date
  </button>

@@ -16,6 +16,7 @@ export type TiltProps = {
  className?: string;
  style?: MotionStyle;
  rotationFactor?: number;
+ isReverse?: boolean;
  isRevese?: boolean;
  springOptions?: SpringOptions;
 };
@@ -25,9 +26,11 @@ export function Tilt({
  className,
  style,
  rotationFactor = 15,
+ isReverse,
  isRevese = false,
  springOptions,
 }: TiltProps) {
+ const reverse = isReverse ?? isRevese;
  const ref = useRef<HTMLDivElement>(null);
 
  const x = useMotionValue(0);
@@ -39,14 +42,14 @@ export function Tilt({
  const rotateX = useTransform(
  ySpring,
  [-0.5, 0.5],
- isRevese
+ reverse
  ? [rotationFactor, -rotationFactor]
  : [-rotationFactor, rotationFactor]
  );
  const rotateY = useTransform(
  xSpring,
  [-0.5, 0.5],
- isRevese
+ reverse
  ? [-rotationFactor, rotationFactor]
  : [rotationFactor, -rotationFactor]
  );

@@ -180,7 +180,7 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => onEdit(expense)}
-                  className="p-1.5 rounded-lg hover:bg-theme-surface text-theme-secondary hover:text-theme-primary transition-colors touch-target shadow-xs"
+                  className="p-1.5 rounded-lg hover:bg-theme-surface text-theme-secondary hover:text-theme-primary transition-colors touch-target shadow-sm"
                   aria-label="Edit expense inline"
                 >
                   <Edit2 className="w-3.5 h-3.5" />

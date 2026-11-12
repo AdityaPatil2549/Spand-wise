@@ -5,6 +5,7 @@ import {
  Children,
  cloneElement,
  ReactElement,
+ ReactNode,
  useEffect,
  useState,
  useId,
@@ -46,8 +47,18 @@ export function AnimatedBackground({
  }
  }, [defaultValue]);
 
- return Children.map(children, (child: any, index) => {
- const id = child.props['data-id'];
+ return Children.map(
+ children,
+ (
+ child: ReactElement<{
+ 'data-id'?: string;
+ className?: string;
+ children?: ReactNode;
+ 'data-checked'?: string;
+ }>,
+ index
+ ) => {
+ const id = child.props['data-id'] ?? null;
 
  const interactionProps = enableHover
  ? {

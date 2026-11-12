@@ -11,7 +11,7 @@ import type { CategoryDocument } from '@/types/firestore';
 import { deleteCustomCategory } from '@/lib/categories/index';
 
 export const CategoryManager = () => {
-  const { user, householdId, categories, removeCategoryOptimistic, addToast } = useStore();
+  const { householdId, categories, removeCategoryOptimistic, addToast } = useStore();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryDocument | null>(null);
   const [currentType, setCurrentType] = useState<'expense' | 'income'>('expense');
@@ -33,7 +33,7 @@ export const CategoryManager = () => {
         await deleteCustomCategory(householdId, category.id);
         removeCategoryOptimistic(category.id);
         addToast({ type: 'success', message: 'Category deleted' });
-      } catch (err: any) {
+      } catch {
         addToast({ type: 'error', message: 'Failed to delete category' });
       }
     }

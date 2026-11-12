@@ -19,10 +19,6 @@ import {
   ChevronRight, 
   Calendar as CalendarIcon, 
   Flame, 
-  Sparkles, 
-  TrendingUp, 
-  AlertCircle,
-  CheckCircle2,
   Plus
 } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
@@ -134,11 +130,11 @@ export default function CalendarPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="p-1.5 rounded-lg bg-theme-surface border border-theme-border/40 text-theme-accent shadow-xs">
+              <span className="p-1.5 rounded-lg bg-theme-surface border border-theme-border/40 text-theme-accent shadow-sm">
                 <CalendarIcon className="w-4 h-4 stroke-[2]" />
               </span>
               <span className="text-xs font-bold text-theme-secondary uppercase tracking-widest">
-                Tier 2.6 Daily Intensity Engine
+                Daily Spend Cadence
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-display font-bold text-theme-primary tracking-tight">
@@ -149,7 +145,7 @@ export default function CalendarPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-theme-surface border border-theme-border/50 rounded-2xl p-1 shadow-xs self-start sm:self-auto">
+          <div className="flex items-center gap-2 bg-theme-surface border border-theme-border/50 rounded-2xl p-1 shadow-sm self-start sm:self-auto">
             <button 
               type="button"
               onClick={prevMonth} 
@@ -302,7 +298,7 @@ export default function CalendarPage() {
                     {format(day, 'd')}
                   </span>
                   {isTodayDate && (
-                    <span className="text-xs uppercase font-extrabold px-1.5 py-0.2 rounded-full bg-theme-accent text-theme-inverse">
+                    <span className="text-xs uppercase font-extrabold px-1.5 py-0.5 rounded-full bg-theme-accent text-theme-on-accent">
                       Today
                     </span>
                   )}
@@ -354,11 +350,10 @@ export default function CalendarPage() {
               <button
                 type="button"
                 onClick={() => {
-                  const targetDate = selectedDateStr;
                   setSelectedDateStr(null);
                   openBottomSheetGlobal();
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-theme-accent text-theme-inverse font-semibold text-xs active:scale-95 transition-all shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-theme-accent text-theme-on-accent font-semibold text-xs active:scale-95 transition-all shadow-sm"
               >
                 <Plus className="w-4 h-4 stroke-[2.5]" />
                 <span>Log Transaction for this Day</span>

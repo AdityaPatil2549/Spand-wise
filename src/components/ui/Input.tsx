@@ -8,6 +8,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  error?: string;
  helper?: string;
  prefix?: string;
+ leftIcon?: React.ReactNode;
+ rightElement?: React.ReactNode;
 }
 
 /**
@@ -15,7 +17,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * Uses design tokens for all color values.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
- ({ label, error, helper, prefix, className, id, ...props }, ref) => {
+ ({ label, error, helper, prefix, leftIcon, rightElement, className, id, ...props }, ref) => {
  const inputId = id ?? `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
 
  return (
@@ -36,16 +38,24 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
  </span>
  )}
 
+ {leftIcon && !prefix && (
+ <span className="absolute left-3.5 flex items-center pointer-events-none text-theme-tertiary">
+ {leftIcon}
+ </span>
+ )}
+
  <input
  ref={ref}
  id={inputId}
  className={clsx(
- 'w-full rounded-xl bg-theme-elevated text-theme-primary border-none font-body',
+ 'w-full rounded-xl bg-theme-elevated text-theme-primary border border-transparent font-body',
  'text-base placeholder:text-theme-tertiary',
  'transition-[border-color,box-shadow,background-color] duration-150 ease-out',
- 'min-h-[44px]',
- 'focus:outline-none focus:ring-2 focus:ring-theme-accent focus:border-transparent',
- prefix ? 'pl-10 pr-4 py-3' : 'px-4 py-3',
+ 'min-h-[46px]',
+ 'focus:outline-none focus:ring-2 focus:ring-theme-accent/20 focus:border-theme-accent',
+ prefix ? 'pl-10' : leftIcon ? 'pl-10' : 'pl-4',
+ rightElement ? 'pr-11' : 'pr-4',
+ 'py-3',
  error
  ? 'border-red-400 focus:ring-red-400'
  : 'focus:border-theme-accent',
@@ -56,6 +66,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
  aria-describedby={error ? `${inputId}-error` : helper ? `${inputId}-helper` : undefined}
  {...props}
  />
+
+ {rightElement && (
+ <div className="absolute right-3 flex items-center">
+ {rightElement}
+ </div>
+ )}
  </div>
 
  {error && (

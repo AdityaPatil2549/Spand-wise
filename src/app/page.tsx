@@ -3,38 +3,35 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
-import { onAuthChange } from '@/lib/firebase/auth';
 
 /**
- * Root route — redirects based on auth state.
- * Unauthenticated → /login
- * Authenticated + onboarding complete → /dashboard
- * Authenticated + not onboarded → /onboarding
+ * RootPage — Auth + Onboarding Router.
+ * Waits for GlobalProviders' useAuthListener to finish hydrating both Firebase Auth
+ * and Firestore user metadata before redirecting, avoiding any race condition.
  */
 export default function RootPage() {
- const router = useRouter();
+  const router = useRouter();
+  const user = useStore((s) => s.user);
+  const isAuthLoading = useStore((s) => s.isAuthLoading);
+  const isOnboardingComplete = useStore((s) => s.isOnboardingComplete);
 
- useEffect(() => {
- const unsubscribe = onAuthChange((user) => {
- if (!user) {
- router.replace('/login');
- } else {
- // Check Zustand store for onboarding state
- const { isOnboardingComplete } = useStore.getState();
- if (isOnboardingComplete) {
- router.replace('/dashboard');
- } else {
- router.replace('/onboarding');
- }
- }
- });
- return () => unsubscribe();
- }, [router]);
+  useEffect(() => {
+    if (isAuthLoading) return;
 
- // Show nothing while redirecting
- return (
- <div className="min-h-screen bg-[var(--surface-base)] flex items-center justify-center">
- <div className="w-8 h-8 rounded-full border-3 border-violet-600 border-t-transparent animate-spin" />
- </div>
- );
+    if (!user) {
+      router.replace('/login');
+    } else if (isOnboardingComplete) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/onboarding');
+    }
+  }, [user, isAuthLoading, isOnboardingComplete, router]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-theme-base">
+      <div className="w-10 h-10 rounded-2xl bg-theme-accent/15 border border-theme-accent/30 flex items-center justify-center animate-pulse">
+        <div className="w-4 h-4 rounded-full bg-theme-accent" />
+      </div>
+    </div>
+  );
 }

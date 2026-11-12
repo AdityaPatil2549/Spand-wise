@@ -14,7 +14,6 @@ export default function DayViewPage() {
   const router = useRouter();
   const isHydrated = useHydrated();
   const expenses = useStore(s => s.expenses);
-  const categories = useStore(s => s.categories);
   
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -25,7 +24,7 @@ export default function DayViewPage() {
         try {
           const expenseDate = typeof e.date === 'string' ? new Date(e.date) : e.date.toDate();
           return isSameDay(expenseDate, selectedDate);
-        } catch (err) {
+        } catch {
           return false;
         }
       })

@@ -12,7 +12,7 @@ export const useHaptic = () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       try {
         navigator.vibrate(pattern);
-      } catch (e) {
+      } catch {
         // Silently ignore errors (e.g. if user hasn't interacted with page yet)
       }
     }

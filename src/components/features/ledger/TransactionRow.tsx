@@ -29,7 +29,7 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
     <div
       className={`flex items-center justify-between py-3 px-4 transition-colors hover:bg-theme-surface-hover/70 ${
         isStandalone
-          ? 'rounded-2xl bg-theme-surface/70 border border-theme-border/40 shadow-xs'
+          ? 'rounded-2xl bg-theme-surface/70 border border-theme-border/40 shadow-sm'
           : 'bg-transparent'
       }`}
     >

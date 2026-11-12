@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
-import { Target, Plus, Trophy, Sparkles, X } from 'lucide-react';
+import { Target, Plus, Trophy, X } from 'lucide-react';
 import type { GoalDocument } from '@/types/firestore';
 
 interface SavingsGoalCardsProps {
@@ -97,7 +97,7 @@ export const SavingsGoalCards: React.FC<SavingsGoalCardsProps> = ({
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-theme-primary text-theme-inverse text-xs font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-theme-primary text-theme-on-primary text-xs font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>New Target</span>
@@ -196,7 +196,7 @@ export const SavingsGoalCards: React.FC<SavingsGoalCardsProps> = ({
       {/* Add New Goal Modal */}
       {showAddModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
@@ -259,7 +259,7 @@ export const SavingsGoalCards: React.FC<SavingsGoalCardsProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="py-2 px-4 rounded-xl bg-theme-primary text-theme-inverse font-semibold disabled:opacity-50"
+                  className="py-2 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold disabled:opacity-50"
                 >
                   {isSubmitting ? 'Creating...' : 'Create Goal'}
                 </button>

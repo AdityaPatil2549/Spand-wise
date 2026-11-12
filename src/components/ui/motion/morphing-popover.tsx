@@ -125,7 +125,7 @@ function MorphingPopoverTrigger({
 
  if (asChild && isValidElement(children)) {
  const MotionComponent = motion.create(
- children.type as React.ForwardRefExoticComponent<any>
+ children.type as React.ForwardRefExoticComponent<Record<string, unknown>>
  );
  const childProps = children.props as Record<string, unknown>;
 

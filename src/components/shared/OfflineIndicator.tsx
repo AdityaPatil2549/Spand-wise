@@ -32,7 +32,7 @@ export const OfflineIndicator = () => {
  exit={{ y: -50, opacity: 0 }}
  className="fixed top-0 left-0 right-0 z-[var(--z-toast)] flex justify-center p-2 pointer-events-none"
  >
- <div className="bg-amber-500 text-theme-inverse text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2">
+ <div className="bg-amber-500 text-slate-950 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2">
  <WifiOff className="w-3.5 h-3.5" />
  <span>You&apos;re offline. Changes are saved locally.</span>
  </div>

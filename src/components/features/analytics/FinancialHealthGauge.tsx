@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { formatCurrency } from '@/lib/utils';
-import { ShieldCheck, Info, ChevronRight, CheckCircle2, AlertTriangle, ArrowRight, X } from 'lucide-react';
+import { ShieldCheck, Info, ChevronRight, X } from 'lucide-react';
 import type { FinancialHealthResult } from '@/lib/algorithms/financialHealth';
 
 interface FinancialHealthGaugeProps {
@@ -14,13 +13,10 @@ interface FinancialHealthGaugeProps {
 
 export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
   healthResult,
-  monthlyIncome,
-  totalSpent,
-  budgetAmount,
 }) => {
   const [showModal, setShowModal] = useState(false);
 
-  const { score, tier, color, recommendation, metrics } = healthResult;
+  const { hasData, score, tier, color, recommendation, metrics } = healthResult;
 
   return (
     <>
@@ -63,60 +59,77 @@ export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
               borderColor: `${color}30`,
             }}
           >
-            {tier} Tier
+            {hasData ? `${tier} Tier` : 'Awaiting Data'}
           </span>
         </div>
 
         {/* Big Score Display & Progress Ring */}
-        <div className="my-6 flex items-center justify-between gap-6">
-          <div className="space-y-1">
-            <div className="flex items-baseline gap-2">
-              <span className="font-sans text-5xl font-extrabold text-theme-primary tracking-tight tabular-nums">
-                {score}
-              </span>
-              <span className="text-sm font-semibold text-theme-secondary">/ 100</span>
-            </div>
-            <p className="text-xs text-theme-secondary leading-snug max-w-xs">
-              {recommendation || 'Your financial pacing is stable and balanced.'}
+        {!hasData ? (
+          <div className="my-6 p-5 rounded-2xl bg-theme-base/60 border border-theme-border/40 text-center space-y-2">
+            <p className="text-base font-bold text-theme-primary">No Activity Logged Yet</p>
+            <p className="text-xs text-theme-secondary leading-relaxed max-w-sm mx-auto">
+              {recommendation}
             </p>
           </div>
+        ) : (
+          <div className="my-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-2">
+                <span className="font-sans text-5xl font-extrabold text-theme-primary tracking-tight tabular-nums">
+                  {score}
+                </span>
+                <span className="text-sm font-semibold text-theme-secondary">/ 100</span>
+              </div>
+              <p className="text-xs text-theme-secondary leading-snug max-w-xs">
+                {recommendation || 'Your financial pacing is stable and balanced.'}
+              </p>
+            </div>
 
-          {/* Mini Metric Score Pill Matrix */}
-          <div className="grid grid-cols-2 gap-2 text-right">
-            <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
-              <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
-                Savings
-              </span>
-              <strong className="text-theme-primary font-bold tabular-nums">
-                {metrics?.savings?.score ?? 0}/{metrics?.savings?.maxScore ?? 25}
-              </strong>
-            </div>
-            <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
-              <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
-                Velocity
-              </span>
-              <strong className="text-theme-primary font-bold tabular-nums">
-                {metrics?.burnRate?.score ?? 0}/{metrics?.burnRate?.maxScore ?? 25}
-              </strong>
-            </div>
-            <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
-              <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
-                Stability
-              </span>
-              <strong className="text-theme-primary font-bold tabular-nums">
-                {metrics?.volatility?.score ?? 0}/{metrics?.volatility?.maxScore ?? 20}
-              </strong>
-            </div>
-            <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
-              <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
-                Essential
-              </span>
-              <strong className="text-theme-primary font-bold tabular-nums">
-                {metrics?.allocation?.score ?? 0}/{metrics?.allocation?.maxScore ?? 15}
-              </strong>
+            {/* 5-Variable Metric Score Pill Matrix (sum = score) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-right">
+              <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
+                <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
+                  Savings
+                </span>
+                <strong className="text-theme-primary font-bold tabular-nums">
+                  {metrics?.savings?.score ?? 0}/{metrics?.savings?.maxScore ?? 25}
+                </strong>
+              </div>
+              <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
+                <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
+                  Velocity
+                </span>
+                <strong className="text-theme-primary font-bold tabular-nums">
+                  {metrics?.burnRate?.score ?? 0}/{metrics?.burnRate?.maxScore ?? 25}
+                </strong>
+              </div>
+              <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
+                <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
+                  Stability
+                </span>
+                <strong className="text-theme-primary font-bold tabular-nums">
+                  {metrics?.volatility?.score ?? 0}/{metrics?.volatility?.maxScore ?? 20}
+                </strong>
+              </div>
+              <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs">
+                <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
+                  Essential
+                </span>
+                <strong className="text-theme-primary font-bold tabular-nums">
+                  {metrics?.allocation?.score ?? 0}/{metrics?.allocation?.maxScore ?? 15}
+                </strong>
+              </div>
+              <div className="p-2 rounded-xl bg-theme-base/60 border border-theme-border/30 text-xs col-span-2 sm:col-span-2">
+                <span className="text-[10px] text-theme-secondary block uppercase tracking-wider">
+                  MoM Momentum
+                </span>
+                <strong className="text-theme-primary font-bold tabular-nums">
+                  {metrics?.momentum?.score ?? 0}/{metrics?.momentum?.maxScore ?? 15}
+                </strong>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Footer Deep-Dive Link */}
         <button
@@ -132,7 +145,7 @@ export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
       {/* Algorithmic Breakdown Modal */}
       {showModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
@@ -204,6 +217,18 @@ export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
                       {metrics.allocation.explanation}
                     </p>
                   </div>
+
+                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                    <div className="flex justify-between font-bold text-theme-primary">
+                      <span>5. {metrics.momentum.name}</span>
+                      <span className="tabular-nums font-mono">
+                        {metrics.momentum.score} / {metrics.momentum.maxScore}
+                      </span>
+                    </div>
+                    <p className="text-theme-secondary leading-normal">
+                      {metrics.momentum.explanation}
+                    </p>
+                  </div>
                 </>
               )}
             </div>
@@ -212,7 +237,7 @@ export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="w-full py-2.5 px-4 rounded-xl bg-theme-primary text-theme-inverse font-semibold text-xs hover:opacity-95 transition-opacity cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold text-xs hover:opacity-95 transition-opacity cursor-pointer"
               >
                 Close Breakdown
               </button>

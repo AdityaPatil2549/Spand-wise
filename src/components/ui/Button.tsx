@@ -50,7 +50,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
  // Color variants
  variant === 'primary' && [
- 'bg-theme-accent text-theme-white font-body',
+ 'bg-theme-accent text-theme-on-accent font-body',
  'hover:bg-theme-accent-hover',
  'shadow-sm hover:shadow-md active:translate-y-[2px]',
  ],

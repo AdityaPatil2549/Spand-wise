@@ -59,7 +59,6 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
 
  const displayHour = current.hour.toString().padStart(2, '0');
  const displayMinute = current.minute.toString().padStart(2, '0');
- const amPm = current.isAm ? 'AM' : 'PM';
 
  const formatDisplayTime = () => {
  if (!value) return '-- : --';
@@ -116,14 +115,14 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  <button 
  type="button"
  onClick={() => toggleAmPm(true)}
- className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${current.isAm ? 'bg-theme-accent text-theme-inverse shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
+ className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${current.isAm ? 'bg-theme-accent text-theme-on-accent shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
  >
  AM
  </button>
  <button 
  type="button"
  onClick={() => toggleAmPm(false)}
- className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${!current.isAm ? 'bg-theme-accent text-theme-inverse shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
+ className={`text-sm font-bold px-4 py-2 rounded-xl transition-colors ${!current.isAm ? 'bg-theme-accent text-theme-on-accent shadow-md' : 'bg-theme-border/50 text-theme-tertiary hover:bg-theme-border'}`}
  >
  PM
  </button>
@@ -149,7 +148,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  onClick={() => handleHourSelect(h)}
  className={`h-14 rounded-2xl text-xl font-bold transition-all duration-200
  ${current.hour === h 
- ? 'bg-theme-accent text-theme-inverse shadow-md scale-105' 
+ ? 'bg-theme-accent text-theme-on-accent shadow-md scale-105' 
  : 'bg-theme-elevated text-theme-primary hover:bg-theme-border'}`}
  >
  {h}
@@ -173,7 +172,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  onClick={() => handleMinuteSelect(m)}
  className={`h-12 rounded-2xl text-xl font-bold transition-all duration-200
  ${current.minute === m 
- ? 'bg-theme-accent text-theme-inverse shadow-md scale-105' 
+ ? 'bg-theme-accent text-theme-on-accent shadow-md scale-105' 
  : 'bg-theme-elevated text-theme-primary hover:bg-theme-border'}`}
  >
  {m.toString().padStart(2, '0')}
@@ -204,7 +203,7 @@ export const AnimatedTimePicker = ({ value, onChange, label, error }: AnimatedTi
  <button
  type="button"
  onClick={handleConfirm}
- className="w-full py-4 bg-theme-accent text-theme-inverse font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
+ className="w-full py-4 bg-theme-accent text-theme-on-accent font-bold text-lg rounded-2xl hover:bg-theme-accent-hover transition-colors shadow-lg active:scale-[0.98]"
  >
  Confirm Time
  </button>

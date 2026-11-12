@@ -1,13 +1,13 @@
 import { Timestamp } from 'firebase/firestore';
 import type { ScheduledTransactionDocument, ExpenseDocument } from '@/types/firestore';
 import { addExpense } from '../expenses/index';
-import { updateScheduledTransaction } from './index';
+import { computeNextDueDate, updateScheduledTransaction } from './index';
 import { getLocalMonthString } from '../date-sharding';
-import { addMonths, addWeeks, addYears, addDays, isBefore, isEqual } from 'date-fns';
+import { isBefore, isEqual } from 'date-fns';
 
 /**
  * Checks all scheduled transactions and processes any that are due.
- * Creates the expenses and updates the nextDueDate of the scheduled transaction.
+ * Creates the expenses and advances nextDueDate (or deactivates one-time bills).
  */
 export async function processScheduledTransactions(
   householdId: string,
@@ -23,13 +23,15 @@ export async function processScheduledTransactions(
 
     let dueDate = st.nextDueDate.toDate();
     let updated = false;
-    
-    // Process all missed occurrences if they are in the past
-    while (isBefore(dueDate, now) || isEqual(dueDate, now)) {
-      // 1. Create the expense for this occurrence
+    let shouldDeactivate = false;
+    let iterations = 0;
+
+    // Guard against runaway catch-up loops
+    while ((isBefore(dueDate, now) || isEqual(dueDate, now)) && iterations < 24) {
+      iterations += 1;
       const expenseDate = Timestamp.fromDate(dueDate);
-      const tempId = `scheduled-${st.id}-${Date.now()}`;
-      
+      const tempId = `scheduled-${st.id}-${Date.now()}-${iterations}`;
+
       const newExpenseData = {
         amount: st.amount,
         categoryId: st.categoryId,
@@ -37,8 +39,7 @@ export async function processScheduledTransactions(
         date: expenseDate,
         accountId: st.accountId || 'bank',
       };
-      
-      // Optimistic Expense
+
       addExpenseOptimistic({
         id: tempId,
         ...newExpenseData,
@@ -48,29 +49,37 @@ export async function processScheduledTransactions(
         updatedAt: Timestamp.now(),
         createdBy: 'system',
       });
-      
-      // Persist Expense (we omit await here to run in background or we can await)
+
       await addExpense(householdId, userId, {
         ...newExpenseData,
         date: expenseDate.toDate().toISOString(),
       });
 
-      // 2. Advance the due date
-      if (st.frequency === 'daily') dueDate = addDays(dueDate, 1);
-      else if (st.frequency === 'weekly') dueDate = addWeeks(dueDate, 1);
-      else if (st.frequency === 'monthly') dueDate = addMonths(dueDate, 1);
-      else if (st.frequency === 'yearly') dueDate = addYears(dueDate, 1);
-      
       updated = true;
+
+      if (st.frequency === 'one-time') {
+        shouldDeactivate = true;
+        break;
+      }
+
+      const nextDate = computeNextDueDate(dueDate, st.frequency);
+      if (nextDate.getTime() <= dueDate.getTime()) break;
+      dueDate = nextDate;
     }
 
     if (updated) {
-      // 3. Save the new due date
       const newDueDateTimestamp = Timestamp.fromDate(dueDate);
-      const updatedSt = { ...st, nextDueDate: newDueDateTimestamp };
-      
+      const updatedSt: ScheduledTransactionDocument = {
+        ...st,
+        nextDueDate: newDueDateTimestamp,
+        isActive: shouldDeactivate ? false : st.isActive,
+      };
+
       updateScheduledOptimistic(updatedSt);
-      await updateScheduledTransaction(householdId, st.id, { nextDueDate: newDueDateTimestamp });
+      await updateScheduledTransaction(householdId, st.id, {
+        nextDueDate: newDueDateTimestamp,
+        ...(shouldDeactivate ? { isActive: false } : {}),
+      });
     }
   }
 }

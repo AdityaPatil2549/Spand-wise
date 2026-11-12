@@ -17,13 +17,23 @@ interface ExpenseListProps {
   preview?: boolean;
   /** Optional pre-filtered expenses to display instead of the full store list */
   expenses?: ExpenseDocument[];
+  /** True if the user has applied search, category, or payment filters */
+  isFiltered?: boolean;
+  /** Callback to clear active filters */
+  onClearFilters?: () => void;
 }
 
 /**
  * Expense timeline grouped by day.
  * Formatted as an Inset Grouped list with hairlines and clean tracking.
  */
-export const ExpenseList = ({ onEditExpense, preview = false, expenses: propExpenses }: ExpenseListProps) => {
+export const ExpenseList = ({ 
+  onEditExpense, 
+  preview = false, 
+  expenses: propExpenses,
+  isFiltered = false,
+  onClearFilters,
+}: ExpenseListProps) => {
   const storeExpenses = useStore((s) => s.expenses);
   const expenses = propExpenses ?? storeExpenses;
   const isLoading = useStore((s) => s.isExpensesLoading);
@@ -46,6 +56,17 @@ export const ExpenseList = ({ onEditExpense, preview = false, expenses: propExpe
   }
 
   if (dayGroups.length === 0) {
+    if (isFiltered) {
+      return (
+        <EmptyState
+          icon={Receipt}
+          title="No matching transactions"
+          description="We couldn't find any expenses matching your active filter criteria."
+          actionLabel="Clear All Filters"
+          onAction={onClearFilters}
+        />
+      );
+    }
     return (
       <EmptyState
         icon={Receipt}
@@ -70,7 +91,7 @@ export const ExpenseList = ({ onEditExpense, preview = false, expenses: propExpe
           </div>
 
           {/* Unified Inset Group */}
-          <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-xs overflow-hidden mx-1 sm:mx-4 divide-y divide-theme-border/25 shadow-xs">
+          <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-sm overflow-hidden mx-1 sm:mx-4 divide-y divide-theme-border/25 shadow-sm">
             <AnimatePresence initial={false}>
               {group.expenses.map((expense) => (
                 <ExpenseListItem

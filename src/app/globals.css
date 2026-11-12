@@ -5,16 +5,20 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Pure Porcelain Luxury Light Mode */
-    --theme-base: 250 250 252; /* #fafafc — Crisp cool porcelain */
-    --theme-surface: 255 255 255; /* #ffffff — Optical pure white */
-    --theme-surface-hover: 244 244 248; /* #f4f4f8 — Silky zinc hover */
-    --theme-elevated: 241 243 247; /* #f1f3f7 */
-    --theme-elevated-hover: 232 235 242;
-    
-    --theme-border: 226 232 240; /* #e2e8f0 — Razor slate hairline */
-    
+  /* =========================================================================
+     THEME 1: PORCELAIN (Swiss International Minimalist — Light)
+     60% Cool Chalk (#F8FAFC) • 30% Pitch Zinc (#09090B) • 10% Indigo (#4338CA)
+     ========================================================================= */
+  :root,
+  .light,
+  .porcelain {
+    --theme-base: 248 250 252;
+    --theme-surface: 255 255 255;
+    --theme-surface-hover: 241 245 249;
+    --theme-elevated: 241 245 249;
+    --theme-elevated-hover: 226 232 240;
+    --theme-border: 203 213 225;
+
     --theme-font-sans: var(--font-inter);
     --theme-font-display: var(--font-outfit);
     --theme-weight-body: 400;
@@ -24,477 +28,844 @@
     --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    /* Calibrated Luxury Typography Tokens */
-    --theme-primary: 9 9 11; /* #09090b — Deepest Obsidian (18:1 contrast, AAA+) */
-    --theme-secondary: 82 82 91; /* #52525b — Crisp Zinc-600 (5.8:1 contrast, AAA Pass) */
-    --theme-tertiary: 148 163 184; /* #94a3b8 — Clean Slate-400 */
-    
-    /* Functional Luxury Accents */
-    --theme-accent: 15 23 42; /* #0f172a — High-intent Obsidian Slate */
-    --theme-accent-hover: 30 41 59; 
-    --theme-accent-light: 241 245 249;
-    
-    --theme-danger: 225 29 72; /* #e11d48 — Rose-600 */
+    --theme-radius-card: 1.25rem;
+
+    --theme-primary: 9 9 11;
+    --theme-secondary: 71 85 105;
+    --theme-tertiary: 100 116 139;
+    --theme-accent: 67 56 202;
+    --theme-accent-hover: 55 48 163;
+    --theme-accent-light: 238 242 255;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 255 255 255;
+
+    --theme-positive: 4 120 87;
+    --theme-positive-light: 209 250 229;
+    --theme-warning: 180 83 9;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 190 18 60;
     --theme-danger-light: 255 228 230;
-    
+
     --theme-white: 255 255 255;
     --theme-inverse: 255 255 255;
   }
 
-  .dark {
-    /* Obsidian Luxury Dark Mode */
-    --theme-base: 9 9 11; /* #09090b — Deepest obsidian */
-    --theme-surface: 18 18 21; /* #121215 — Layered dark slate */
-    --theme-surface-hover: 26 26 31; /* #1a1a1f */
-    --theme-elevated: 34 34 40; /* #222228 */
-    --theme-elevated-hover: 45 45 52;
-    
-    --theme-border: 39 39 42; /* #27272a — Titanium hairline */
-    
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
+  /* =========================================================================
+     THEME 2: MIDNIGHT (Aviation Night Cockpit — Dark)
+     60% Sapphire Night (#091124) • 30% Starlight Ice (#F1F5F9) • 10% Sky (#38BDF8)
+     ========================================================================= */
+  .dark,
+  .midnight {
+    --theme-base: 9 17 36;
+    --theme-surface: 16 27 54;
+    --theme-surface-hover: 23 38 74;
+    --theme-elevated: 23 38 74;
+    --theme-elevated-hover: 34 54 102;
+    --theme-border: 39 59 110;
+
+    --theme-font-sans: var(--font-dm-sans);
+    --theme-font-display: var(--font-space-grotesk);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.025em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.25rem;
+
+    --theme-primary: 241 245 249;
+    --theme-secondary: 148 163 184;
+    --theme-tertiary: 122 142 168;
+    --theme-accent: 56 189 248;
+    --theme-accent-hover: 14 165 233;
+    --theme-accent-light: 19 42 74;
+    --theme-on-accent: 6 19 38;
+    --theme-on-primary: 9 17 36;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 16 27 54;
+    --theme-inverse: 9 17 36;
+  }
+
+  /* =========================================================================
+     THEME 3: WARM PAPER (Japanese Washi & Kinfolk Editorial — Light)
+     60% Linen Paper (#F6F0E4) • 30% Sumi Charcoal (#1C1917) • 10% Vermilion (#C44116)
+     ========================================================================= */
+  .atelier-paper {
+    --theme-base: 246 240 228;
+    --theme-surface: 252 249 242;
+    --theme-surface-hover: 239 231 216;
+    --theme-elevated: 236 227 211;
+    --theme-elevated-hover: 224 212 191;
+    --theme-border: 214 201 180;
+
+    --theme-font-sans: var(--font-work-sans);
+    --theme-font-display: var(--font-fraunces);
     --theme-weight-body: 400;
     --theme-weight-display: 600;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.55;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1rem;
+
+    --theme-primary: 28 25 23;
+    --theme-secondary: 87 78 69;
+    --theme-tertiary: 117 106 94;
+    --theme-accent: 196 65 22;
+    --theme-accent-hover: 168 53 16;
+    --theme-accent-light: 249 232 224;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 250 247 242;
+
+    --theme-positive: 21 128 61;
+    --theme-positive-light: 220 252 231;
+    --theme-warning: 180 83 9;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 185 28 28;
+    --theme-danger-light: 254 226 226;
+
+    --theme-white: 252 249 242;
+    --theme-inverse: 250 247 242;
+  }
+
+  /* =========================================================================
+     THEME 4: NAVY ROSE (Savile Row Tailoring + Punk Silk Lining — Dark)
+     60% Suit Wool Navy (#070E1E) • 30% Chalk White (#FFFFFF) • 10% Magenta (#FF3B8D)
+     ========================================================================= */
+  .savile-rebel {
+    --theme-base: 7 14 30;
+    --theme-surface: 14 25 53;
+    --theme-surface-hover: 22 38 78;
+    --theme-elevated: 22 38 78;
+    --theme-elevated-hover: 34 55 108;
+    --theme-border: 40 62 122;
+
+    --theme-font-sans: var(--font-manrope);
+    --theme-font-display: var(--font-cinzel);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: 0.015em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 0.875rem;
+
+    --theme-primary: 255 255 255;
+    --theme-secondary: 184 200 235;
+    --theme-tertiary: 140 162 214;
+    --theme-accent: 255 59 141;
+    --theme-accent-hover: 235 36 120;
+    --theme-accent-light: 61 18 42;
+    --theme-on-accent: 7 14 30;
+    --theme-on-primary: 7 14 30;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 255 107 107;
+    --theme-danger-light: 70 18 22;
+
+    --theme-white: 14 25 53;
+    --theme-inverse: 7 14 30;
+  }
+
+  /* =========================================================================
+     THEME 5: SAND BLUE (Desert Field Terminal — Dark)
+     60% Matte Umber (#181613) • 30% Limestone (#F3EBDC) • 10% Cobalt (#4D94FF)
+     ========================================================================= */
+  .dune-terminal {
+    --theme-base: 24 22 19;
+    --theme-surface: 34 31 27;
+    --theme-surface-hover: 46 42 36;
+    --theme-elevated: 46 42 36;
+    --theme-elevated-hover: 61 56 48;
+    --theme-border: 71 64 54;
+
+    --theme-font-sans: var(--font-work-sans);
+    --theme-font-display: var(--font-jetbrains-mono);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
     --theme-tracking-body: -0.01em;
     --theme-tracking-display: -0.03em;
     --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 255 255 255; /* #ffffff — Optical white */
-    --theme-secondary: 161 161 170; /* #a1a1aa — Zinc-400 (6.2:1 contrast) */
-    --theme-tertiary: 113 113 122; /* #71717a — Zinc-500 */
-    
-    --theme-accent: 255 255 255; /* Pure high-contrast white */
-    --theme-accent-hover: 228 228 231;
-    --theme-accent-light: 39 39 42;
-    
-    --theme-danger: 244 63 94; /* #f43f5e — Vibrant Rose */
-    --theme-danger-light: 76 5 25;
-    
-    --theme-white: 18 18 21;
-    --theme-inverse: 9 9 11;
+    --theme-radius-card: 0.75rem;
+
+    --theme-primary: 243 235 220;
+    --theme-secondary: 190 179 160;
+    --theme-tertiary: 150 138 118;
+    --theme-accent: 77 148 255;
+    --theme-accent-hover: 52 128 245;
+    --theme-accent-light: 22 39 69;
+    --theme-on-accent: 8 20 38;
+    --theme-on-primary: 24 22 19;
+
+    --theme-positive: 74 222 128;
+    --theme-positive-light: 18 46 28;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 248 113 113;
+    --theme-danger-light: 66 20 20;
+
+    --theme-white: 34 31 27;
+    --theme-inverse: 24 22 19;
   }
 
-  .ocean {
-    /* Ocean Breeze */
-    --theme-base: 10 25 47; /* Deep navy blue */
-    --theme-surface: 17 34 64; /* Lighter navy */
-    --theme-surface-hover: 26 51 92;
-    --theme-elevated: 23 42 69;
-    --theme-elevated-hover: 32 58 92;
-    
-    --theme-border: 30 58 138;
-    
-    --theme-font-sans: var(--font-work-sans);
-    --theme-font-display: var(--font-comfortaa);
-    --theme-weight-body: 300;
-    --theme-weight-display: 700;
-    --theme-tracking-body: 0.02em;
-    --theme-tracking-display: -0.04em;
-    --theme-line-height-body: 1.7;
+  /* =========================================================================
+     THEME 6: VOLT BLACK (Formula Pit-Wall Telemetry — Dark)
+     60% OLED Carbon (#050505) • 30% Diamond (#FFFFFF) • 10% Volt Lime (#16E865)
+     ========================================================================= */
+  .cyber-velocity {
+    --theme-base: 5 5 5;
+    --theme-surface: 14 14 18;
+    --theme-surface-hover: 23 23 30;
+    --theme-elevated: 23 23 30;
+    --theme-elevated-hover: 34 34 44;
+    --theme-border: 42 42 53;
+
+    --theme-font-sans: var(--font-space-grotesk);
+    --theme-font-display: var(--font-anton);
+    --theme-weight-body: 400;
+    --theme-weight-display: 400;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: 0.02em;
+    --theme-line-height-body: 1.48;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 230 241 255; /* Ice white */
-    --theme-secondary: 136 146 176;
-    --theme-tertiary: 100 255 218; /* Bright teal accent */
-    
-    --theme-accent: 100 255 218; /* Electric Cyan */
-    --theme-accent-hover: 50 205 168;
-    --theme-accent-light: 17 34 64; /* Same as surface for subtle */
-    
-    --theme-danger: 239 68 68;
-    --theme-danger-light: 63 21 21;
-    
-    --theme-white: 17 34 64;
-    --theme-inverse: 10 25 47;
+    --theme-radius-card: 0.875rem;
+
+    --theme-primary: 255 255 255;
+    --theme-secondary: 168 168 179;
+    --theme-tertiary: 127 127 140;
+    --theme-accent: 22 232 101;
+    --theme-accent-hover: 16 204 86;
+    --theme-accent-light: 12 48 26;
+    --theme-on-accent: 5 5 5;
+    --theme-on-primary: 5 5 5;
+
+    --theme-positive: 22 232 101;
+    --theme-positive-light: 12 48 26;
+    --theme-warning: 250 204 21;
+    --theme-warning-light: 54 44 10;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 14 14 18;
+    --theme-inverse: 5 5 5;
   }
 
-  .forest {
-    /* Pine Forest */
-    --theme-base: 26 36 33; /* Dark olive */
-    --theme-surface: 36 49 45; /* Moss */
-    --theme-surface-hover: 45 61 57;
-    --theme-elevated: 41 56 52;
-    --theme-elevated-hover: 51 70 65;
-    
-    --theme-border: 62 82 75;
-    
-    --theme-font-sans: var(--font-merriweather);
+  /* =========================================================================
+     THEME 7: RIVIERA (1960s Côte d'Azur Regatta — Sunlit Light)
+     60% Sunlit Chalk (#FAF6EE) • 30% Yacht Navy (#0D2847) • 10% Regatta Coral (#C93A22)
+     ========================================================================= */
+  .riviera-maritime {
+    --theme-base: 250 246 238;
+    --theme-surface: 255 255 255;
+    --theme-surface-hover: 243 236 223;
+    --theme-elevated: 239 232 216;
+    --theme-elevated-hover: 226 216 196;
+    --theme-border: 214 204 184;
+
+    --theme-font-sans: var(--font-dm-sans);
     --theme-font-display: var(--font-fraunces);
     --theme-weight-body: 400;
-    --theme-weight-display: 800;
-    --theme-tracking-body: 0;
-    --theme-tracking-display: -0.03em;
-    --theme-line-height-body: 1.8;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 242 245 235; /* Off-white cream */
-    --theme-secondary: 173 189 179;
-    --theme-tertiary: 126 148 135;
-    
-    --theme-accent: 184 227 101; /* Lime / gold */
-    --theme-accent-hover: 153 194 76;
-    --theme-accent-light: 41 56 52;
-    
-    --theme-danger: 239 68 68;
-    --theme-danger-light: 63 21 21;
-    
-    --theme-white: 36 49 45;
-    --theme-inverse: 26 36 33;
+    --theme-radius-card: 1.375rem;
+
+    --theme-primary: 13 40 71;
+    --theme-secondary: 51 78 111;
+    --theme-tertiary: 85 112 145;
+    --theme-accent: 201 58 34;
+    --theme-accent-hover: 173 46 25;
+    --theme-accent-light: 252 232 228;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 250 246 238;
+
+    --theme-positive: 15 118 110;
+    --theme-positive-light: 204 251 241;
+    --theme-warning: 180 83 9;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 190 18 60;
+    --theme-danger-light: 255 228 230;
+
+    --theme-white: 255 255 255;
+    --theme-inverse: 250 246 238;
   }
 
-  .cyberpunk {
-    /* Cyberpunk Amethyst */
-    --theme-base: 13 2 33; /* Deepest purple */
-    --theme-surface: 26 5 66; /* Violet */
-    --theme-surface-hover: 38 7 99;
-    --theme-elevated: 32 6 82;
-    --theme-elevated-hover: 44 9 115;
-    
-    --theme-border: 71 18 163;
-    
-    --theme-font-sans: var(--font-jetbrains-mono);
-    --theme-font-display: var(--font-orbitron);
+  /* =========================================================================
+     THEME 8: MOSS GOLD (Botanical Velvet Emerald & Amethyst — Dark)
+     60% Deep Emerald (#061812) • 30% Celadon (#E6F7EE) • 10% Amethyst (#C084FC)
+     ========================================================================= */
+  .bio-alchemical {
+    --theme-base: 6 24 18;
+    --theme-surface: 13 40 30;
+    --theme-surface-hover: 20 56 42;
+    --theme-elevated: 20 56 42;
+    --theme-elevated-hover: 30 78 60;
+    --theme-border: 35 84 64;
+
+    --theme-font-sans: var(--font-manrope);
+    --theme-font-display: var(--font-syne);
     --theme-weight-body: 400;
-    --theme-weight-display: 900;
-    --theme-tracking-body: 0;
-    --theme-tracking-display: 0.1em;
-    --theme-line-height-body: 1.4;
-    --theme-casing-display: uppercase;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 255 255 255; /* Glowing white */
-    --theme-secondary: 200 176 250;
-    --theme-tertiary: 147 112 219;
-    
-    --theme-accent: 255 0 128; /* Neon pink */
-    --theme-accent-hover: 219 0 109;
-    --theme-accent-light: 44 9 115;
-    
-    --theme-danger: 255 77 77;
-    --theme-danger-light: 77 15 15;
-    
-    --theme-white: 26 5 66;
-    --theme-inverse: 13 2 33;
+    --theme-radius-card: 1.375rem;
+
+    --theme-primary: 230 247 238;
+    --theme-secondary: 159 216 188;
+    --theme-tertiary: 112 181 148;
+    --theme-accent: 192 132 252;
+    --theme-accent-hover: 168 85 247;
+    --theme-accent-light: 44 24 72;
+    --theme-on-accent: 24 8 40;
+    --theme-on-primary: 6 24 18;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 13 40 30;
+    --theme-inverse: 6 24 18;
   }
 
-  .arctic {
-    /* Arctic Frost */
-    --theme-base: 248 250 252; /* Crisp snow white */
-    --theme-surface: 236 244 249; /* Pale icy blue */
-    --theme-surface-hover: 224 238 247;
-    --theme-elevated: 241 248 255;
-    --theme-elevated-hover: 226 238 250;
-    
-    --theme-border: 203 213 225;
-    
+  /* =========================================================================
+     THEME 9: CLAY CREAM (Tuscan Farmhouse Pottery — Light)
+     60% Kiln Blush (#EFE5D8) • 30% Espresso (#2B1C14) • 10% Fired Sienna (#B33F1B)
+     ========================================================================= */
+  .earthy {
+    --theme-base: 239 229 216;
+    --theme-surface: 250 246 240;
+    --theme-surface-hover: 234 221 204;
+    --theme-elevated: 229 214 195;
+    --theme-elevated-hover: 215 196 172;
+    --theme-border: 203 183 158;
+
+    --theme-font-sans: var(--font-nunito);
+    --theme-font-display: var(--font-merriweather);
+    --theme-weight-body: 500;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: -0.015em;
+    --theme-line-height-body: 1.55;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.5rem;
+
+    --theme-primary: 43 28 20;
+    --theme-secondary: 92 68 56;
+    --theme-tertiary: 117 91 77;
+    --theme-accent: 179 63 27;
+    --theme-accent-hover: 148 50 19;
+    --theme-accent-light: 247 224 214;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 250 246 240;
+
+    --theme-positive: 21 128 61;
+    --theme-positive-light: 220 252 231;
+    --theme-warning: 161 98 7;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 185 28 28;
+    --theme-danger-light: 254 226 226;
+
+    --theme-white: 250 246 240;
+    --theme-inverse: 250 246 240;
+  }
+
+  /* =========================================================================
+     THEME 10: MATCHA (Kyoto Tea House Zen — Light)
+     60% Uji Sage (#F0F5EC) • 30% Deep Tea (#192A1E) • 10% Jade (#246A42)
+     ========================================================================= */
+  .matcha {
+    --theme-base: 240 245 236;
+    --theme-surface: 255 255 255;
+    --theme-surface-hover: 231 239 224;
+    --theme-elevated: 227 236 217;
+    --theme-elevated-hover: 211 224 198;
+    --theme-border: 194 212 179;
+
+    --theme-font-sans: var(--font-nunito);
+    --theme-font-display: var(--font-comfortaa);
+    --theme-weight-body: 500;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.55;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.5rem;
+
+    --theme-primary: 25 42 30;
+    --theme-secondary: 62 87 69;
+    --theme-tertiary: 90 115 96;
+    --theme-accent: 36 106 66;
+    --theme-accent-hover: 27 84 52;
+    --theme-accent-light: 224 242 230;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 255 255 255;
+
+    --theme-positive: 21 128 61;
+    --theme-positive-light: 220 252 231;
+    --theme-warning: 161 98 7;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 190 18 60;
+    --theme-danger-light: 255 228 230;
+
+    --theme-white: 255 255 255;
+    --theme-inverse: 255 255 255;
+  }
+
+  /* =========================================================================
+     THEME 11: SAKURA (Hanami Morning Cherry Petal — Light)
+     60% Morning Petal (#FDF4F7) • 30% Plum Ink (#2E1120) • 10% Rose (#BF215F)
+     ========================================================================= */
+  .sakura {
+    --theme-base: 253 244 247;
+    --theme-surface: 255 255 255;
+    --theme-surface-hover: 250 232 239;
+    --theme-elevated: 248 229 236;
+    --theme-elevated-hover: 240 212 223;
+    --theme-border: 232 196 210;
+
     --theme-font-sans: var(--font-dm-sans);
+    --theme-font-display: var(--font-comfortaa);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.5rem;
+
+    --theme-primary: 46 17 32;
+    --theme-secondary: 99 54 77;
+    --theme-tertiary: 130 83 106;
+    --theme-accent: 191 33 95;
+    --theme-accent-hover: 161 24 78;
+    --theme-accent-light: 252 228 238;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 255 255 255;
+
+    --theme-positive: 21 128 61;
+    --theme-positive-light: 220 252 231;
+    --theme-warning: 180 83 9;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 190 18 60;
+    --theme-danger-light: 255 228 230;
+
+    --theme-white: 255 255 255;
+    --theme-inverse: 255 255 255;
+  }
+
+  /* =========================================================================
+     THEME 12: GOLD DARK (Observatory Bullion Vault — Dark)
+     60% Obsidian Canyon (#120C06) • 30% Bullion Gold (#FEF3C7) • 10% Amber (#F59E0B)
+     ========================================================================= */
+  .solaris {
+    --theme-base: 18 12 6;
+    --theme-surface: 30 21 11;
+    --theme-surface-hover: 44 31 17;
+    --theme-elevated: 44 31 17;
+    --theme-elevated-hover: 62 44 24;
+    --theme-border: 74 52 28;
+
+    --theme-font-sans: var(--font-inter);
     --theme-font-display: var(--font-cinzel);
     --theme-weight-body: 400;
-    --theme-weight-display: 500;
-    --theme-tracking-body: -0.02em;
-    --theme-tracking-display: 0.05em;
-    --theme-line-height-body: 1.5;
-    --theme-casing-display: uppercase;
-    --theme-style-display: normal;
-    
-    --theme-primary: 30 41 59; /* Dark slate */
-    --theme-secondary: 71 85 105;
-    --theme-tertiary: 100 116 139;
-    
-    --theme-accent: 56 189 248; /* Frosty blue */
-    --theme-accent-hover: 14 165 233;
-    --theme-accent-light: 224 242 254;
-    
-    --theme-danger: 220 38 38;
-    --theme-danger-light: 254 226 226;
-    
-    --theme-white: 255 255 255;
-    --theme-inverse: 248 250 252;
-  }
-
-  .oled-pro {
-    /* OLED Pro Max */
-    --theme-base: 15 23 42; /* #0F172A */
-    --theme-surface: 16 26 52; /* Slightly lighter than base */
-    --theme-surface-hover: 21 34 68;
-    --theme-elevated: 18 30 60;
-    --theme-elevated-hover: 24 40 80;
-    
-    --theme-border: 255 255 255; /* rgba(255,255,255,0.08) applied via opacity classes where needed */
-    
-    --theme-font-sans: var(--font-space-grotesk);
-    --theme-font-display: var(--font-syne);
-    --theme-weight-body: 500;
-    --theme-weight-display: 800;
-    --theme-tracking-body: -0.03em;
-    --theme-tracking-display: -0.05em;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: 0.015em;
     --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 255 255 255; /* #FFFFFF */
-    --theme-secondary: 163 175 194; /* Muted blue-grey */
-    --theme-tertiary: 100 116 139;
-    
-    --theme-accent: 5 150 105; /* #059669 Profit Green */
-    --theme-accent-hover: 4 120 87; 
-    --theme-accent-light: 15 23 42;
-    
-    --theme-danger: 220 38 38; /* #DC2626 */
-    --theme-danger-light: 63 21 21;
-    
-    --theme-white: 16 26 52;
-    --theme-inverse: 15 23 42;
+    --theme-radius-card: 1rem;
+
+    --theme-primary: 254 243 199;
+    --theme-secondary: 217 194 142;
+    --theme-tertiary: 171 147 94;
+    --theme-accent: 245 158 11;
+    --theme-accent-hover: 217 119 6;
+    --theme-accent-light: 58 38 12;
+    --theme-on-accent: 18 12 6;
+    --theme-on-primary: 18 12 6;
+
+    --theme-positive: 74 222 128;
+    --theme-positive-light: 18 46 28;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 248 113 113;
+    --theme-danger-light: 66 20 20;
+
+    --theme-white: 30 21 11;
+    --theme-inverse: 18 12 6;
   }
 
+  /* =========================================================================
+     THEME 13: AURORA (Nordic Fjord Polar Night — Dark)
+     60% Arctic Fjord (#08121B) • 30% Frost White (#ECFEFF) • 10% Teal (#2DD4BF)
+     ========================================================================= */
+  .aurora {
+    --theme-base: 8 18 27;
+    --theme-surface: 16 31 46;
+    --theme-surface-hover: 23 43 64;
+    --theme-elevated: 23 43 64;
+    --theme-elevated-hover: 32 58 84;
+    --theme-border: 39 68 99;
+
+    --theme-font-sans: var(--font-manrope);
+    --theme-font-display: var(--font-outfit);
+    --theme-weight-body: 400;
+    --theme-weight-display: 600;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.025em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.25rem;
+
+    --theme-primary: 236 254 255;
+    --theme-secondary: 155 200 217;
+    --theme-tertiary: 110 158 179;
+    --theme-accent: 45 212 191;
+    --theme-accent-hover: 20 184 166;
+    --theme-accent-light: 16 48 52;
+    --theme-on-accent: 6 28 27;
+    --theme-on-primary: 8 18 27;
+
+    --theme-positive: 45 212 191;
+    --theme-positive-light: 16 48 52;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 16 31 46;
+    --theme-inverse: 8 18 27;
+  }
+
+  /* =========================================================================
+     THEME 14: DEEP OCEAN (Bathysphere Pelagic Dive — Dark)
+     60% Pelagic Navy (#04111F) • 30% Seafoam Ice (#E0F2FE) • 10% Cyan (#22D3EE)
+     ========================================================================= */
+  .ocean {
+    --theme-base: 4 17 31;
+    --theme-surface: 10 29 51;
+    --theme-surface-hover: 17 43 74;
+    --theme-elevated: 17 43 74;
+    --theme-elevated-hover: 26 60 100;
+    --theme-border: 30 70 117;
+
+    --theme-font-sans: var(--font-dm-sans);
+    --theme-font-display: var(--font-rubik);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.005em;
+    --theme-tracking-display: -0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.125rem;
+
+    --theme-primary: 224 242 254;
+    --theme-secondary: 147 197 253;
+    --theme-tertiary: 100 159 217;
+    --theme-accent: 34 211 238;
+    --theme-accent-hover: 6 182 212;
+    --theme-accent-light: 12 46 66;
+    --theme-on-accent: 4 20 33;
+    --theme-on-primary: 4 17 31;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 10 29 51;
+    --theme-inverse: 4 17 31;
+  }
+
+  /* =========================================================================
+     THEME 15: PINE (Pacific Northwest Timber Cabin — Dark)
+     60% Old Growth (#121D18) • 30% Birch Cream (#EDF2E7) • 10% Citron (#B6E054)
+     ========================================================================= */
+  .forest {
+    --theme-base: 18 29 24;
+    --theme-surface: 27 42 35;
+    --theme-surface-hover: 37 56 47;
+    --theme-elevated: 37 56 47;
+    --theme-elevated-hover: 48 72 60;
+    --theme-border: 57 84 71;
+
+    --theme-font-sans: var(--font-work-sans);
+    --theme-font-display: var(--font-merriweather);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: -0.015em;
+    --theme-line-height-body: 1.55;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1.125rem;
+
+    --theme-primary: 237 242 231;
+    --theme-secondary: 178 196 183;
+    --theme-tertiary: 130 153 137;
+    --theme-accent: 182 224 84;
+    --theme-accent-hover: 158 201 62;
+    --theme-accent-light: 35 54 32;
+    --theme-on-accent: 18 29 24;
+    --theme-on-primary: 18 29 24;
+
+    --theme-positive: 74 222 128;
+    --theme-positive-light: 18 46 28;
+    --theme-warning: 250 204 21;
+    --theme-warning-light: 54 44 10;
+    --theme-danger: 248 113 113;
+    --theme-danger-light: 66 20 20;
+
+    --theme-white: 27 42 35;
+    --theme-inverse: 18 29 24;
+  }
+
+  /* =========================================================================
+     THEME 16: NEON PLUM (1982 Synthwave HUD — Dark)
+     60% Void Violet (#0A0314) • 30% Lavender (#F5E8FF) • 10% Pink (#FF3D9A)
+     ========================================================================= */
+  .cyberpunk {
+    --theme-base: 10 3 20;
+    --theme-surface: 20 8 38;
+    --theme-surface-hover: 33 14 61;
+    --theme-elevated: 33 14 61;
+    --theme-elevated-hover: 48 22 88;
+    --theme-border: 62 30 110;
+
+    --theme-font-sans: var(--font-space-grotesk);
+    --theme-font-display: var(--font-orbitron);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: 0.02em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 0.75rem;
+
+    --theme-primary: 245 232 255;
+    --theme-secondary: 205 169 245;
+    --theme-tertiary: 158 120 209;
+    --theme-accent: 255 61 154;
+    --theme-accent-hover: 230 34 128;
+    --theme-accent-light: 56 14 48;
+    --theme-on-accent: 20 3 28;
+    --theme-on-primary: 10 3 20;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 250 204 21;
+    --theme-warning-light: 54 44 10;
+    --theme-danger: 255 107 107;
+    --theme-danger-light: 70 18 22;
+
+    --theme-white: 20 8 38;
+    --theme-inverse: 10 3 20;
+  }
+
+  /* =========================================================================
+     THEME 17: GLACIER (Scandinavian Ice Laboratory — Light)
+     60% Crisp Iceberg (#EFF6FC) • 30% Polar Navy (#0F172A) • 10% Azure (#0369A1)
+     ========================================================================= */
+  .arctic {
+    --theme-base: 239 246 252;
+    --theme-surface: 255 255 255;
+    --theme-surface-hover: 229 240 250;
+    --theme-elevated: 225 238 248;
+    --theme-elevated-hover: 209 227 242;
+    --theme-border: 190 214 235;
+
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-space-grotesk);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.025em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 1rem;
+
+    --theme-primary: 15 23 42;
+    --theme-secondary: 59 80 107;
+    --theme-tertiary: 86 110 140;
+    --theme-accent: 3 105 161;
+    --theme-accent-hover: 2 84 130;
+    --theme-accent-light: 224 242 254;
+    --theme-on-accent: 255 255 255;
+    --theme-on-primary: 255 255 255;
+
+    --theme-positive: 4 120 87;
+    --theme-positive-light: 209 250 229;
+    --theme-warning: 180 83 9;
+    --theme-warning-light: 254 243 199;
+    --theme-danger: 190 18 60;
+    --theme-danger-light: 255 228 230;
+
+    --theme-white: 255 255 255;
+    --theme-inverse: 255 255 255;
+  }
+
+  /* =========================================================================
+     THEME 18: PITCH BLACK (0% AMOLED Quant Terminal — Dark)
+     60% Pitch Black (#000000) • 30% White (#FFFFFF) • 10% Emerald (#00EA90)
+     ========================================================================= */
+  .oled-pro {
+    --theme-base: 0 0 0;
+    --theme-surface: 10 10 10;
+    --theme-surface-hover: 20 20 20;
+    --theme-elevated: 20 20 20;
+    --theme-elevated-hover: 32 32 32;
+    --theme-border: 43 43 43;
+
+    --theme-font-sans: var(--font-inter);
+    --theme-font-display: var(--font-jetbrains-mono);
+    --theme-weight-body: 400;
+    --theme-weight-display: 700;
+    --theme-tracking-body: -0.01em;
+    --theme-tracking-display: -0.03em;
+    --theme-line-height-body: 1.5;
+    --theme-casing-display: none;
+    --theme-style-display: normal;
+    --theme-radius-card: 0.75rem;
+
+    --theme-primary: 255 255 255;
+    --theme-secondary: 166 166 176;
+    --theme-tertiary: 125 125 135;
+    --theme-accent: 0 234 144;
+    --theme-accent-hover: 0 204 126;
+    --theme-accent-light: 0 48 30;
+    --theme-on-accent: 0 0 0;
+    --theme-on-primary: 0 0 0;
+
+    --theme-positive: 0 234 144;
+    --theme-positive-light: 0 48 30;
+    --theme-warning: 250 204 21;
+    --theme-warning-light: 54 44 10;
+    --theme-danger: 251 113 133;
+    --theme-danger-light: 66 14 28;
+
+    --theme-white: 10 10 10;
+    --theme-inverse: 0 0 0;
+  }
+
+  /* =========================================================================
+     THEME 19: SUNSET (California Dusk Poster — Dark)
+     60% Dusk Grape (#180924) • 30% Peach Cream (#FFEAE0) • 10% Coral (#FF6B4A)
+     ========================================================================= */
   .neon-sunset {
-    /* Synthwave / Neon Sunset */
-    --theme-base: 18 9 28; /* #12091c */
-    --theme-surface: 34 17 51; /* #221133 */
-    --theme-surface-hover: 49 25 76;
-    --theme-elevated: 42 21 64;
-    --theme-elevated-hover: 60 30 89;
-    
-    --theme-border: 85 43 128;
-    
+    --theme-base: 24 9 36;
+    --theme-surface: 38 16 56;
+    --theme-surface-hover: 53 24 77;
+    --theme-elevated: 53 24 77;
+    --theme-elevated-hover: 70 33 102;
+    --theme-border: 87 43 122;
+
     --theme-font-sans: var(--font-rubik);
     --theme-font-display: var(--font-bungee);
     --theme-weight-body: 400;
     --theme-weight-display: 400;
-    --theme-tracking-body: 0;
-    --theme-tracking-display: 0.05em;
+    --theme-tracking-body: 0em;
+    --theme-tracking-display: 0.02em;
     --theme-line-height-body: 1.5;
-    --theme-casing-display: uppercase;
+    --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 255 240 245; /* Lavender blush */
-    --theme-secondary: 219 195 227;
-    --theme-tertiary: 176 148 186;
-    
-    --theme-accent: 255 107 107; /* Neon Coral */
-    --theme-accent-hover: 255 71 87;
-    --theme-accent-light: 49 25 76;
-    
-    --theme-danger: 220 38 38;
-    --theme-danger-light: 63 21 21;
-    
-    --theme-white: 34 17 51;
-    --theme-inverse: 18 9 28;
+    --theme-radius-card: 1.25rem;
+
+    --theme-primary: 255 234 224;
+    --theme-secondary: 232 184 203;
+    --theme-tertiary: 188 137 173;
+    --theme-accent: 255 107 74;
+    --theme-accent-hover: 235 84 52;
+    --theme-accent-light: 68 24 44;
+    --theme-on-accent: 28 7 20;
+    --theme-on-primary: 24 9 36;
+
+    --theme-positive: 52 211 153;
+    --theme-positive-light: 12 46 38;
+    --theme-warning: 251 191 36;
+    --theme-warning-light: 56 38 12;
+    --theme-danger: 255 107 129;
+    --theme-danger-light: 70 18 28;
+
+    --theme-white: 38 16 56;
+    --theme-inverse: 24 9 36;
   }
 
+  /* =========================================================================
+     THEME 20: GRAPHITE (Bauhaus Industrial Monochrome — Dark)
+     60% Matte Carbon (#121212) • 30% Aluminum (#EAEAEA) • 10% Stark White (#FFFFFF)
+     ========================================================================= */
   .graphite {
-    /* Minimalist Mono / Graphite */
-    --theme-base: 10 10 10;
-    --theme-surface: 20 20 20;
-    --theme-surface-hover: 30 30 30;
-    --theme-elevated: 25 25 25;
-    --theme-elevated-hover: 35 35 35;
-    
-    --theme-border: 60 60 60;
-    
-    --theme-font-sans: var(--font-manrope);
-    --theme-font-display: var(--font-anton);
-    --theme-weight-body: 500;
-    --theme-weight-display: 400;
-    --theme-tracking-body: -0.04em;
-    --theme-tracking-display: 0;
-    --theme-line-height-body: 1.3;
-    --theme-casing-display: uppercase;
-    --theme-style-display: normal;
-    
-    --theme-primary: 240 240 240;
-    --theme-secondary: 160 160 160;
-    --theme-tertiary: 100 100 100;
-    
-    --theme-accent: 255 255 255; /* Pure white accent */
-    --theme-accent-hover: 200 200 200;
-    --theme-accent-light: 40 40 40;
-    
-    --theme-danger: 255 100 100;
-    --theme-danger-light: 50 20 20;
-    
-    --theme-white: 20 20 20;
-    --theme-inverse: 10 10 10;
-  }
+    --theme-base: 18 18 18;
+    --theme-surface: 28 28 28;
+    --theme-surface-hover: 40 40 40;
+    --theme-elevated: 40 40 40;
+    --theme-elevated-hover: 54 54 54;
+    --theme-border: 61 61 61;
 
-  .earthy {
-    /* Earthy Warmth — Restored Original Cozy Artisan Theme */
-    --theme-base: 252 249 242; /* #fcf9f2 — Warm handmade paper cream */
-    --theme-surface: 255 255 255; /* #ffffff — Organic pure ivory */
-    --theme-surface-hover: 247 242 233; /* #f7f2e9 */
-    --theme-elevated: 234 226 218; /* #eadeda */
-    --theme-elevated-hover: 216 208 200; /* #d8d0c8 */
-    
-    --theme-border: 216 208 200; /* #d8d0c8 — Soft warm sandstone */
-    
     --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
+    --theme-font-display: var(--font-syne);
     --theme-weight-body: 400;
-    --theme-weight-display: 600;
+    --theme-weight-display: 700;
     --theme-tracking-body: -0.01em;
-    --theme-tracking-display: -0.02em;
+    --theme-tracking-display: -0.025em;
     --theme-line-height-body: 1.5;
     --theme-casing-display: none;
     --theme-style-display: normal;
-    
-    --theme-primary: 45 36 31; /* #2d241f — Deep roasted espresso */
-    --theme-secondary: 95 79 69; /* #5f4f45 — High-contrast warm cocoa (7.2:1 AAA) */
-    --theme-tertiary: 150 134 123;
-    
-    --theme-accent: 217 107 20; /* #d96b14 — Terracotta clay orange */
-    --theme-accent-hover: 194 92 14; 
-    --theme-accent-light: 252 227 212;
-    
-    --theme-danger: 217 56 56;
-    --theme-danger-light: 254 226 226;
-    
-    --theme-white: 255 255 255;
-    --theme-inverse: 252 249 242;
-  }
+    --theme-radius-card: 0.875rem;
 
-  .matcha {
-    /* Kyoto Matcha — Zen Organic Tea Ceremony */
-    --theme-base: 244 246 240; /* #f4f6f0 — Matcha linen */
-    --theme-surface: 255 255 255; /* #ffffff */
-    --theme-surface-hover: 237 241 232;
-    --theme-elevated: 228 234 221;
-    --theme-elevated-hover: 218 226 210;
-    
-    --theme-border: 209 219 200; /* #d1dbc8 */
-    
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
-    --theme-weight-body: 400;
-    --theme-weight-display: 600;
-    --theme-tracking-body: -0.01em;
-    --theme-tracking-display: -0.02em;
-    --theme-line-height-body: 1.5;
-    --theme-casing-display: none;
-    --theme-style-display: normal;
-    
-    --theme-primary: 31 45 36; /* #1f2d24 — Deep forest slate */
-    --theme-secondary: 65 87 72; /* #415748 — Deep ceremonial pine (7.5:1 AAA) */
-    --theme-tertiary: 125 145 131;
-    
-    --theme-accent: 45 90 63; /* #2d5a3f — Ceremonial Jade */
-    --theme-accent-hover: 36 74 51;
-    --theme-accent-light: 230 240 233;
-    
-    --theme-danger: 225 29 72;
-    --theme-danger-light: 255 228 230;
-    
-    --theme-white: 255 255 255;
-    --theme-inverse: 244 246 240;
-  }
+    --theme-primary: 234 234 234;
+    --theme-secondary: 168 168 168;
+    --theme-tertiary: 130 130 130;
+    --theme-accent: 255 255 255;
+    --theme-accent-hover: 218 218 218;
+    --theme-accent-light: 44 44 44;
+    --theme-on-accent: 18 18 18;
+    --theme-on-primary: 18 18 18;
 
-  .sakura {
-    /* Tokyo Sakura — Twilight Blossom */
-    --theme-base: 22 15 30; /* #160f1e — Deep plum obsidian */
-    --theme-surface: 35 23 48; /* #231730 — Layered amethyst */
-    --theme-surface-hover: 48 32 66;
-    --theme-elevated: 42 28 58;
-    --theme-elevated-hover: 56 38 78;
-    
-    --theme-border: 68 46 94; /* #442e5e */
-    
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
-    --theme-weight-body: 400;
-    --theme-weight-display: 600;
-    --theme-tracking-body: -0.01em;
-    --theme-tracking-display: -0.02em;
-    --theme-line-height-body: 1.5;
-    --theme-casing-display: none;
-    --theme-style-display: normal;
-    
-    --theme-primary: 250 245 255; /* #faf5ff — Pearlescent ivory */
-    --theme-secondary: 196 181 253; /* #c4b5fd — Soft lavender */
-    --theme-tertiary: 147 122 186;
-    
-    --theme-accent: 244 114 182; /* #f472b6 — Luminous sakura blossom pink */
-    --theme-accent-hover: 236 72 153;
-    --theme-accent-light: 56 38 78;
-    
-    --theme-danger: 244 63 94;
-    --theme-danger-light: 76 5 25;
-    
-    --theme-white: 35 23 48;
-    --theme-inverse: 22 15 30;
-  }
+    --theme-positive: 74 222 128;
+    --theme-positive-light: 18 46 28;
+    --theme-warning: 250 204 21;
+    --theme-warning-light: 54 44 10;
+    --theme-danger: 248 113 113;
+    --theme-danger-light: 66 20 20;
 
-  .solaris {
-    /* Solaris Amber — Cinematic Golden Hour */
-    --theme-base: 250 246 240; /* #faf6f0 — Dune sand linen */
-    --theme-surface: 255 255 255; /* #ffffff */
-    --theme-surface-hover: 245 239 230;
-    --theme-elevated: 238 230 218;
-    --theme-elevated-hover: 226 216 202;
-    
-    --theme-border: 226 216 202; /* #e2d8ca */
-    
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
-    --theme-weight-body: 400;
-    --theme-weight-display: 600;
-    --theme-tracking-body: -0.01em;
-    --theme-tracking-display: -0.02em;
-    --theme-line-height-body: 1.5;
-    --theme-casing-display: none;
-    --theme-style-display: normal;
-    
-    --theme-primary: 56 36 21; /* #382415 — Deep espresso bronze */
-    --theme-secondary: 105 76 52; /* #694c34 — Roasted bronze (7.1:1 AAA) */
-    --theme-tertiary: 155 125 100;
-    
-    --theme-accent: 217 119 6; /* #d97706 — Radiant Sunburst Amber */
-    --theme-accent-hover: 180 83 9;
-    --theme-accent-light: 254 243 199;
-    
-    --theme-danger: 225 29 72;
-    --theme-danger-light: 255 228 230;
-    
-    --theme-white: 255 255 255;
-    --theme-inverse: 250 246 240;
-  }
-
-  .aurora {
-    /* Nordic Aurora — Glacial Midnight */
-    --theme-base: 9 13 26; /* #090d1a — Deep fjord navy */
-    --theme-surface: 18 24 44; /* #12182c — Midnight cobalt */
-    --theme-surface-hover: 25 34 62;
-    --theme-elevated: 23 31 56;
-    --theme-elevated-hover: 31 42 75;
-    
-    --theme-border: 37 50 90; /* #25325a */
-    
-    --theme-font-sans: var(--font-inter);
-    --theme-font-display: var(--font-outfit);
-    --theme-weight-body: 400;
-    --theme-weight-display: 600;
-    --theme-tracking-body: -0.01em;
-    --theme-tracking-display: -0.02em;
-    --theme-line-height-body: 1.5;
-    --theme-casing-display: none;
-    --theme-style-display: normal;
-    
-    --theme-primary: 240 253 250; /* #f0fdfa — Glacial ice white */
-    --theme-secondary: 153 193 209; /* #99c1d1 */
-    --theme-tertiary: 92 130 150;
-    
-    --theme-accent: 45 212 191; /* #2dd4bf — Aurora Borealis Teal */
-    --theme-accent-hover: 20 184 166;
-    --theme-accent-light: 23 31 56;
-    
-    --theme-danger: 244 63 94;
-    --theme-danger-light: 76 5 25;
-    
-    --theme-white: 18 24 44;
-    --theme-inverse: 9 13 26;
+    --theme-white: 28 28 28;
+    --theme-inverse: 18 18 18;
   }
 }
 
@@ -504,15 +875,35 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  :root, .porcelain, .light, .earthy, .arctic, .matcha, .solaris {
+
+  :root,
+  .porcelain,
+  .light,
+  .atelier-paper,
+  .riviera-maritime,
+  .earthy,
+  .matcha,
+  .sakura,
+  .arctic {
     color-scheme: light;
   }
-  
-  .dark, .ocean, .forest, .cyberpunk, .oled-pro, .neon-sunset, .graphite, .sakura, .aurora {
+
+  .dark,
+  .midnight,
+  .savile-rebel,
+  .dune-terminal,
+  .cyber-velocity,
+  .bio-alchemical,
+  .solaris,
+  .aurora,
+  .ocean,
+  .forest,
+  .cyberpunk,
+  .oled-pro,
+  .neon-sunset,
+  .graphite {
     color-scheme: dark;
-    /* Soften 3D Neumorphism shadows for dark themes */
-    --shadow-3d-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-3d-card: 0 4px 20px rgba(0, 0, 0, 0.42);
     --shadow-3d-card-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
     --shadow-3d-inset: inset 0 2px 10px rgba(0, 0, 0, 0.4);
     --shadow-3d-button: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -523,17 +914,17 @@
     --shadow-3d-button-danger-active: inset 0 2px 5px rgba(185, 28, 28, 0.6);
     --shadow-3d-fab: 0 8px 20px rgba(0, 0, 0, 0.5);
     --shadow-3d-fab-active: inset 0 2px 10px rgba(0, 0, 0, 0.6);
-    --shadow-3d-bottom-nav: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-3d-bottom-nav: 0 -4px 20px rgba(0, 0, 0, 0.35);
   }
 
   body {
     background-color: var(--surface-base);
-    background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+    background-image: radial-gradient(circle at 50% 0%, rgb(var(--theme-accent) / 0.07) 0%, transparent 45%);
     color: var(--text-primary);
     transition: background-color var(--duration-normal) var(--ease-in-out),
                 color var(--duration-normal) var(--ease-in-out);
     min-height: 100vh;
-    
+
     /* Dynamic Theme Typography (Body) */
     font-family: var(--theme-font-sans) !important;
     font-weight: var(--theme-weight-body) !important;
@@ -548,11 +939,11 @@
     --text-primary: rgb(var(--theme-primary));
     --text-secondary: rgb(var(--theme-secondary));
     --text-tertiary: rgb(var(--theme-tertiary));
-    --text-inverse: rgb(var(--theme-inverse));
+    --text-inverse: rgb(var(--theme-on-primary));
     --text-brand: rgb(var(--theme-accent));
-    
+
     --border-light: rgb(var(--theme-border) / 0.5);
-    --border-subtle: rgb(var(--theme-border) / 0.2);
+    --border-subtle: rgb(var(--theme-border) / 0.25);
   }
 
   /* Dynamic Theme Typography (Display) */
@@ -563,9 +954,22 @@
     text-transform: var(--theme-casing-display) !important;
     font-style: var(--theme-style-display) !important;
   }
-  
-  .dark body {
-    background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+
+  .dark body,
+  .midnight body,
+  .savile-rebel body,
+  .dune-terminal body,
+  .cyber-velocity body,
+  .bio-alchemical body,
+  .solaris body,
+  .aurora body,
+  .ocean body,
+  .forest body,
+  .cyberpunk body,
+  .oled-pro body,
+  .neon-sunset body,
+  .graphite body {
+    background-image: radial-gradient(circle at 50% 0%, rgb(var(--theme-accent) / 0.11) 0%, transparent 50%);
   }
 
   * {
@@ -573,27 +977,23 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Remove default button styles */
   button {
     cursor: pointer;
     touch-action: manipulation;
   }
 
-  /* Mobile and Desktop Ergonomics */
   html, body {
     min-height: 100dvh;
     scroll-behavior: smooth;
     overscroll-behavior-y: contain;
   }
 
-  /* Prevent automatic mobile input zooming in Android Chrome / iOS */
   @media (max-width: 768px) {
     input, select, textarea {
       font-size: 16px !important;
     }
   }
 
-  /* Safe area padding for devices with notches & gesture bars */
   .safe-area-top {
     padding-top: max(env(safe-area-inset-top, 0px), 0px);
   }
@@ -602,7 +1002,6 @@
     padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
   }
 
-  /* Android 48px touch target standard */
   .touch-target {
     min-height: 48px;
     min-width: 48px;
@@ -611,7 +1010,6 @@
     justify-content: center;
   }
 
-  /* Sleek desktop scrollbars */
   @media (min-width: 768px) {
     ::-webkit-scrollbar {
       width: 6px;
@@ -631,12 +1029,10 @@
 }
 
 @layer utilities {
-  /* Text balance for headings */
   .text-balance {
     text-wrap: balance;
   }
 
-  /* Hero gradient backgrounds */
   .bg-hero-safe {
     background: var(--gradient-hero);
   }
@@ -649,7 +1045,6 @@
     background: var(--gradient-hero-danger);
   }
 
-  /* Glass morphism */
   .glass {
     background: var(--surface-glass);
     backdrop-filter: blur(24px);
@@ -658,24 +1053,22 @@
     box-shadow: var(--shadow-3d-card);
   }
 
-  /* Dynamic Glass Panel */
   .glass-panel {
-    background: rgb(var(--theme-surface) / 0.5);
+    background: rgb(var(--theme-surface) / 0.65);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgb(var(--theme-border) / 0.3);
+    border: 1px solid rgb(var(--theme-border) / 0.35);
   }
 
   .hover-elevate {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .hover-elevate:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px -8px rgb(var(--theme-elevated) / 0.4);
   }
 
-  /* Hide scrollbar but keep scroll functionality */
   .scrollbar-none {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -685,13 +1078,11 @@
     display: none;
   }
 
-  /* Touch target minimum size */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
 
-  /* Bottom sheet handle */
   .sheet-handle {
     width: 36px;
     height: 4px;
@@ -700,12 +1091,10 @@
     opacity: 0.5;
   }
 
-  /* Pulse animation for warning state */
   .budget-pulse {
     animation: budgetPulse 2s ease-in-out infinite;
   }
 
-  /* Shimmer for skeleton loading */
   .shimmer {
     background: linear-gradient(
       90deg,
@@ -717,9 +1106,8 @@
     animation: shimmer 1.5s infinite;
   }
 
-  /* Minimal glow text */
   .glow-text {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+    text-shadow: 0 0 10px rgb(var(--theme-accent) / 0.2);
   }
 }
 
@@ -809,3 +1197,16 @@
   }
 }
 
+/* Theme-native autofill styling across all 20 light & dark personalities */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px rgb(var(--theme-elevated)) inset !important;
+  box-shadow: 0 0 0 1000px rgb(var(--theme-elevated)) inset !important;
+  -webkit-text-fill-color: rgb(var(--theme-primary)) !important;
+  color: rgb(var(--theme-primary)) !important;
+  caret-color: rgb(var(--theme-primary)) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  border-radius: 0.75rem !important;
+}

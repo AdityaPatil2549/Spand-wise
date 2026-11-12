@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { query, where, orderBy, limit, onSnapshot, Unsubscribe } from 'firebase/firestore';
+import { query, where, onSnapshot, Unsubscribe } from 'firebase/firestore';
 import { expensesColRef } from '@/lib/firebase/firestore';
 import { useStore } from '@/store';
 import { EXPENSES_PAGE_SIZE } from '@/config/constants';
@@ -16,9 +16,10 @@ import type { ExpenseDocument } from '@/types/firestore';
 export const useExpensesListener = (householdId: string | null, months: string[]): void => {
   const { setExpenses, setExpensesLoading } = useStore();
   const unsubscribeRef = useRef<Unsubscribe | null>(null);
+  const monthsKey = Array.from(new Set(months.slice(0, 10))).sort().join(',');
 
   useEffect(() => {
-    if (!householdId || months.length === 0) {
+    if (!householdId || !monthsKey) {
       setExpenses([]);
       setExpensesLoading(false);
       return;
@@ -32,9 +33,7 @@ export const useExpensesListener = (householdId: string | null, months: string[]
       unsubscribeRef.current = null;
     }
 
-    // Firestore 'in' queries support up to 10 elements
-    const queryMonths = months.slice(0, 10);
-    const uniqueMonths = Array.from(new Set(queryMonths)).sort();
+    const uniqueMonths = monthsKey.split(',');
 
     const q = query(
       expensesColRef(householdId),
@@ -70,5 +69,5 @@ export const useExpensesListener = (householdId: string | null, months: string[]
         unsubscribeRef.current = null;
       }
     };
-  }, [householdId, months.join(','), setExpenses, setExpensesLoading]);
+  }, [householdId, monthsKey, setExpenses, setExpensesLoading]);
 };

@@ -157,3 +157,48 @@ export interface GoalDocument {
   updatedAt: Timestamp;
 }
 
+export type SplitMode = 'equal' | 'exact' | 'percentage' | 'shares';
+
+export interface SplitGroupMember {
+  id: string;
+  name: string;
+  upiId?: string;
+  isSelf?: boolean;
+}
+
+export interface SplitGroupDocument {
+  id: string;
+  name: string;
+  emoji?: string;
+  isDirect?: boolean;
+  simplifyDebts: boolean;
+  members: SplitGroupMember[];
+  createdBy: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface SplitShareAllocation {
+  memberId: string;
+  amountPaise: number;
+  inputVal?: number;
+}
+
+export interface SplitExpenseDocument {
+  id: string;
+  groupId: string;
+  description: string;
+  totalPaise: number;
+  paidById: string;
+  paidByName: string;
+  mode: SplitMode;
+  allocations: SplitShareAllocation[];
+  categoryId?: string;
+  isSettlement?: boolean;
+  isDeleted: boolean;
+  createdBy: string;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+

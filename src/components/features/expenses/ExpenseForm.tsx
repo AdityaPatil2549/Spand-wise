@@ -1,8 +1,20 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Timestamp } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
-import { Sparkles } from 'lucide-react';
+import {
+  Sparkles,
+  Trash2,
+  Calculator,
+  ClipboardPaste,
+  ChevronDown,
+  ChevronUp,
+  Delete,
+  CalendarClock,
+  Banknote,
+  Smartphone,
+  CreditCard,
+} from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,16 +27,23 @@ import { AnimatedSelect } from '@/components/ui/AnimatedSelect';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { ReceiptScanner } from '@/components/features/expenses/ReceiptScanner';
 import { useStore } from '@/store';
-import { addExpense, editExpense, softDeleteExpense } from '@/lib/expenses/index';
+import { addExpense, editExpense, parseExpenseDate, softDeleteExpense } from '@/lib/expenses/index';
 import { dateToInputValue } from '@/lib/utils/date';
 import { getLocalMonthString } from '@/lib/date-sharding';
 import { predictCategory } from '@/lib/ml/categorizer';
+import { formatCurrency } from '@/lib/utils';
+import {
+  evaluateCalculatorExpression,
+  formatExpressionDisplay,
+  parseUpiSms,
+} from '@/lib/utils/calculator';
 import {
  MAX_EXPENSE_AMOUNT,
  MIN_EXPENSE_AMOUNT,
  MAX_NOTE_LENGTH,
  CURRENCY_SYMBOL,
 } from '@/config/constants';
+import { normalizeAccounts } from '@/lib/accounts/normalize';
 import { DEFAULT_CATEGORY_ID } from '@/config/categories';
 import type { ExpenseDocument } from '@/types/firestore';
 
@@ -66,6 +85,15 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const isEdit = !!editingExpense;
   const haptic = useHaptic();
 
+  // Thumb-first Calculator, UPI SMS & Collapsible Details State
+  const [expr, setExpr] = useState<string>(() =>
+    editingExpense?.amount ? String(editingExpense.amount) : ''
+  );
+  const [showCalcPad, setShowCalcPad] = useState(false);
+  const [showSmsBox, setShowSmsBox] = useState(false);
+  const [smsText, setSmsText] = useState('');
+  const [showMoreOptions, setShowMoreOptions] = useState(isEdit);
+
   // ML Auto-Categorization State
   const [isAutoCategorized, setIsAutoCategorized] = useState(false);
   const [autoCategoryName, setAutoCategoryName] = useState<string | null>(null);
@@ -100,6 +128,24 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
     frame();
   };
 
+  const rawAccounts = useStore((s) => s.accounts);
+  const accounts = useMemo(() => normalizeAccounts(rawAccounts), [rawAccounts]);
+  const resolvedDefaultAccountId =
+    accounts.find((a) => a.id === 'cash' || a.type === 'cash')?.id ||
+    accounts[0]?.id ||
+    'cash';
+
+  const accountOptions =
+    accounts.length > 0
+      ? accounts.map((a) => ({
+          label: a.name || (a.type === 'bank' ? 'UPI' : 'Cash'),
+          value: a.id,
+        }))
+      : [
+          { label: 'Cash', value: 'cash' },
+          { label: 'UPI', value: 'bank' },
+        ];
+
   const {
     register,
     handleSubmit,
@@ -118,16 +164,88 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       date: editingExpense
         ? dateToInputValue(editingExpense.date.toDate())
         : dateToInputValue(),
-      accountId: editingExpense?.accountId ?? 'cash',
+      accountId: editingExpense?.accountId ?? resolvedDefaultAccountId,
     },
   });
 
   const currentDateTime = watch('date') || '';
   const currentType = watch('type');
+  const currentAccountId = watch('accountId') || resolvedDefaultAccountId;
   const watchedNote = watch('note');
   const watchedAmount = watch('amount');
   const datePart = currentDateTime.includes('T') ? currentDateTime.split('T')[0] : '';
   const timePart = currentDateTime.includes('T') ? currentDateTime.split('T')[1] : '';
+
+  const hasMathOperator = /[+\-*/×÷]/.test(expr.replace(/^-/, ''));
+  const evaluatedExpr = evaluateCalculatorExpression(expr);
+
+  const syncExpression = useCallback(
+    (rawNext: string) => {
+      const normalized = rawNext.replace(/×/g, '*').replace(/÷/g, '/');
+      setExpr(normalized);
+      const val = evaluateCalculatorExpression(normalized);
+      if (val !== null && val > 0) {
+        setValue('amount', val, { shouldValidate: true });
+      } else {
+        setValue('amount', 0, { shouldValidate: normalized.trim().length > 0 });
+      }
+    },
+    [setValue]
+  );
+
+  const handleCalcTap = (token: string) => {
+    haptic.light();
+    if (token === 'C') {
+      setExpr('');
+      setValue('amount', 0, { shouldValidate: false });
+      return;
+    }
+    if (token === '⌫') {
+      syncExpression(expr.slice(0, -1));
+      return;
+    }
+    if (token === '=') {
+      if (evaluatedExpr !== null && evaluatedExpr > 0) {
+        const resultStr = String(evaluatedExpr);
+        setExpr(resultStr);
+        setValue('amount', evaluatedExpr, { shouldValidate: true });
+      }
+      return;
+    }
+    const isOp = /^[+\-*/]$/.test(token);
+    if (isOp) {
+      if (!expr && token !== '-') return;
+      if (/[+\-*/]$/.test(expr)) {
+        syncExpression(expr.slice(0, -1) + token);
+        return;
+      }
+    }
+    syncExpression(`${expr}${token}`);
+  };
+
+  const handleParseSms = () => {
+    const parsed = parseUpiSms(smsText);
+    if (!parsed) {
+      addToast({ type: 'error', message: 'Could not detect amount or merchant in that SMS text.' });
+      return;
+    }
+    if (parsed.amount && parsed.amount > 0) {
+      syncExpression(String(parsed.amount));
+    }
+    if (parsed.note) {
+      setValue('note', parsed.note, { shouldValidate: true });
+    }
+    if (parsed.accountId === 'bank') {
+      const bankAcc = accounts.find((a) => a.id === 'bank' || a.type === 'bank');
+      if (bankAcc) {
+        setValue('accountId', bankAcc.id, { shouldValidate: true });
+      }
+    }
+    haptic.success();
+    setShowSmsBox(false);
+    setSmsText('');
+    addToast({ type: 'success', message: 'Parsed SMS details into form!' });
+  };
 
   // Intelligent real-time categorizer effect
   useEffect(() => {
@@ -156,13 +274,14 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
     try {
       if (isEdit && editingExpense) {
         // Optimistic update
-        const newMonth = getLocalMonthString(new Date(data.date));
+        const parsedDate = parseExpenseDate(data.date);
+        const newMonth = getLocalMonthString(parsedDate);
         updateExpenseOptimistic({ 
           id: editingExpense.id, 
           amount: data.amount, 
           categoryId: data.categoryId, 
           note: data.note ?? null,
-          date: Timestamp.fromDate(new Date(data.date)),
+          date: Timestamp.fromDate(parsedDate),
           month: newMonth,
           accountId: data.accountId,
           type: data.type
@@ -188,20 +307,21 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       } else {
         // Optimistic add — create a temporary ID
         tempId = `temp-${Date.now()}`;
-        const newMonth = getLocalMonthString(new Date(data.date));
+        const parsedDate = parseExpenseDate(data.date);
+        const newMonth = getLocalMonthString(parsedDate);
         const tempExpense: ExpenseDocument = {
           id: tempId,
           amount: data.amount,
           categoryId: data.categoryId,
           note: data.note ?? null,
-          date: Timestamp.fromDate(new Date(data.date)),
+          date: Timestamp.fromDate(parsedDate),
           month: newMonth,
           isDeleted: false,
           type: data.type,
           createdAt: Timestamp.now(),
           createdBy: user.uid,
           updatedAt: Timestamp.now(),
-          accountId: data.accountId || 'cash',
+          accountId: data.accountId || resolvedDefaultAccountId,
         };
         
         addExpenseOptimistic(tempExpense);
@@ -220,7 +340,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
       // Check category budget thresholds
       const currentMonth = useStore.getState().selectedMonth;
-      const expenseMonth = getLocalMonthString(new Date(data.date));
+      const expenseMonth = getLocalMonthString(parseExpenseDate(data.date));
       
       if (data.type === 'expense' && currentMonth === expenseMonth) {
         const { budget, expenses, categoriesMap } = useStore.getState();
@@ -247,9 +367,10 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         }
       }
 
+      setExpr('');
       reset();
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to save transaction:', error);
       
       // ATOMIC ROLLBACK
@@ -265,7 +386,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         }
       }
       
-      addToast({ type: 'error', message: error.message || 'Failed to save transaction' });
+      addToast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to save transaction' });
     }
   };
 
@@ -288,7 +409,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       );
       addToast({ type: 'success', message: 'Transaction deleted' });
       onSuccess();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to delete transaction:', error);
       
       // ATOMIC ROLLBACK
@@ -298,64 +419,145 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         adjustTotalSpentOptimistic(editingExpense.amount);
       }
       
-      addToast({ type: 'error', message: error.message || 'Failed to delete transaction' });
+      addToast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to delete transaction' });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5" noValidate>
-      
-      {/* Type Toggle */}
-      <div className="flex bg-theme-surface p-1 rounded-xl mb-2">
-        <button
-          type="button"
-          onClick={() => setValue('type', 'expense')}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${currentType === 'expense' ? 'bg-theme-base text-theme-primary shadow-sm' : 'text-theme-secondary hover:text-theme-primary'}`}
-        >
-          Expense
-        </button>
-        <button
-          type="button"
-          onClick={() => setValue('type', 'income')}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${currentType === 'income' ? 'bg-theme-base text-[#10b981] shadow-sm' : 'text-theme-secondary hover:text-[#10b981]'}`}
-        >
-          Income
-        </button>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
+      {/* Top Row: Compact Type + Account Quick Pills (Thumb-First Cashew Style) */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex bg-theme-surface p-1 rounded-xl border border-theme-border/60">
+          <button
+            type="button"
+            onClick={() => setValue('type', 'expense')}
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              currentType === 'expense'
+                ? 'bg-theme-base text-theme-primary shadow-sm'
+                : 'text-theme-secondary hover:text-theme-primary'
+            }`}
+          >
+            Expense
+          </button>
+          <button
+            type="button"
+            onClick={() => setValue('type', 'income')}
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              currentType === 'income'
+                ? 'bg-theme-base text-theme-positive shadow-sm'
+                : 'text-theme-secondary hover:text-theme-positive'
+            }`}
+          >
+            Income
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1 bg-theme-surface p-1 rounded-xl border border-theme-border/60">
+          {accountOptions.slice(0, 3).map((acc) => {
+            const isSelected = currentAccountId === acc.value;
+            const isCash = acc.value === 'cash' || acc.label.toLowerCase().includes('cash');
+            const isBank = acc.value === 'bank' || acc.label.toLowerCase().includes('upi') || acc.label.toLowerCase().includes('bank');
+            return (
+              <button
+                key={acc.value}
+                type="button"
+                onClick={() => {
+                  setValue('accountId', acc.value, { shouldValidate: true });
+                  haptic.light();
+                }}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  isSelected
+                    ? 'bg-theme-accent text-theme-on-accent shadow-sm'
+                    : 'text-theme-secondary hover:text-theme-primary'
+                }`}
+              >
+                {isCash ? (
+                  <Banknote className="w-3.5 h-3.5" />
+                ) : isBank ? (
+                  <Smartphone className="w-3.5 h-3.5" />
+                ) : (
+                  <CreditCard className="w-3.5 h-3.5" />
+                )}
+                <span>{acc.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Amount Input */}
+      {/* Calculator Expression Hero Amount + Live Readout */}
       <div>
-        <label className="text-sm font-medium text-theme-secondary mb-1.5 block font-body flex justify-between items-end">
-          <span>Amount</span>
-        </label>
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-theme-secondary font-body">
+            Amount
+          </label>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                setShowCalcPad((v) => !v);
+                haptic.light();
+              }}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all ${
+                showCalcPad
+                  ? 'bg-theme-accent text-theme-on-accent border-theme-accent'
+                  : 'bg-theme-surface text-theme-secondary border-theme-border hover:text-theme-primary'
+              }`}
+            >
+              <Calculator className="w-3 h-3" />
+              <span>123 Calc</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSmsBox((v) => !v);
+                haptic.light();
+              }}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all ${
+                showSmsBox
+                  ? 'bg-theme-accent text-theme-on-accent border-theme-accent'
+                  : 'bg-theme-surface text-theme-secondary border-theme-border hover:text-theme-primary'
+              }`}
+            >
+              <ClipboardPaste className="w-3 h-3" />
+              <span>Paste SMS</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Hidden registered input for React Hook Form */}
+        <input type="hidden" {...register('amount', { valueAsNumber: true })} />
+
+        <div className="flex gap-2.5 items-center">
           <div className="relative flex-1 flex items-center">
             <span className="absolute left-4 text-theme-secondary font-bold text-xl pointer-events-none select-none">
-            {CURRENCY_SYMBOL}
+              {CURRENCY_SYMBOL}
             </span>
             <input
-            type="number"
-            inputMode="numeric"
-            step="1"
-            placeholder="0"
-            autoFocus
-            className="w-full pl-10 pr-4 py-4 text-4xl font-manrope tabular-nums font-semibold rounded-2xl border-2
-            bg-theme-elevated text-theme-primary
-            placeholder:text-theme-tertiary
-            border-transparent focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent
-            transition-all duration-150"
-            {...register('amount', { valueAsNumber: true })}
-            aria-label="Expense amount in rupees"
-            aria-invalid={!!errors.amount}
+              type="text"
+              inputMode="decimal"
+              value={formatExpressionDisplay(expr)}
+              onChange={(e) => syncExpression(e.target.value)}
+              placeholder="0 or 180+45"
+              autoFocus={!showCalcPad}
+              className="w-full pl-10 pr-24 py-3.5 text-3xl sm:text-4xl font-mono tabular-nums font-bold rounded-2xl border-2 bg-theme-elevated text-theme-primary placeholder:text-theme-tertiary placeholder:text-2xl border-theme-border/60 focus:border-theme-accent focus:outline-none focus:ring-2 focus:ring-theme-accent/30 transition-all duration-150"
+              aria-label="Expense amount or math expression in rupees"
+              aria-invalid={!!errors.amount}
             />
+            {hasMathOperator && evaluatedExpr !== null && evaluatedExpr > 0 && (
+              <span className="absolute right-3 px-2.5 py-1 rounded-lg bg-theme-accent/15 border border-theme-accent/30 text-theme-accent text-xs font-mono font-bold tabular-nums pointer-events-none">
+                = {formatCurrency(evaluatedExpr)}
+              </span>
+            )}
           </div>
-          <ReceiptScanner 
+          <ReceiptScanner
             onScanComplete={(data) => {
               if (data.amount) {
-                setValue('amount', data.amount, { shouldValidate: true });
+                syncExpression(String(data.amount));
               }
               if (data.date) {
                 setValue('date', `${data.date}T12:00`, { shouldValidate: true });
+                setShowMoreOptions(true);
               }
               if (data.note) {
                 setValue('note', data.note, { shouldValidate: true });
@@ -367,45 +569,142 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
                 const catName = categoriesMap.get(data.categoryId)?.name || data.categoryId;
                 setAutoCategoryName(catName);
               }
-            }} 
+            }}
           />
         </div>
+
+        {/* Inline Operator Bar + Quick Chips */}
+        <div className="flex items-center justify-between gap-2 mt-2 flex-wrap">
+          <div className="flex items-center gap-1">
+            {[
+              { label: '+', token: '+' },
+              { label: '-', token: '-' },
+              { label: '×', token: '*' },
+              { label: '÷', token: '/' },
+              { label: '=', token: '=' },
+              { label: '⌫', token: '⌫' },
+              { label: 'C', token: 'C' },
+            ].map((op) => (
+              <button
+                key={op.label}
+                type="button"
+                onClick={() => handleCalcTap(op.token)}
+                className={`min-w-[30px] h-7 px-2 rounded-lg text-xs font-mono font-bold border transition-all active:scale-95 ${
+                  op.token === '='
+                    ? 'bg-theme-accent text-theme-on-accent border-theme-accent'
+                    : op.token === 'C'
+                    ? 'bg-theme-danger/10 text-theme-danger border-theme-danger/30'
+                    : 'bg-theme-surface hover:bg-theme-elevated text-theme-primary border-theme-border'
+                }`}
+                aria-label={`Calculator ${op.label}`}
+              >
+                {op.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {[50, 100, 500].map((amt) => (
+              <button
+                key={amt}
+                type="button"
+                onClick={() => {
+                  const baseVal = evaluatedExpr ?? 0;
+                  syncExpression(String(baseVal + amt));
+                  haptic.light();
+                }}
+                className="px-2 py-1 rounded-lg bg-theme-surface hover:bg-theme-elevated border border-theme-border text-[11px] font-bold text-theme-primary tabular-nums active:scale-95 transition-all"
+              >
+                +₹{amt}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Expandable 4x4 Thumb-Zone Numpad */}
+        {showCalcPad && (
+          <div className="mt-2.5 p-2.5 rounded-2xl bg-theme-surface border border-theme-border grid grid-cols-4 gap-2 animate-in fade-in duration-150">
+            {['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', 'C', '0', '.', '+'].map(
+              (key) => {
+                const isOp = ['/', '*', '-', '+'].includes(key);
+                const display = key === '*' ? '×' : key === '/' ? '÷' : key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => handleCalcTap(key)}
+                    className={`h-11 rounded-xl font-mono text-base font-bold border transition-all active:scale-95 flex items-center justify-center ${
+                      key === 'C'
+                        ? 'bg-theme-danger/15 text-theme-danger border-theme-danger/30'
+                        : isOp
+                        ? 'bg-theme-accent/15 text-theme-accent border-theme-accent/30'
+                        : 'bg-theme-base hover:bg-theme-elevated text-theme-primary border-theme-border'
+                    }`}
+                  >
+                    {display}
+                  </button>
+                );
+              }
+            )}
+            <button
+              type="button"
+              onClick={() => handleCalcTap('⌫')}
+              className="col-span-2 h-10 rounded-xl bg-theme-elevated hover:bg-theme-surface text-theme-primary border border-theme-border font-semibold text-sm flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+            >
+              <Delete className="w-4 h-4" />
+              <span>Backspace</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                handleCalcTap('=');
+                setShowCalcPad(false);
+              }}
+              className="col-span-2 h-10 rounded-xl bg-theme-accent text-theme-on-accent font-bold text-sm flex items-center justify-center active:scale-95 transition-all"
+            >
+              Done (=)
+            </button>
+          </div>
+        )}
+
+        {/* Expandable UPI / Bank SMS Paste Parser */}
+        {showSmsBox && (
+          <div className="mt-2.5 p-3 rounded-2xl bg-theme-surface border border-theme-accent/30 space-y-2 animate-in fade-in duration-150">
+            <label className="text-[11px] font-semibold text-theme-secondary block">
+              Paste UPI / Bank SMS alert (e.g. &ldquo;Paid Rs. 240 to Swiggy via UPI&rdquo;)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={smsText}
+                onChange={(e) => setSmsText(e.target.value)}
+                placeholder="Paste bank or GPay/PhonePe SMS..."
+                className="flex-1 px-3 py-2 rounded-xl bg-theme-base border border-theme-border text-xs text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:border-theme-accent"
+              />
+              <Button type="button" variant="primary" size="sm" onClick={handleParseSms}>
+                Extract
+              </Button>
+            </div>
+          </div>
+        )}
+
         {errors.amount && (
-          <p className="mt-1 text-xs text-red-500" role="alert">
+          <p className="mt-1.5 text-xs text-theme-danger font-medium" role="alert">
             {errors.amount.message}
           </p>
         )}
-
-        {/* Quick Increment Denominations */}
-        <div className="flex items-center gap-2 mt-2.5 flex-wrap">
-          <span className="text-[11px] font-semibold text-theme-secondary">Quick +:</span>
-          {[50, 100, 500, 1000].map((amt) => (
-            <button
-              key={amt}
-              type="button"
-              onClick={() => {
-                const current = watch('amount') || 0;
-                setValue('amount', current + amt, { shouldValidate: true });
-                haptic.light();
-              }}
-              className="px-2.5 py-1 rounded-lg bg-theme-surface hover:bg-theme-elevated border border-theme-border/40 text-[11px] font-bold text-theme-primary tabular-nums active:scale-95 transition-all cursor-pointer"
-            >
-              +₹{amt}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Category Picker */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-theme-secondary block font-body">
+          <label className="text-xs font-semibold uppercase tracking-wider text-theme-secondary block font-body">
             Category
           </label>
           {isAutoCategorized && autoCategoryName && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-theme-accent bg-theme-accent/10 px-2 py-0.5 rounded-full border border-theme-accent/20 animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-theme-accent bg-theme-accent/15 px-2 py-0.5 rounded-full border border-theme-accent/25 animate-in fade-in duration-200">
               <Sparkles className="w-3 h-3 stroke-[2.2]" />
-              Auto-detected: {autoCategoryName}
+              Auto: {autoCategoryName}
             </span>
           )}
         </div>
@@ -426,79 +725,102 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
           )}
         />
         {errors.categoryId && (
-          <p className="mt-1 text-xs text-red-500" role="alert">
+          <p className="mt-1 text-xs text-theme-danger font-medium" role="alert">
             {errors.categoryId.message}
           </p>
         )}
       </div>
 
- {/* Note Input */}
- <Input
- label="Note (optional)"
- placeholder="What was this for?"
- {...register('note')}
- error={errors.note?.message}
- maxLength={MAX_NOTE_LENGTH}
- />
+      {/* Note Input */}
+      <Input
+        label="Note (optional)"
+        placeholder="Merchant or description (triggers auto-category)"
+        {...register('note')}
+        error={errors.note?.message}
+        maxLength={MAX_NOTE_LENGTH}
+      />
 
- {/* Account Selector */}
- <div>
-   <label className="text-sm font-medium text-theme-secondary mb-2 block font-body">
-     Payment Mode
-   </label>
-    <AnimatedSelect
-      value={watch('accountId') || 'cash'}
-      onChange={(val) => setValue('accountId', val, { shouldValidate: true })}
-      options={[
-        { label: 'Cash', value: 'cash' },
-        { label: 'UPI', value: 'bank' }
-      ]}
-    />
- </div>
+      {/* Collapsible Date, Time & Extra Account Details */}
+      <div className="rounded-2xl border border-theme-border/80 bg-theme-surface/60 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowMoreOptions((v) => !v)}
+          className="w-full px-3.5 py-2.5 flex items-center justify-between text-xs font-semibold text-theme-secondary hover:text-theme-primary transition-colors"
+        >
+          <span className="inline-flex items-center gap-2">
+            <CalendarClock className="w-4 h-4 text-theme-accent" />
+            <span>Date, Time &amp; More</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-theme-tertiary">
+            <span>{datePart} {timePart}</span>
+            {showMoreOptions ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </span>
+        </button>
 
- {/* Date and Time */}
- <div className="flex gap-4">
- <div className="flex-1">
- <AnimatedDatePicker
- label="Date"
- value={datePart}
- onChange={(newDate) => setValue('date', `${newDate}T${timePart}`, { shouldValidate: true })}
- />
- </div>
- <div className="flex-1">
- <AnimatedTimePicker
- label="Time"
- value={timePart}
- onChange={(newTime) => setValue('date', `${datePart}T${newTime}`, { shouldValidate: true })}
- />
- </div>
- </div>
+        {showMoreOptions && (
+          <div className="px-3.5 pb-3.5 pt-2 border-t border-theme-border/60 space-y-3 animate-in fade-in duration-150">
+            {accountOptions.length > 0 && (
+              <div>
+                <label className="text-xs font-medium text-theme-secondary mb-1.5 block font-body">
+                  All Accounts
+                </label>
+                <AnimatedSelect
+                  value={currentAccountId}
+                  onChange={(val) => setValue('accountId', val, { shouldValidate: true })}
+                  options={accountOptions}
+                />
+              </div>
+            )}
 
- {/* Submit / Actions */}
- <div className="flex gap-3">
- <Button
- type="submit"
- variant="primary"
- size="lg"
- className="flex-1"
- isLoading={isSubmitting}
- >
- {isEdit ? 'Update Expense' : 'Add Expense'}
- </Button>
- {isEdit && (
- <Button
- type="button"
- variant="outline"
- size="lg"
- onClick={handleDelete}
- className="text-red-500 border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors px-4 flex-shrink-0"
- disabled={isSubmitting}
- title="Delete Expense"
- >
- <span className="material-symbols-outlined text-[20px]">delete</span>
- </Button>
- )}
- </div>
- </form>
- );
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <AnimatedDatePicker
+                  label="Date"
+                  value={datePart}
+                  onChange={(newDate) => setValue('date', `${newDate}T${timePart}`, { shouldValidate: true })}
+                />
+              </div>
+              <div className="flex-1">
+                <AnimatedTimePicker
+                  label="Time"
+                  value={timePart}
+                  onChange={(newTime) => setValue('date', `${datePart}T${newTime}`, { shouldValidate: true })}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Sticky Submit / Actions */}
+      <div className="flex gap-3 pt-1">
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="flex-1 font-bold"
+          isLoading={isSubmitting}
+        >
+          {isEdit ? 'Update Transaction' : currentType === 'income' ? 'Save Income' : 'Save Expense'}
+        </Button>
+        {isEdit && (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={handleDelete}
+            className="text-theme-danger border-theme-danger/30 hover:bg-theme-danger/10 hover:border-theme-danger/60 transition-colors px-4 flex-shrink-0"
+            disabled={isSubmitting}
+            title="Delete Expense"
+          >
+            <Trash2 className="w-5 h-5" />
+          </Button>
+        )}
+      </div>
+    </form>
+  );
 };

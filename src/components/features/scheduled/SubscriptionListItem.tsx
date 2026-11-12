@@ -1,8 +1,8 @@
 'use client';
 
 import { motion, useAnimation, PanInfo } from 'framer-motion';
-import { Trash2, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { format, differenceInCalendarDays } from 'date-fns';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import type { ScheduledTransactionDocument, CategoryDocument } from '@/types/firestore';
 import { useHaptic } from '@/hooks/useHaptic';
@@ -36,7 +36,7 @@ export const SubscriptionListItem = ({
 
   const dueDate = subscription.nextDueDate.toDate();
   const now = new Date();
-  const daysDiff = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const daysDiff = differenceInCalendarDays(dueDate, now);
   const isDueToday = daysDiff === 0;
   const isDueSoon = daysDiff > 0 && daysDiff <= 7;
   const isPastDue = daysDiff < 0;

@@ -67,7 +67,7 @@ export const DonutChart = () => {
  };
  })
  .sort((a, b) => b.amount - a.amount);
- }, [expenses, storeCategories, budget]);
+ }, [expenses, storeCategories, categoriesMap, budget]);
 
  const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
 

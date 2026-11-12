@@ -39,9 +39,10 @@ export interface MetricBreakdown {
 }
 
 export interface FinancialHealthResult {
+  hasData: boolean;
   score: number; // 0 to 100
-  tier: 'Exceptional' | 'Healthy' | 'Moderate' | 'At Risk';
-  grade: 'A+' | 'A' | 'B' | 'C' | 'D';
+  tier: 'Exceptional' | 'Healthy' | 'Moderate' | 'At Risk' | 'Unrated';
+  grade: 'A+' | 'A' | 'B' | 'C' | 'D' | '—';
   color: string;
   bgLight: string;
   summary: string;
@@ -84,6 +85,81 @@ export function calculateFinancialHealth(inputs: FinancialHealthInputs): Financi
     categoriesMap,
     prevMonthSpent = 0,
   } = inputs;
+
+  const hasTransactions = expenses.some((e) => e.amount > 0);
+  const hasData = totalSpent > 0 || monthlyIncome > 0 || hasTransactions;
+
+  if (!hasData) {
+    return {
+      hasData: false,
+      score: 0,
+      tier: 'Unrated',
+      grade: '—',
+      color: '#6366f1',
+      bgLight: 'rgba(99, 102, 241, 0.12)',
+      summary: 'Log your first expense or income to unlock your 5-factor Financial Health Score.',
+      recommendation: 'Record a transaction on the Home dashboard or via Quick Log to generate live pacing telemetry.',
+      metrics: {
+        savings: {
+          name: 'Savings Capacity',
+          score: 0,
+          maxScore: 25,
+          weightPct: 25,
+          formula: 'f(r) = 25 / (1 + e^{-12(r - 0.15)})',
+          metricValue: 'No transactions yet',
+          status: 'moderate',
+          explanation: 'Evaluates net surplus ratio against effective monthly inflow using a logistic curve.',
+        },
+        burnRate: {
+          name: 'Pacing Velocity',
+          score: 0,
+          maxScore: 25,
+          weightPct: 25,
+          formula: 'V = (E / B) / (t / T)',
+          metricValue: 'Awaiting spend data',
+          status: 'moderate',
+          explanation: 'Measures budget burn relative to calendar time elapsed using discrete velocity derivatives.',
+        },
+        volatility: {
+          name: 'Daily Consistency',
+          score: 0,
+          maxScore: 20,
+          weightPct: 20,
+          formula: 'CV = \\sigma / \\mu',
+          metricValue: 'Awaiting daily data',
+          status: 'moderate',
+          explanation: 'Analyzes standard deviation and dispersion of daily spending to detect impulsive spikes.',
+        },
+        allocation: {
+          name: 'Budget Allocation',
+          score: 0,
+          maxScore: 15,
+          weightPct: 15,
+          formula: '\\rho_{ess} = E_{ess} / E_{total}',
+          metricValue: 'Awaiting spend mix',
+          status: 'moderate',
+          explanation: 'Tracks essential obligations (groceries, academics, rent) vs discretionary lifestyle spends.',
+        },
+        momentum: {
+          name: 'MoM Momentum',
+          score: 0,
+          maxScore: 15,
+          weightPct: 15,
+          formula: '\\Delta E = (E_m - E_{m-1}) / E_{m-1}',
+          metricValue: 'Baseline pending',
+          status: 'moderate',
+          explanation: 'First discrete derivative of spending trajectory compared to the prior billing cycle.',
+        },
+      },
+      mathematicalFactors: {
+        savingsRate: 0,
+        velocityFactor: 0,
+        coefficientOfVariation: 0,
+        essentialRatio: 0,
+        momDelta: 0,
+      },
+    };
+  }
 
   // Safe denominators
   const effectiveInflow = Math.max(monthlyIncome, budgetAmount, totalSpent, 1);
@@ -243,6 +319,7 @@ export function calculateFinancialHealth(inputs: FinancialHealthInputs): Financi
   const summary = `Calculated with 5 mathematical variables. Score: ${boundedScore}/100 (${tier}). Pacing velocity: ${velocityFactor.toFixed(2)}x, Daily variance CV: ${cv.toFixed(2)}.`;
 
   return {
+    hasData: true,
     score: boundedScore,
     tier,
     grade,

@@ -43,7 +43,14 @@ export const AnimatedSelect = React.forwardRef<HTMLDivElement, AnimatedSelectPro
     }, [isOpen]);
 
     return (
-      <div className={cn('relative w-full', className)} ref={containerRef}>
+      <div
+        className={cn('relative w-full', className)}
+        ref={(node) => {
+          (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref) ref.current = node;
+        }}
+      >
         {label && (
           <label className="text-sm font-medium text-theme-secondary mb-2 block font-body">
             {label}

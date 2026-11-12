@@ -16,7 +16,7 @@ import {
 import { getDoc } from 'firebase/firestore';
 import { budgetDocRef } from '@/lib/firebase/firestore';
 import { calculateFinancialHealth } from '@/lib/algorithms/financialHealth';
-import { FileDown, Calendar, Sparkles } from 'lucide-react';
+import { FileDown } from 'lucide-react';
 
 // Analytics Domain Components
 import { AnalyticsSkeleton } from '@/components/features/analytics/AnalyticsSkeleton';
@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
   }, [householdId, budget]);
 
   // Aggregated Category and Trajectory Calculations
-  const { categoryTotals, totalSpent, pieData, areaData, dailySpendMap } = useMemo(() => {
+  const { totalSpent, pieData, areaData, dailySpendMap } = useMemo(() => {
     let total = 0;
     const totals: Record<string, number> = {};
     const dayMap: Record<string, number> = {};
@@ -202,7 +202,6 @@ export default function AnalyticsPage() {
     });
 
     return {
-      categoryTotals: totals,
       totalSpent: total,
       pieData: pie,
       areaData: area,
@@ -316,22 +315,22 @@ export default function AnalyticsPage() {
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-theme-border/30">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] tracking-widest font-mono font-bold text-theme-accent uppercase px-2.5 py-0.5 rounded-full bg-theme-accent/10 border border-theme-accent/20">
-              Intelligence • {format(new Date(), 'MMMM yyyy')}
+            <span className="text-[11px] font-sans font-semibold tracking-wider text-theme-accent uppercase px-2.5 py-0.5 rounded-md bg-theme-accent/10 border border-theme-accent/20">
+              {format(new Date(), 'MMMM yyyy')}
             </span>
           </div>
           <h1 className="font-sans text-2xl sm:text-3xl font-extrabold text-theme-primary tracking-tight mt-1">
-            Financial Analysis & Cockpit
+            Financial Intelligence
           </h1>
           <p className="text-xs text-theme-secondary mt-0.5">
-            Algorithmic health audit, velocity trajectories & cashflow breakdown
+            Cashflow patterns, category distributions, and monthly health audit
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setShowExportModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-theme-primary text-theme-inverse text-xs font-semibold hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer self-start sm:self-auto"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-theme-primary text-theme-on-primary text-xs font-semibold hover:opacity-90 active:scale-95 transition-all shadow-sm cursor-pointer self-start sm:self-auto"
         >
           <FileDown className="w-4 h-4 stroke-[2.2]" />
           <span>Export Report</span>

@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { getCategories, addCustomCategory, updateCustomCategory, deleteCustomCategory } from '@/lib/categories/index';
+import { getCategories } from '@/lib/categories/index';
 import type { CategoryDocument } from '@/types/firestore';
 import type { AppStore } from './index';
 import { PRESET_CATEGORIES } from '@/config/categories';
@@ -48,9 +48,9 @@ export const createCategoriesSlice: StateCreator<
  false,
  'categories/loadCategories/success'
  );
- } catch (err: any) {
+ } catch (err: unknown) {
  set(
- { categoriesError: err.message, isCategoriesLoading: false },
+ { categoriesError: err instanceof Error ? err.message : 'Failed to load categories', isCategoriesLoading: false },
  false,
  'categories/loadCategories/error'
  );

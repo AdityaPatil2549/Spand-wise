@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useStore } from '@/store';
-import { CalendarClock, Plus, ArrowRight, ChevronDown, RefreshCw, ShieldCheck, Zap, AlertCircle } from 'lucide-react';
+import { Plus, ChevronDown, RefreshCw, ShieldCheck, Zap } from 'lucide-react';
 import { useHydrated } from '@/hooks/useHydrated';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { format } from 'date-fns';
@@ -16,9 +16,16 @@ import { DropdownMenu } from '@/components/ui/DropdownMenu';
 import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 import { SubscriptionListItem } from '@/components/features/scheduled/SubscriptionListItem';
 import { dateToInputValue } from '@/lib/utils/date';
-import { addScheduledTransaction, deleteScheduledTransaction, updateScheduledTransaction } from '@/lib/scheduled';
-import { addExpense } from '@/lib/expenses';
+import {
+  addScheduledTransaction,
+  computeNextDueDate,
+  deleteScheduledTransaction,
+  updateScheduledTransaction,
+} from '@/lib/scheduled';
+import { addExpense, parseExpenseDate } from '@/lib/expenses';
+import { formatCurrency } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
+import type { ScheduledTransactionDocument } from '@/types/firestore';
 
 export default function ScheduledPage() {
   const isHydrated = useHydrated();
@@ -30,6 +37,7 @@ export default function ScheduledPage() {
   const addScheduledOptimistic = useStore(s => s.addScheduledOptimistic);
   const removeScheduledOptimistic = useStore(s => s.removeScheduledOptimistic);
   const addExpenseOptimistic = useStore(s => s.addExpenseOptimistic);
+  const removeExpenseOptimistic = useStore(s => s.removeExpenseOptimistic);
   const addToast = useStore(s => s.addToast);
   
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -97,8 +105,11 @@ export default function ScheduledPage() {
 
   const handleAdd = async () => {
     if (!amount || !categoryId || !user) return;
-    
-    const nextDueDate = Timestamp.fromDate(new Date(startDate));
+    const targetHousehold = householdId || user.uid;
+    const parsedDue = parseExpenseDate(startDate);
+    const nextDueDate = Timestamp.fromDate(parsedDue);
+    const defaultAccount =
+      accounts.find((a) => a.id === 'bank' || a.type === 'bank')?.id || 'bank';
     const tempId = `temp-${Date.now()}`;
     const payload = {
       amount: parseFloat(amount),
@@ -111,7 +122,7 @@ export default function ScheduledPage() {
       nextDueDate,
       isActive: true,
       createdBy: user.uid,
-      accountId: 'bank'
+      accountId: defaultAccount,
     };
 
     addScheduledOptimistic({
@@ -127,17 +138,24 @@ export default function ScheduledPage() {
     setCategoryId('');
     setStartDate(dateToInputValue());
     
-    await addScheduledTransaction(user.uid, payload);
+    const created = await addScheduledTransaction(targetHousehold, payload);
+    removeScheduledOptimistic(tempId);
+    addScheduledOptimistic(created);
   };
 
-  const handleLogPaid = async (subscription: any) => {
+  const handleLogPaid = async (subscription: ScheduledTransactionDocument) => {
     if (!user) return;
+    const targetHousehold = householdId || user.uid;
     const cat = categories.find(c => c.id === subscription.categoryId);
     const catName = cat?.name || 'Subscription';
     const billTitle = subscription.note || catName;
     const now = new Date();
     const month = format(now, 'yyyy-MM');
     const tempId = `temp-sub-paid-${Date.now()}`;
+    const defaultAccount =
+      subscription.accountId ||
+      accounts.find((a) => a.id === 'bank' || a.type === 'bank')?.id ||
+      'bank';
 
     const expensePayload = {
       amount: subscription.amount,
@@ -152,7 +170,8 @@ export default function ScheduledPage() {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       userId: user.uid,
-      householdId: householdId || user.uid,
+      householdId: targetHousehold,
+      accountId: defaultAccount,
     };
 
     addExpenseOptimistic({
@@ -160,36 +179,47 @@ export default function ScheduledPage() {
       id: tempId,
     });
 
-    // If it's a one-time bill/IOU, mark it inactive so it moves to settled
     if (subscription.frequency === 'one-time') {
       removeScheduledOptimistic(subscription.id);
       try {
-        await updateScheduledTransaction(householdId || user.uid, subscription.id, { isActive: false });
+        await updateScheduledTransaction(targetHousehold, subscription.id, { isActive: false });
       } catch (err) {
         console.error('Failed to complete one-time bill:', err);
+      }
+    } else {
+      const advancedDue = Timestamp.fromDate(
+        computeNextDueDate(subscription.nextDueDate.toDate(), subscription.frequency)
+      );
+      try {
+        await updateScheduledTransaction(targetHousehold, subscription.id, { nextDueDate: advancedDue });
+      } catch (err) {
+        console.error('Failed to advance recurring due date:', err);
       }
     }
 
     addToast({
       type: 'success',
-      message: `Marked "${billTitle}" as paid (${CURRENCY_SYMBOL}${subscription.amount})`,
+      message: `Marked "${billTitle}" as paid (${formatCurrency(subscription.amount)})`,
     });
 
     try {
-      const created = await addExpense(householdId || user.uid, user.uid, {
+      const created = await addExpense(targetHousehold, user.uid, {
         amount: subscription.amount,
         categoryId: subscription.categoryId,
         date: now.toISOString(),
         note: `${billTitle} (${subscription.frequency === 'one-time' ? 'Bill Paid' : 'Scheduled'})`,
-        accountId: 'bank',
+        accountId: defaultAccount,
       });
+      removeExpenseOptimistic(tempId);
       addExpenseOptimistic(created);
     } catch (err) {
       console.error(err);
+      removeExpenseOptimistic(tempId);
+      addToast({ type: 'error', message: 'Failed to record bill payment.' });
     }
   };
 
-  const handleDelete = async (subscription: any) => {
+  const handleDelete = async (subscription: ScheduledTransactionDocument) => {
     if (!householdId) return;
     try {
       removeScheduledOptimistic(subscription.id);
@@ -202,23 +232,25 @@ export default function ScheduledPage() {
   };
 
   return (
-    <div className="min-h-screen pb-36 pt-24 animate-fade-in">
+    <div className="pb-32 py-2 animate-fade-in">
       <div className="px-4 md:px-8 max-w-4xl mx-auto">
         
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2 tracking-tight font-display">
-              <RefreshCw className="w-6 h-6 text-indigo-500" />
+            <h1 className="text-2xl font-bold text-theme-primary flex items-center gap-2.5 tracking-tight font-sans">
+              <div className="w-8 h-8 rounded-xl bg-theme-accent/10 flex items-center justify-center text-theme-accent">
+                <RefreshCw className="w-4 h-4 stroke-[2.2]" />
+              </div>
               Commitments & Bills
             </h1>
-            <p className="text-sm text-theme-secondary mt-1">
+            <p className="text-xs text-theme-secondary mt-1">
               Track upcoming friend dues, hostel rent, utilities, and recurring subscriptions.
             </p>
           </div>
           <button 
             type="button"
             onClick={() => setIsAddOpen(true)} 
-            className="px-4 py-2.5 bg-theme-accent hover:bg-theme-accent-hover text-theme-inverse rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 font-bold text-xs cursor-pointer self-start sm:self-auto"
+            className="px-4 py-2.5 bg-theme-accent hover:bg-theme-accent-hover text-theme-on-accent rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 font-bold text-xs cursor-pointer self-start sm:self-auto"
             aria-label="Add Commitment or Bill"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -233,7 +265,7 @@ export default function ScheduledPage() {
             onClick={() => setActiveTab('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -244,7 +276,7 @@ export default function ScheduledPage() {
             onClick={() => setActiveTab('bills')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'bills'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -255,7 +287,7 @@ export default function ScheduledPage() {
             onClick={() => setActiveTab('subscriptions')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === 'subscriptions'
-                ? 'bg-theme-primary text-theme-inverse shadow-xs'
+                ? 'bg-theme-primary text-theme-on-primary shadow-sm'
                 : 'text-theme-secondary hover:text-theme-primary'
             }`}
           >
@@ -310,7 +342,7 @@ export default function ScheduledPage() {
             <div className="pt-3.5 flex flex-wrap items-center justify-between gap-2 text-xs text-theme-secondary">
               <span className="inline-flex items-center gap-1.5 font-medium">
                 <Zap className="w-3.5 h-3.5 text-theme-accent" />
-                Tap the checkmark icon on any bill to instantly log payment to this month's expenses.
+                Tap the checkmark icon on any bill to instantly log payment to this month&apos;s expenses.
               </span>
               <span className="px-2.5 py-1 rounded-full bg-theme-surface border border-theme-border/50 text-theme-tertiary">
                 Swipe left to delete

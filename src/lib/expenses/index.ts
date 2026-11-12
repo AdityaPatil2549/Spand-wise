@@ -15,6 +15,36 @@ import { expensesColRef, expenseDocRef, budgetDocRef } from '@/lib/firebase/fire
 import type { ExpenseDocument } from '@/types/firestore';
 import type { AddExpenseInput, EditExpenseInput } from '@/types/forms';
 import { EXPENSES_PAGE_SIZE } from '@/config/constants';
+import { getLocalMonthString } from '@/lib/date-sharding';
+
+/**
+ * Parses YYYY-MM-DD or YYYY-MM-DDTHH:mm strings as local calendar dates (noon for date-only)
+ * to prevent UTC midnight timezone day-shifts, falling back cleanly for ISO timestamps.
+ */
+export function parseExpenseDate(dateInput: string): Date {
+  const dateOnlyMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateInput);
+  if (dateOnlyMatch) {
+    const [, y, m, d] = dateOnlyMatch;
+    return new Date(Number(y), Number(m) - 1, Number(d), 12, 0, 0, 0);
+  }
+
+  const localDateTimeMatch = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(dateInput);
+  if (localDateTimeMatch) {
+    const [, y, m, d, hh, mm, ss] = localDateTimeMatch;
+    return new Date(
+      Number(y),
+      Number(m) - 1,
+      Number(d),
+      Number(hh),
+      Number(mm),
+      ss ? Number(ss) : 0,
+      0
+    );
+  }
+
+  const parsed = new Date(dateInput);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+}
 
 /**
  * Add a new expense and atomically update the budget total and account balance.
@@ -25,19 +55,21 @@ export const addExpense = async (
   userId: string,
   input: AddExpenseInput
 ): Promise<ExpenseDocument> => {
-  const month = input.date.slice(0, 7); // "YYYY-MM"
+  const parsedDate = parseExpenseDate(input.date);
+  const month = getLocalMonthString(parsedDate);
   const expenseRef = doc(expensesColRef(householdId));
   const budgetRef = budgetDocRef(householdId, month);
   const accountId = input.accountId || 'cash';
   const accountRef = doc(db, 'households', householdId, 'accounts', accountId);
 
   const isIncome = input.type === 'income';
+  const clientNow = Timestamp.now();
 
   const expenseData: Omit<ExpenseDocument, 'id'> = {
     amount: input.amount,
     categoryId: input.categoryId,
     note: input.note?.trim() || null,
-    date: Timestamp.fromDate(new Date(input.date)),
+    date: Timestamp.fromDate(parsedDate),
     month,
     isDeleted: false,
     type: input.type || 'expense',
@@ -60,11 +92,25 @@ export const addExpense = async (
   );
 
   const balanceChange = isIncome ? input.amount : -input.amount;
-  batch.set(accountRef, { balance: increment(balanceChange) }, { merge: true });
+  const accountPatch: Record<string, unknown> = { balance: increment(balanceChange) };
+  if (accountId === 'cash') {
+    accountPatch.id = 'cash';
+    accountPatch.name = 'Cash';
+    accountPatch.type = 'cash';
+  } else if (accountId === 'bank') {
+    accountPatch.id = 'bank';
+    accountPatch.name = 'UPI';
+    accountPatch.type = 'bank';
+  }
+  batch.set(accountRef, accountPatch, { merge: true });
 
   await batch.commit();
 
-  return { ...expenseData, id: expenseRef.id } as ExpenseDocument;
+  return {
+    ...expenseData,
+    id: expenseRef.id,
+    createdAt: clientNow,
+  } as ExpenseDocument;
 };
 
 /**
@@ -79,7 +125,8 @@ export const editExpense = async (
   previousType: 'expense' | 'income' = 'expense',
   previousAccountId: string = 'cash'
 ): Promise<void> => {
-  const newMonth = input.date.slice(0, 7);
+  const parsedDate = parseExpenseDate(input.date);
+  const newMonth = getLocalMonthString(parsedDate);
   const newType = input.type || 'expense';
   const newAccountId = input.accountId || 'cash';
   const expenseRef = expenseDocRef(householdId, input.id);
@@ -89,7 +136,7 @@ export const editExpense = async (
     amount: input.amount,
     categoryId: input.categoryId,
     note: input.note?.trim() || null,
-    date: Timestamp.fromDate(new Date(input.date)),
+    date: Timestamp.fromDate(parsedDate),
     month: newMonth,
     type: newType,
     updatedAt: serverTimestamp(),

@@ -3,20 +3,19 @@
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { isWithinInterval, startOfDay, endOfDay, format } from 'date-fns';
-import { ArrowLeft, LayoutGrid, CalendarIcon, TrendingUp, TrendingDown } from 'lucide-react';
+import { ArrowLeft, CalendarIcon, TrendingUp, TrendingDown } from 'lucide-react';
 
 import { useStore } from '@/store';
 import { useHydrated } from '@/hooks/useHydrated';
-import { CURRENCY_SYMBOL } from '@/config/constants';
+import { formatCurrency } from '@/lib/utils';
 import { ExpenseList } from '@/components/features/expenses/ExpenseList';
-import { Input } from '@/components/ui/Input';
 import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 
 export default function CustomViewPage() {
   const router = useRouter();
   const isHydrated = useHydrated();
   const expenses = useStore(s => s.expenses);
-  const categories = useStore(s => s.categories);
+  const openBottomSheet = useStore(s => s.openBottomSheet);
   
   const [startDate, setStartDate] = useState<string>(
     format(new Date(), 'yyyy-MM-01')
@@ -28,8 +27,8 @@ export default function CustomViewPage() {
   const filteredExpenses = useMemo(() => {
     if (!startDate || !endDate) return [];
     
-    const start = startOfDay(new Date(startDate));
-    const end = endOfDay(new Date(endDate));
+    const start = startOfDay(new Date(`${startDate}T00:00:00`));
+    const end = endOfDay(new Date(`${endDate}T00:00:00`));
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) return [];
 
@@ -39,7 +38,7 @@ export default function CustomViewPage() {
         try {
           const expenseDate = typeof e.date === 'string' ? new Date(e.date) : e.date.toDate();
           return isWithinInterval(expenseDate, { start, end });
-        } catch (err) {
+        } catch {
           return false;
         }
       })
@@ -54,8 +53,11 @@ export default function CustomViewPage() {
     let inc = 0;
     let exp = 0;
     filteredExpenses.forEach(e => {
-      // For now, treat all transactions as expenses
-      exp += e.amount;
+      if (e.type === 'income') {
+        inc += e.amount;
+      } else {
+        exp += e.amount;
+      }
     });
     return { income: inc, expense: exp };
   }, [filteredExpenses]);
@@ -110,8 +112,8 @@ export default function CustomViewPage() {
               <TrendingUp className="w-4 h-4" />
               <span className="text-xs font-semibold uppercase">Income</span>
             </div>
-            <span className="font-bold text-theme-primary">
-              {CURRENCY_SYMBOL} {income.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+            <span className="font-bold text-theme-primary tabular-nums">
+              {formatCurrency(income, income % 1 !== 0)}
             </span>
           </div>
           <div className="bg-theme-surface border border-theme-border rounded-2xl p-3 flex flex-col items-center">
@@ -119,8 +121,8 @@ export default function CustomViewPage() {
               <TrendingDown className="w-4 h-4" />
               <span className="text-xs font-semibold uppercase">Expense</span>
             </div>
-            <span className="font-bold text-theme-primary">
-              {CURRENCY_SYMBOL} {expense.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+            <span className="font-bold text-theme-primary tabular-nums">
+              {formatCurrency(expense, expense % 1 !== 0)}
             </span>
           </div>
         </div>
@@ -137,7 +139,7 @@ export default function CustomViewPage() {
             </p>
           </div>
         ) : (
-          <ExpenseList expenses={filteredExpenses} onEditExpense={() => {}} />
+          <ExpenseList expenses={filteredExpenses} onEditExpense={(exp) => openBottomSheet({ editingExpenseId: exp.id })} />
         )}
       </div>
     </div>

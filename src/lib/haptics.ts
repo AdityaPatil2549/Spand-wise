@@ -7,5 +7,5 @@ export const triggerHaptic = (type: 'light' | 'medium' | 'heavy' | 'warning' = '
       case 'heavy':   navigator.vibrate(30); break;          // Expense log success
       case 'warning': navigator.vibrate([25, 50, 25]); break; // Budget >85% alert
     }
-  } catch (e) { /* Gracefully ignore unsupported desktop browsers */ }
+  } catch { /* Gracefully ignore unsupported desktop browsers */ }
 };

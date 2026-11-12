@@ -1,17 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useStore } from '@/store';
 import { AnimatedNumber } from '@/components/ui/motion/animated-number';
 import { AnimatedGroup } from '@/components/ui/motion/animated-group';
-import { TextEffect } from '@/components/ui/motion/text-effect';
 import { TransactionCard } from '@/components/features/expenses/TransactionCard';
 import { DEFAULT_CATEGORY_ID } from '@/config/categories';
-import { format, isToday, isYesterday, isThisWeek, subMonths, isSameMonth } from 'date-fns';
-import { ExpensesSidebar } from '@/components/layout/ExpensesSidebar';
+import { format, isToday, isYesterday, isThisWeek, subMonths } from 'date-fns';
 import { ScrollProgress } from '@/components/ui/motion/scroll-progress';
-import { InView } from '@/components/ui/motion/in-view';
 import { AnimatedBackground } from '@/components/ui/motion/animated-background';
 import { EditExpenseMorph } from '@/components/features/expenses/EditExpenseMorph';
 import { EmptyMonthState } from '@/components/ui/EmptyMonthState';
@@ -22,27 +18,37 @@ import type { ExpenseDocument } from '@/types/firestore';
 import { CURRENCY_SYMBOL } from '@/config/constants';
 import { Search, TrendingUp } from 'lucide-react';
 
-// Group expenses by date (e.g. "Today, July 14", "Yesterday, July 13", "July 12")
+const safeToDate = (rawDate: unknown): Date => {
+  if (!rawDate) return new Date();
+  if (typeof (rawDate as { toDate?: () => Date }).toDate === 'function') {
+    return (rawDate as { toDate: () => Date }).toDate();
+  }
+  if (rawDate instanceof Date) return rawDate;
+  const parsed = new Date(rawDate as string | number);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
+// Group expenses by date with bulletproof fallback
 const groupExpensesByDate = (expenses: ExpenseDocument[]) => {
- const groups: Record<string, typeof expenses> = {};
- 
- expenses.forEach((exp) => {
- const date = exp.date.toDate();
- let label = '';
- 
- if (isToday(date)) {
- label = `Today, ${format(date, 'MMMM d')}`;
- } else if (isYesterday(date)) {
- label = `Yesterday, ${format(date, 'MMMM d')}`;
- } else {
- label = format(date, 'MMMM d, yyyy');
- }
- 
- if (!groups[label]) groups[label] = [];
- groups[label].push(exp);
- });
- 
- return groups;
+  const groups: Record<string, typeof expenses> = {};
+  
+  expenses.forEach((exp) => {
+    const date = safeToDate(exp.date);
+    let label = '';
+    
+    if (isToday(date)) {
+      label = `Today, ${format(date, 'MMMM d')}`;
+    } else if (isYesterday(date)) {
+      label = `Yesterday, ${format(date, 'MMMM d')}`;
+    } else {
+      label = format(date, 'MMMM d, yyyy');
+    }
+    
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(exp);
+  });
+  
+  return groups;
 };
 
 export default function ExpensesPage() {
@@ -50,21 +56,35 @@ export default function ExpensesPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const { openBottomSheet, expenses, budget, isExpensesLoading, categoriesMap, setSelectedMonth, selectedMonth } = useStore();
  
- const totalSpent = budget?.totalSpent || 0;
+  // Filter out deleted + income entries for expenditure analytics
+  const monthExpenseOnly = useMemo(
+    () =>
+      expenses.filter(
+        (e) =>
+          !e.isDeleted &&
+          e.type !== 'income' &&
+          (!selectedMonth || e.month === selectedMonth)
+      ),
+    [expenses, selectedMonth]
+  );
+
+ const totalSpent = budget?.totalSpent ?? monthExpenseOnly.reduce((sum, e) => sum + e.amount, 0);
  const budgetAmount = budget?.budgetAmount || 0;
  
  const financialSummary = useMemo(() => {
    return calculateFinancialSummary(
-     expenses.map(e => ({ amount: e.amount, date: e.date.toDate() })),
+     monthExpenseOnly.map(e => ({ amount: e.amount, date: safeToDate(e.date) })),
      budgetAmount
    );
- }, [expenses, budgetAmount]);
+ }, [monthExpenseOnly, budgetAmount]);
  
   // Filter expenses locally if needed
   const displayExpenses = useMemo(() => {
-    let filtered = expenses;
+    let filtered = expenses.filter(
+      (e) => !e.isDeleted && (!selectedMonth || e.month === selectedMonth)
+    );
     if (timeFilter === 'This Week') {
-      filtered = filtered.filter(e => isThisWeek(e.date.toDate(), { weekStartsOn: 1 }));
+      filtered = filtered.filter(e => isThisWeek(safeToDate(e.date), { weekStartsOn: 1 }));
     }
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
@@ -75,21 +95,22 @@ export default function ExpensesPage() {
       });
     }
     return filtered;
-  }, [expenses, timeFilter, searchQuery, categoriesMap]);
+  }, [expenses, selectedMonth, timeFilter, searchQuery, categoriesMap]);
 
  // Group the filtered expenses
  const groupedExpenses = useMemo(() => groupExpensesByDate(displayExpenses), [displayExpenses]);
 
- // Calculate top category from displayExpenses
+ // Calculate top category from displayExpenses (expenditure only)
  const topCategory = useMemo(() => {
- if (!displayExpenses.length) return { name: 'None', amount: 0, percent: 0 };
+ const spendItems = displayExpenses.filter((e) => e.type !== 'income');
+ if (!spendItems.length) return { name: 'None', amount: 0, percent: 0 };
  
  const catTotals: Record<string, number> = {};
- displayExpenses.forEach(e => {
+ spendItems.forEach(e => {
  catTotals[e.categoryId] = (catTotals[e.categoryId] || 0) + e.amount;
  });
  
- let topCatId = displayExpenses[0].categoryId;
+ let topCatId = spendItems[0].categoryId;
  let maxAmt = 0;
  
  for (const [id, amt] of Object.entries(catTotals)) {
@@ -100,14 +121,15 @@ export default function ExpensesPage() {
  }
  
  const catInfo = categoriesMap.get(topCatId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
- const percent = totalSpent > 0 ? (maxAmt / totalSpent) * 100 : 0;
+ const denominator = spendItems.reduce((s, e) => s + e.amount, 0) || totalSpent;
+ const percent = denominator > 0 ? (maxAmt / denominator) * 100 : 0;
  
  return {
  name: catInfo?.name || 'Unknown',
  amount: maxAmt,
  percent,
  };
- }, [expenses, totalSpent]);
+ }, [displayExpenses, categoriesMap, totalSpent]);
 
   // Generate last 6 months for the timeline filter
   const recentMonths = useMemo(() => {
@@ -128,16 +150,24 @@ export default function ExpensesPage() {
       <ScrollProgress className="top-0 z-50 bg-theme-accent" />
 
       {/* Main Content Canvas */}
-      <main className="flex-1 w-full pt-12 md:pt-16 px-6 md:px-16 pb-32 md:pb-20 overflow-y-auto">
+      <div className="flex-1 w-full py-2 px-4 sm:px-6 md:px-8 pb-32 overflow-y-auto">
         {/* Page Header & Filters */}
-        <div className="max-w-6xl mx-auto mb-12">
-          <TextEffect as="h1" per="char" preset="fade" className="font-headline text-5xl md:text-6xl text-theme-primary mb-8 uppercase tracking-widest text-center md:text-left">Expenses</TextEffect>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-6">
+        <div className="max-w-6xl mx-auto mb-8">
+          <div className="mb-6">
+            <span className="text-[11px] font-sans font-semibold tracking-wider text-theme-accent uppercase px-2.5 py-0.5 rounded-md bg-theme-accent/10 border border-theme-accent/20">
+              Monthly Ledger
+            </span>
+            <h1 className="font-sans text-2xl sm:text-3xl font-extrabold text-theme-primary tracking-tight mt-1">
+              Budget & Overview
+            </h1>
+            <p className="text-xs text-theme-secondary mt-0.5">
+              Category breakdowns and daily spending pace
+            </p>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pb-4 border-b border-theme-border/30">
             {/* Timeline Filter */}
             <div className="relative w-full md:w-auto">
-              <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-theme-base to-transparent z-10 md:hidden" />
-              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-theme-base to-transparent z-10 md:hidden" />
-              <nav className="flex gap-6 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x px-2">
+              <nav className="flex gap-4 overflow-x-auto w-full md:w-auto hide-scrollbar snap-x">
               {recentMonths.map((m) => {
                 const isActive = selectedMonth === m.value;
                 return (
@@ -147,10 +177,10 @@ export default function ExpensesPage() {
                       setSelectedMonth(m.value);
                       setTimeFilter('All');
                     }}
-                    className={`snap-start whitespace-nowrap pb-2 font-body text-sm uppercase tracking-wide font-semibold transition-colors ${
+                    className={`snap-start whitespace-nowrap pb-2 font-sans text-xs uppercase tracking-wider font-semibold transition-colors cursor-pointer ${
                       isActive 
                         ? 'text-theme-accent border-b-2 border-theme-accent' 
-                        : 'text-theme-tertiary hover:text-theme-primary'
+                        : 'text-theme-secondary hover:text-theme-primary'
                     }`}
                   >
                     {m.label}
@@ -161,41 +191,39 @@ export default function ExpensesPage() {
             </div>
   {/* Search/Category Filter */}
   <div className="relative w-full md:w-72 group">
-  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary group-focus-within:text-theme-accent transition-colors" />
+  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary group-focus-within:text-theme-accent transition-colors" />
   <input 
     value={searchQuery}
     onChange={(e) => setSearchQuery(e.target.value)}
-    className="w-full bg-theme-surface/50 backdrop-blur-md border border-theme-border/60 rounded-full py-2.5 pl-10 pr-4 font-body text-sm text-theme-primary focus:outline-none focus:border-theme-accent focus:ring-1 focus:ring-theme-accent transition-all shadow-sm placeholder:text-theme-tertiary" 
-    placeholder="Search or filter..." 
+    className="w-full bg-theme-surface/70 border border-theme-border/60 rounded-xl py-2 pl-10 pr-4 font-sans text-xs text-theme-primary focus:outline-none focus:border-theme-accent/60 transition-all shadow-sm placeholder:text-theme-tertiary" 
+    placeholder="Search expenses..." 
     type="text" 
   />
   </div>
  </div>
  </div>
 
- {/* Bento Grid Context / Summary (High-End Layout) */}
- <AnimatedGroup preset="scale" className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
- <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
- <div className="absolute -right-10 -top-10 w-32 h-32 bg-theme-accent-light/40 rounded-full blur-3xl group-hover:bg-theme-accent-light/60 transition-all duration-700"></div>
- <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Total Spent</span>
- <span className="font-headline text-5xl text-theme-primary flex items-baseline">
- {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(totalSpent)} /><span className="text-2xl text-theme-tertiary">{(totalSpent % 1 !== 0) ? (totalSpent % 1).toFixed(2).substring(1) : '.00'}</span>
+ {/* Bento Grid Context / Summary */}
+ <AnimatedGroup preset="scale" className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+ <div className="rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+ <span className="font-sans text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Total Spent</span>
+ <span className="font-sans text-3xl sm:text-4xl font-extrabold text-theme-primary flex items-baseline tracking-tight tabular-nums">
+ {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(totalSpent)} /><span className="text-xl text-theme-tertiary">{(totalSpent % 1 !== 0) ? (totalSpent % 1).toFixed(2).substring(1) : '.00'}</span>
  </span>
- <div className="mt-6 flex items-center gap-2 text-sm text-[#8c3c3c]">
- <TrendingUp className="w-4 h-4 stroke-[2]" />
- <span className="font-body flex items-center gap-1">+<AnimatedNumber value={0} />% from last month</span>
+ <div className="mt-4 flex items-center gap-1.5 text-xs text-theme-secondary">
+ <TrendingUp className="w-3.5 h-3.5 stroke-[2] text-theme-accent" />
+ <span>Current billing cycle</span>
  </div>
  </div>
  
- <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
- <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-theme-elevated/40 rounded-full blur-3xl group-hover:bg-theme-elevated/60 transition-all duration-700"></div>
- <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Top Category</span>
- <span className="font-headline text-3xl text-theme-primary mb-1">{topCategory.name}</span>
- <span className="font-body text-lg text-theme-accent flex items-center gap-1">
+ <div className="rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+ <span className="font-sans text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Top Category</span>
+ <span className="font-sans text-2xl font-bold text-theme-primary mb-1 truncate">{topCategory.name}</span>
+ <span className="font-sans text-base font-semibold text-theme-accent flex items-center gap-1 tabular-nums font-mono">
  {CURRENCY_SYMBOL}<AnimatedNumber value={Math.floor(topCategory.amount)} />
  {(topCategory.amount % 1 !== 0) ? (topCategory.amount % 1).toFixed(2).substring(1) : '.00'}
  </span>
- <div className="mt-auto pt-6 flex items-center justify-between">
+ <div className="mt-auto pt-4 flex items-center justify-between">
  <div className="w-full bg-theme-elevated rounded-full h-1.5 overflow-hidden">
  <div className="bg-theme-accent h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, topCategory.percent)}%` }}></div>
  </div>
@@ -203,15 +231,14 @@ export default function ExpensesPage() {
  </div>
  
  {/* Safe-Spend Odometer */}
- <div className="glass-panel hover-elevate rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden group">
- <div className="absolute -left-10 -bottom-10 w-32 h-32 bg-[#10b981]/20 rounded-full blur-3xl group-hover:bg-[#10b981]/40 transition-all duration-700"></div>
- <span className="font-body text-xs text-theme-secondary uppercase tracking-widest mb-4">Safe Daily Spend</span>
- <span className="font-headline text-5xl text-theme-primary flex items-baseline">
+ <div className="rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+ <span className="font-sans text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Safe Daily Spend</span>
+ <span className="font-sans text-3xl sm:text-4xl font-extrabold text-theme-primary flex items-baseline tracking-tight tabular-nums">
  <FormattedCurrency amount={financialSummary.safeDailySpend} />
  </span>
- <div className="mt-auto pt-6 flex items-center justify-between">
- <p className="font-body text-xs text-theme-secondary">
- Recommended daily limit to stay under budget by end of month.
+ <div className="mt-auto pt-4 flex items-center justify-between">
+ <p className="font-sans text-xs text-theme-secondary">
+ Safe daily pacing to remain within limits.
  </p>
  </div>
  </div>
@@ -264,7 +291,10 @@ export default function ExpensesPage() {
           ) : (
             <div className="space-y-6">
               {Object.entries(groupedExpenses).map(([dateLabel, dayExpenses]) => {
-                const dayTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+                const dayTotal = dayExpenses.reduce(
+                  (sum, e) => (e.type === 'income' ? sum : sum + e.amount),
+                  0
+                );
                 return (
                   <div key={dateLabel} className="space-y-2">
                     <div className="flex items-center justify-between px-1.5">
@@ -274,7 +304,7 @@ export default function ExpensesPage() {
                       </span>
                     </div>
 
-                    <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-xs overflow-hidden divide-y divide-theme-border/25 shadow-xs">
+                    <div className="rounded-2xl border border-theme-border/40 bg-theme-surface/70 backdrop-blur-sm overflow-hidden divide-y divide-theme-border/25 shadow-sm">
                       {dayExpenses.map((expense) => {
                         const cat = categoriesMap.get(expense.categoryId) || categoriesMap.get(DEFAULT_CATEGORY_ID);
                         return (
@@ -299,7 +329,7 @@ export default function ExpensesPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
