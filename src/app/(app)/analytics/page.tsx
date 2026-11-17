@@ -149,14 +149,30 @@ export default function AnalyticsPage() {
     };
   }, [householdId, budget]);
 
+  // Scoped Current Month Expenses
+  const now = useMemo(() => new Date(), []);
+  const currentMonthPrefix = useMemo(() => format(now, 'yyyy-MM'), [now]);
+
+  const currentMonthExpenses = useMemo(() => {
+    return expenses.filter((e) => {
+      if (e.isDeleted) return false;
+      if (e.month) return e.month === currentMonthPrefix;
+      try {
+        return format(e.date.toDate(), 'yyyy-MM') === currentMonthPrefix;
+      } catch {
+        return false;
+      }
+    });
+  }, [expenses, currentMonthPrefix]);
+
   // Aggregated Category and Trajectory Calculations
   const { totalSpent, pieData, areaData, dailySpendMap } = useMemo(() => {
     let total = 0;
     const totals: Record<string, number> = {};
     const dayMap: Record<string, number> = {};
 
-    expenses.forEach((expense) => {
-      if (expense.type !== 'income' && !expense.isDeleted) {
+    currentMonthExpenses.forEach((expense) => {
+      if (expense.type !== 'income') {
         total += expense.amount;
         totals[expense.categoryId] = (totals[expense.categoryId] || 0) + expense.amount;
 
@@ -175,7 +191,6 @@ export default function AnalyticsPage() {
       }))
       .sort((a, b) => b.value - a.value);
 
-    const now = new Date();
     const start = startOfMonth(now);
     const end = endOfMonth(now);
     const days = eachDayOfInterval({ start, end });
@@ -207,7 +222,7 @@ export default function AnalyticsPage() {
       areaData: area,
       dailySpendMap: dayMap,
     };
-  }, [expenses, categoriesMap]);
+  }, [currentMonthExpenses, categoriesMap, now]);
 
   // Dynamic Savings & Velocity Calculations
   const savingsThisMonth = useMemo(() => {
@@ -225,8 +240,8 @@ export default function AnalyticsPage() {
     const totals = [0, 0, 0, 0, 0, 0, 0];
     const counts = [0, 0, 0, 0, 0, 0, 0];
 
-    expenses.forEach((e) => {
-      if (e.type !== 'income' && !e.isDeleted) {
+    currentMonthExpenses.forEach((e) => {
+      if (e.type !== 'income') {
         try {
           const dayIdx = getDay(e.date.toDate());
           totals[dayIdx] += e.amount;
@@ -256,7 +271,7 @@ export default function AnalyticsPage() {
       peakDay: maxSpend > 0 ? days[peakIdx] : 'None',
       peakAmount: maxSpend,
     };
-  }, [expenses]);
+  }, [currentMonthExpenses]);
 
   // Daily Spending Velocity & Projections
   const velocityStats = useMemo(() => {
@@ -370,13 +385,13 @@ export default function AnalyticsPage() {
       <WaterfallMoneyFlow
         income={savingsThisMonth.monthlyIncome}
         budgetAmount={budget?.budgetAmount || 0}
-        expenses={expenses}
+        expenses={currentMonthExpenses}
         categoriesMap={categoriesMap}
       />
 
       {/* Domain Row 4: Recurring vs Variable Split */}
       <RecurringVsVariableSplit
-        expenses={expenses}
+        expenses={currentMonthExpenses}
         categoriesMap={categoriesMap}
       />
 

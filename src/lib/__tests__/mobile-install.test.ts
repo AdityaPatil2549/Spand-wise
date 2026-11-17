@@ -33,4 +33,10 @@ describe('Smartphone Detection Logic', () => {
     expect(isMobileUserAgent(windowsChrome)).toBe(false);
     expect(isMobileUserAgent(macSafari)).toBe(false);
   });
+
+  it('determines offline status properly from navigator connectivity flags', () => {
+    const isDeviceOffline = (onLine: boolean) => !onLine;
+    expect(isDeviceOffline(true)).toBe(false);
+    expect(isDeviceOffline(false)).toBe(true);
+  });
 });

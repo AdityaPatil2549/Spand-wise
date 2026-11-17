@@ -42,10 +42,13 @@ export default function SplitBillsPage() {
         loadedGroups = true;
         finishIfReady();
       },
-      () => {
+      (err) => {
         loadedGroups = true;
         finishIfReady();
-        addToast({ type: 'error', message: 'Failed to sync split groups.' });
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          console.warn('[Split] Failed to sync split groups:', err);
+          addToast({ type: 'error', message: 'Failed to sync split groups.' });
+        }
       }
     );
 
@@ -56,10 +59,13 @@ export default function SplitBillsPage() {
         loadedExpenses = true;
         finishIfReady();
       },
-      () => {
+      (err) => {
         loadedExpenses = true;
         finishIfReady();
-        addToast({ type: 'error', message: 'Failed to sync shared bills.' });
+        if (typeof navigator !== 'undefined' && navigator.onLine) {
+          console.warn('[Split] Failed to sync shared bills:', err);
+          addToast({ type: 'error', message: 'Failed to sync shared bills.' });
+        }
       }
     );
 

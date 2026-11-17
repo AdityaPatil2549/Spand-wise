@@ -135,16 +135,37 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
     accounts[0]?.id ||
     'cash';
 
-  const accountOptions =
-    accounts.length > 0
-      ? accounts.map((a) => ({
-          label: a.name || (a.type === 'bank' ? 'UPI' : 'Cash'),
+  const accountOptions = useMemo(() => {
+    if (!accounts.length) {
+      return [
+        { label: 'Cash', value: 'cash' },
+        { label: 'UPI', value: 'bank' },
+      ];
+    }
+    const labelCounts = new Map<string, number>();
+    accounts.forEach((a) => {
+      const lbl = a.name || (a.type === 'bank' ? 'UPI' : 'Cash');
+      labelCounts.set(lbl, (labelCounts.get(lbl) || 0) + 1);
+    });
+
+    const seenLabels = new Map<string, number>();
+    return accounts.map((a) => {
+      const baseLabel = a.name || (a.type === 'bank' ? 'UPI' : 'Cash');
+      const count = labelCounts.get(baseLabel) || 0;
+      if (count > 1) {
+        const index = (seenLabels.get(baseLabel) || 0) + 1;
+        seenLabels.set(baseLabel, index);
+        return {
+          label: `${baseLabel} (${a.type === 'bank' ? 'Account ' + index : a.id === 'cash' ? 'Primary' : 'Wallet ' + index})`,
           value: a.id,
-        }))
-      : [
-          { label: 'Cash', value: 'cash' },
-          { label: 'UPI', value: 'bank' },
-        ];
+        };
+      }
+      return {
+        label: baseLabel,
+        value: a.id,
+      };
+    });
+  }, [accounts]);
 
   const {
     register,
@@ -573,53 +594,55 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
           />
         </div>
 
-        {/* Inline Operator Bar + Quick Chips */}
-        <div className="flex items-center justify-between gap-2 mt-2 flex-wrap">
-          <div className="flex items-center gap-1">
-            {[
-              { label: '+', token: '+' },
-              { label: '-', token: '-' },
-              { label: '×', token: '*' },
-              { label: '÷', token: '/' },
-              { label: '=', token: '=' },
-              { label: '⌫', token: '⌫' },
-              { label: 'C', token: 'C' },
-            ].map((op) => (
-              <button
-                key={op.label}
-                type="button"
-                onClick={() => handleCalcTap(op.token)}
-                className={`min-w-[30px] h-7 px-2 rounded-lg text-xs font-mono font-bold border transition-all active:scale-95 ${
-                  op.token === '='
-                    ? 'bg-theme-accent text-theme-on-accent border-theme-accent'
-                    : op.token === 'C'
-                    ? 'bg-theme-danger/10 text-theme-danger border-theme-danger/30'
-                    : 'bg-theme-surface hover:bg-theme-elevated text-theme-primary border-theme-border'
-                }`}
-                aria-label={`Calculator ${op.label}`}
-              >
-                {op.label}
-              </button>
-            ))}
-          </div>
+        {/* Inline Operator Bar + Quick Chips (Hidden when full 4x4 keypad is expanded) */}
+        {!showCalcPad && (
+          <div className="flex items-center justify-between gap-2 mt-2 flex-wrap animate-in fade-in duration-150">
+            <div className="flex items-center gap-1">
+              {[
+                { label: '+', token: '+' },
+                { label: '-', token: '-' },
+                { label: '×', token: '*' },
+                { label: '÷', token: '/' },
+                { label: '=', token: '=' },
+                { label: '⌫', token: '⌫' },
+                { label: 'C', token: 'C' },
+              ].map((op) => (
+                <button
+                  key={op.label}
+                  type="button"
+                  onClick={() => handleCalcTap(op.token)}
+                  className={`min-w-[30px] h-7 px-2 rounded-lg text-xs font-mono font-bold border transition-all active:scale-95 ${
+                    op.token === '='
+                      ? 'bg-theme-accent text-theme-on-accent border-theme-accent'
+                      : op.token === 'C'
+                      ? 'bg-theme-danger/10 text-theme-danger border-theme-danger/30'
+                      : 'bg-theme-surface hover:bg-theme-elevated text-theme-primary border-theme-border'
+                  }`}
+                  aria-label={`Calculator ${op.label}`}
+                >
+                  {op.label}
+                </button>
+              ))}
+            </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {[50, 100, 500].map((amt) => (
-              <button
-                key={amt}
-                type="button"
-                onClick={() => {
-                  const baseVal = evaluatedExpr ?? 0;
-                  syncExpression(String(baseVal + amt));
-                  haptic.light();
-                }}
-                className="px-2 py-1 rounded-lg bg-theme-surface hover:bg-theme-elevated border border-theme-border text-[11px] font-bold text-theme-primary tabular-nums active:scale-95 transition-all"
-              >
-                +₹{amt}
-              </button>
-            ))}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {[50, 100, 500].map((amt) => (
+                <button
+                  key={amt}
+                  type="button"
+                  onClick={() => {
+                    const baseVal = evaluatedExpr ?? 0;
+                    syncExpression(String(baseVal + amt));
+                    haptic.light();
+                  }}
+                  className="px-2 py-1 rounded-lg bg-theme-surface hover:bg-theme-elevated border border-theme-border text-[11px] font-bold text-theme-primary tabular-nums active:scale-95 transition-all"
+                >
+                  +₹{amt}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Expandable 4x4 Thumb-Zone Numpad */}
         {showCalcPad && (
