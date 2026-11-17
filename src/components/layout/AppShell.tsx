@@ -19,7 +19,7 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
-import { PWAInstallPrompt } from '@/components/shared/PWAInstallPrompt';
+import { AppDownloadSheet } from '@/components/shared/AppDownloadSheet';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
 import { DynamicBackground } from '@/components/ui/motion/DynamicBackground';
 import { ExpenseItemSkeleton, BudgetHeroSkeleton } from '@/components/ui/Skeleton';
@@ -110,7 +110,7 @@ export const AppShell = ({ children }: AppShellProps) => {
 
         {/* Global Floating Elements */}
         <BottomNav />
-        <PWAInstallPrompt />
+        <AppDownloadSheet />
         <OfflineIndicator />
       </div>
 

@@ -19,8 +19,10 @@ import {
   Check, 
   X, 
   TrendingDown, 
-  ArrowRight 
+  ArrowRight,
+  Download 
 } from 'lucide-react';
+import { useMobileInstall } from '@/hooks/useMobileInstall';
 import { differenceInCalendarDays, getDaysInMonth, getDate } from 'date-fns';
 import { formatCurrency } from '@/lib/utils';
 import { addExpense } from '@/lib/expenses';
@@ -55,6 +57,7 @@ export function TopAppBar() {
   const profileRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const { isStandalone, openDownloadSheet } = useMobileInstall();
 
   useEffect(() => {
     try {
@@ -297,7 +300,21 @@ export function TopAppBar() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+      <div className="flex items-center gap-2.5 sm:gap-4 md:gap-5">
+        {/* Mobile Smartphone App Download Pill (Hidden on desktop & standalone) */}
+        {!isStandalone && (
+          <button
+            type="button"
+            onClick={openDownloadSheet}
+            className="md:hidden inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-theme-accent/15 hover:bg-theme-accent/25 text-theme-accent border border-theme-accent/30 text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
+            aria-label="Download Smartphone App"
+            title="Download SpendWise App"
+          >
+            <Download className="w-3.5 h-3.5 stroke-[2.4]" />
+            <span>App</span>
+          </button>
+        )}
+
         {/* Notifications Center */}
         <div className="relative" ref={notificationsRef}>
           <button 

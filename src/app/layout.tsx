@@ -37,8 +37,20 @@ export const metadata: Metadata = {
   },
   description:
     'Track your daily college spends in 3 seconds. See your remaining budget instantly. No bank linking required.',
-  keywords: ['expense tracker', 'student budget', 'college expenses', 'spending tracker'],
+  keywords: ['expense tracker', 'student budget', 'college expenses', 'spending tracker', 'pwa', 'offline app'],
   authors: [{ name: 'SpendWise' }],
+  manifest: '/manifest.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+      { url: '/web-app-manifest-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/web-app-manifest-512x512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

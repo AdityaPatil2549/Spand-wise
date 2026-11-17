@@ -14,11 +14,13 @@ import {
   ArrowRight,
   Sparkles,
   Target,
-  Users
+  Users,
+  Smartphone
 } from 'lucide-react';
 import { TextEffect } from '@/components/ui/motion/text-effect';
 import { useStore } from '@/store';
-import { CURRENCY_SYMBOL } from '@/config/constants';
+import { formatCurrency } from '@/lib/utils';
+import { useMobileInstall } from '@/hooks/useMobileInstall';
 
 interface ToolCardProps {
   title: string;
@@ -81,6 +83,7 @@ export default function MoreToolsPage() {
   const accounts = useStore((s) => s.accounts);
   const budget = useStore((s) => s.budget);
   const goals = useStore((s) => s.goals);
+  const { isStandalone, openDownloadSheet } = useMobileInstall();
   const totalBalance = accounts.reduce((acc, a) => acc + (a.balance || 0), 0);
 
   const PRIMARY_TOOLS: ToolCardProps[] = [
@@ -92,7 +95,7 @@ export default function MoreToolsPage() {
       badge: 'Cumulative',
       iconColor: 'text-emerald-500',
       iconBg: 'bg-emerald-500/10',
-      stat: `${CURRENCY_SYMBOL}${totalBalance.toFixed(2)} Total Reserve`
+      stat: `${formatCurrency(totalBalance)} Total Reserve`
     },
     {
       title: 'Savings Goals',
@@ -139,7 +142,7 @@ export default function MoreToolsPage() {
       badge: 'Cap Control',
       iconColor: 'text-rose-500',
       iconBg: 'bg-rose-500/10',
-      stat: `${CURRENCY_SYMBOL}${budget?.budgetAmount || 0} Total Budget`
+      stat: `${formatCurrency(budget?.budgetAmount || 0)} Total Budget`
     }
   ];
 
@@ -193,6 +196,39 @@ export default function MoreToolsPage() {
             Manage wallets, roommate bill splits, savings goals, recurring subscriptions, and appearance settings.
           </TextEffect>
         </div>
+
+        {/* Smartphone-Only App Download / Offline Access Spotlight */}
+        {!isStandalone && (
+          <div className="mb-6 glass-panel p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-theme-accent/15 via-theme-surface to-theme-base border border-theme-accent/40 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-12 h-12 rounded-2xl bg-theme-accent text-theme-on-accent flex items-center justify-center shrink-0 shadow-md">
+                <Download className="w-6 h-6 stroke-[2.4]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-headline font-bold text-base text-theme-primary">
+                    Install SpendWise on Phone
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-theme-positive/15 text-theme-positive border border-theme-positive/20">
+                    100% Offline
+                  </span>
+                </div>
+                <p className="text-xs text-theme-secondary mt-0.5 max-w-xl">
+                  Download SpendWise directly onto your smartphone home screen. Track spends in Airplane Mode with zero latency and automatic cloud sync.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={openDownloadSheet}
+              className="px-4 py-2.5 rounded-xl bg-theme-accent hover:bg-theme-accent-hover text-theme-on-accent text-xs font-bold shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer shrink-0 self-stretch sm:self-auto justify-center"
+            >
+              <Smartphone className="w-4 h-4 stroke-[2.2]" />
+              <span>Download App</span>
+            </button>
+          </div>
+        )}
 
         <section className="mb-8">
           <h2 className="text-xs font-bold text-theme-tertiary uppercase tracking-wider mb-3 px-1">
