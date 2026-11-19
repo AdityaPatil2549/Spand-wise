@@ -279,6 +279,35 @@
   - `src/store/goals.slice.ts`: Added guest financial goals mock data.
   - `MASTER_PRODUCTION_AUDIT.md`: Authored authoritative 8-persona master production audit document.
 
+---
+
+## Phases 6, 8 & Accessibility Hardening: Quick Add Modal Ergonomics, 1-Tap UPI Copy & Form Standards — COMPLETE
+- **Timestamp:** `2026-11-20 02:38 IST`
+- **Work Domain:** `Form Accessibility (WCAG 2.1) / Mobile Ergonomics / Splitwise UPI Copy / Modal Viewport Polish`
+- **Context & Motivation:** Resolving remaining master production audit findings from Chrome DevTools: missing form labels, mobile viewport button cutoff in the Quick Add modal, and missing 1-tap copy for roommate UPI handles in `/split`.
+- **Architectural & UX Upgrades Executed:**
+  - **1. Quick Add Modal Sticky Thumb Zone:** Converted the primary submit button in [`ExpenseForm.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/expenses/ExpenseForm.tsx) to a sticky bottom dock with blurred glass surface (`sticky bottom-0 z-20 bg-theme-surface/95 backdrop-blur-md`). Ensures "Save Expense" is permanently pinned in the thumb zone on all mobile viewports even when the 16-category grid expands.
+  - **2. Full Modal & Scanner Accessibility Compliance:**
+    - In `ExpenseForm.tsx`, added explicit `id="expense-amount-input"` and `name="expressionAmount"` with `<label htmlFor="expense-amount-input">`.
+    - In `ExpenseForm.tsx`, added `htmlFor="sms-paste-input"`, `id="sms-paste-input"`, `name="smsPasteText"`, and `aria-label="Paste bank or GPay PhonePe SMS alert"`.
+    - In `ReceiptScanner.tsx`, added `id="receipt-file-input"`, `name="receiptImage"`, `aria-label="Upload or scan receipt photo"`, and matching `<label htmlFor="receipt-file-input">`.
+  - **3. 1-Tap Roommate UPI ID Copy in `/split`:**
+    - In [`SplitLedgerPanel.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/splits/SplitLedgerPanel.tsx), added a dedicated tactile 1-tap `Copy` button next to the mobile `Pay UPI` button. Copies the debtor/creditor's VPA handle (`rohan@paytm`) to the clipboard with an instant confirmation toast (`Copied <Name>'s UPI ID: <id>`).
+  - **4. Complete `/split` Form Accessibility Cleanup:**
+    - Added explicit `id`s, `name`s, and `<label htmlFor="...">` attributes across all 4 form controls in the shared expense panel (`#split-expense-desc`, `#split-expense-total`, `#split-expense-paid-by`, `#split-deduct-personal-share`, `#split-personal-account-select`), reducing DevTools form issues to **0**.
+  - **5. Onboarding Scrubber Accessible ID:**
+    - In [`onboarding/page.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/app/(auth)/onboarding/page.tsx), added `id="onboarding-budget-slider"`, `name="budgetSlider"`, and matching `<label htmlFor="onboarding-budget-slider">`.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **6 test files / 25 tests passed (100%)**.
+  - Chrome DevTools Telemetry: Form field issues eradicated; 0 console errors on `/dashboard` and `/split`.
+- **Files Changed:**
+  - `src/components/features/expenses/ExpenseForm.tsx`: Added form ids, names, labels, and mobile sticky submit bar.
+  - `src/components/features/expenses/ReceiptScanner.tsx`: Added receipt file input label and attributes.
+  - `src/components/features/splits/SplitLedgerPanel.tsx`: Added UPI copy button with toast feedback and accessible form controls.
+  - `src/app/(auth)/onboarding/page.tsx`: Added accessible slider attributes and label.
+
+
 
 
 

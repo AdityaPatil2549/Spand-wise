@@ -199,12 +199,18 @@ export const ReceiptScanner = ({ onScanComplete }: ReceiptScannerProps) => {
 
   return (
     <>
+      <label htmlFor="receipt-file-input" className="sr-only">
+        Upload or scan receipt photo
+      </label>
       <input
+        id="receipt-file-input"
+        name="receiptImage"
         type="file"
         accept="image/*"
         capture="environment"
         ref={fileInputRef}
         onChange={handleFileChange}
+        aria-label="Upload or scan receipt photo"
         className="hidden"
       />
       <button

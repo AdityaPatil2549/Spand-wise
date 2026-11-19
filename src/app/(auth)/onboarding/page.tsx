@@ -195,7 +195,12 @@ export default function OnboardingPage() {
 
             {/* Subtle Range Scrubber */}
             <div className="pt-0.5">
+              <label htmlFor="onboarding-budget-slider" className="sr-only">
+                Monthly allowance scrubber
+              </label>
               <input
+                id="onboarding-budget-slider"
+                name="budgetSlider"
                 type="range"
                 min={1000}
                 max={20000}

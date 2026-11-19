@@ -142,6 +142,16 @@ export function SplitLedgerPanel({ mode, groups, expenses, isLoading }: SplitLed
       : computeRawDebts(groupExpenses, memberNamesMap);
   }, [activeGroup, netBalances, groupExpenses, memberNamesMap]);
 
+  const handleCopyUpi = (upiId: string, name: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(upiId).then(() => {
+        addToast({ type: 'success', message: `Copied ${name}'s UPI ID: ${upiId}` });
+      }).catch(() => {
+        addToast({ type: 'error', message: 'Failed to copy UPI ID' });
+      });
+    }
+  };
+
   const totalPaiseInput = toPaise(parseFloat(amountStr) || 0);
   const activeMemberIds = useMemo(
     () => (activeGroup ? activeGroup.members.map((m) => m.id) : []),
@@ -672,28 +682,34 @@ export function SplitLedgerPanel({ mode, groups, expenses, isLoading }: SplitLed
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="text-[11px] font-semibold text-theme-secondary block mb-1">
+                  <label htmlFor="split-expense-desc" className="text-[11px] font-semibold text-theme-secondary block mb-1">
                     Description
                   </label>
                   <input
+                    id="split-expense-desc"
+                    name="splitDescription"
                     type="text"
                     value={desc}
                     onChange={(e) => setDesc(e.target.value)}
                     placeholder="e.g. Groceries, Electricity, Dinner"
+                    aria-label="Split expense description"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-theme-surface border border-theme-border text-sm text-theme-primary outline-none focus:border-theme-accent"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-theme-secondary block mb-1">
+                  <label htmlFor="split-expense-total" className="text-[11px] font-semibold text-theme-secondary block mb-1">
                     Total ({CURRENCY_SYMBOL})
                   </label>
                   <input
+                    id="split-expense-total"
+                    name="splitTotalAmount"
                     type="number"
                     min="0"
                     step="0.01"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
                     placeholder="0"
+                    aria-label={`Split total amount in ${CURRENCY_SYMBOL}`}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-theme-surface border border-theme-border text-sm font-mono font-bold text-theme-primary outline-none focus:border-theme-accent"
                   />
                 </div>
@@ -701,10 +717,13 @@ export function SplitLedgerPanel({ mode, groups, expenses, isLoading }: SplitLed
 
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-theme-secondary">Paid by:</span>
+                  <label htmlFor="split-expense-paid-by" className="text-xs font-semibold text-theme-secondary">Paid by:</label>
                   <select
+                    id="split-expense-paid-by"
+                    name="paidByMember"
                     value={paidById}
                     onChange={(e) => setPaidById(e.target.value)}
+                    aria-label="Select member who paid"
                     className="px-3 py-1.5 rounded-xl bg-theme-surface border border-theme-border text-xs font-semibold text-theme-primary outline-none focus:border-theme-accent"
                   >
                     {activeGroup.members.map((m) => (
@@ -759,19 +778,25 @@ export function SplitLedgerPanel({ mode, groups, expenses, isLoading }: SplitLed
 
               {/* Optional deduct personal budget share */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-theme-border">
-                <label className="inline-flex items-center gap-2 text-xs text-theme-secondary cursor-pointer select-none">
+                <label htmlFor="split-deduct-personal-share" className="inline-flex items-center gap-2 text-xs text-theme-secondary cursor-pointer select-none">
                   <input
+                    id="split-deduct-personal-share"
+                    name="logPersonalShare"
                     type="checkbox"
                     checked={logPersonalShare}
                     onChange={(e) => setLogPersonalShare(e.target.checked)}
+                    aria-label="Also deduct my share from SpendWise wallet"
                     className="rounded border-theme-border accent-[rgb(var(--theme-accent))]"
                   />
                   <span>Also deduct my share from SpendWise wallet:</span>
                 </label>
                 {logPersonalShare && (
                   <select
+                    id="split-personal-account-select"
+                    name="personalAccountId"
                     value={personalAccountId}
                     onChange={(e) => setPersonalAccountId(e.target.value)}
+                    aria-label="Select wallet to deduct share from"
                     className="px-2.5 py-1 rounded-lg bg-theme-surface border border-theme-border text-xs font-semibold text-theme-primary"
                   >
                     {(accounts.length > 0
@@ -946,13 +971,26 @@ export function SplitLedgerPanel({ mode, groups, expenses, isLoading }: SplitLed
                               <span>Settle Up</span>
                             </button>
                             {upiHref ? (
-                              <a
-                                href={upiHref}
-                                className="px-3.5 py-2 rounded-xl bg-theme-base border border-theme-border text-theme-primary font-semibold text-xs inline-flex items-center gap-1.5 hover:border-theme-accent"
-                              >
-                                <Smartphone className="w-3.5 h-3.5 text-theme-accent" />
-                                <span>Pay UPI</span>
-                              </a>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <a
+                                  href={upiHref}
+                                  className="px-3.5 py-2 rounded-xl bg-theme-base border border-theme-border text-theme-primary font-semibold text-xs inline-flex items-center gap-1.5 hover:border-theme-accent active:scale-95 transition-all"
+                                >
+                                  <Smartphone className="w-3.5 h-3.5 text-theme-accent" />
+                                  <span>Pay UPI</span>
+                                </a>
+                                {memberUpiMap[t.toId] && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyUpi(memberUpiMap[t.toId]!, t.toName)}
+                                    title={`Copy UPI: ${memberUpiMap[t.toId]}`}
+                                    aria-label={`Copy ${t.toName}'s UPI ID`}
+                                    className="p-2 rounded-xl bg-theme-base border border-theme-border text-theme-secondary hover:text-theme-primary hover:border-theme-accent active:scale-95 transition-all"
+                                  >
+                                    <Copy className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
                             ) : (
                               <span
                                 className="px-3 py-2 rounded-xl bg-theme-base border border-theme-border text-[11px] text-theme-tertiary"

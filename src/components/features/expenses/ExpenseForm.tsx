@@ -551,10 +551,15 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
 
         <div className="flex gap-2.5 items-center">
           <div className="relative flex-1 flex items-center">
+            <label htmlFor="expense-amount-input" className="sr-only">
+              Expense Amount or Math Expression
+            </label>
             <span className="absolute left-4 text-theme-secondary font-bold text-xl pointer-events-none select-none">
               {CURRENCY_SYMBOL}
             </span>
             <input
+              id="expense-amount-input"
+              name="expressionAmount"
               type="text"
               inputMode="decimal"
               value={formatExpressionDisplay(expr)}
@@ -693,15 +698,18 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
         {/* Expandable UPI / Bank SMS Paste Parser */}
         {showSmsBox && (
           <div className="mt-2.5 p-3 rounded-2xl bg-theme-surface border border-theme-accent/30 space-y-2 animate-in fade-in duration-150">
-            <label className="text-[11px] font-semibold text-theme-secondary block">
+            <label htmlFor="sms-paste-input" className="text-[11px] font-semibold text-theme-secondary block">
               Paste UPI / Bank SMS alert (e.g. &ldquo;Paid Rs. 240 to Swiggy via UPI&rdquo;)
             </label>
             <div className="flex gap-2">
               <input
+                id="sms-paste-input"
+                name="smsPasteText"
                 type="text"
                 value={smsText}
                 onChange={(e) => setSmsText(e.target.value)}
                 placeholder="Paste bank or GPay/PhonePe SMS..."
+                aria-label="Paste bank or GPay PhonePe SMS alert"
                 className="flex-1 px-3 py-2 rounded-xl bg-theme-base border border-theme-border text-xs text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:border-theme-accent"
               />
               <Button type="button" variant="primary" size="sm" onClick={handleParseSms}>
@@ -820,7 +828,7 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       </div>
 
       {/* Sticky Submit / Actions */}
-      <div className="flex gap-3 pt-1">
+      <div className="sticky bottom-0 z-20 flex gap-3 pt-3 pb-1 mt-2 bg-theme-surface/95 backdrop-blur-md border-t border-theme-border/30 -mx-1 px-1 sm:static sm:bg-transparent sm:backdrop-blur-none sm:border-0 sm:p-0 sm:m-0">
         <Button
           type="submit"
           variant="primary"
