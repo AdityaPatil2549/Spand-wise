@@ -12,7 +12,7 @@ export const useAccountsLoader = (householdId: string | null) => {
   const loadAccounts = useStore((s) => s.loadAccounts);
 
   useEffect(() => {
-    if (householdId) {
+    if (householdId && householdId !== 'guest_demo_household') {
       loadAccounts(householdId);
     }
   }, [householdId, loadAccounts]);

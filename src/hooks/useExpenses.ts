@@ -25,6 +25,12 @@ export const useExpensesListener = (householdId: string | null, months: string[]
       return;
     }
 
+    if (householdId === 'guest_demo_household') {
+      // In guest demo mode, keep seeded demo expenses without hitting Firestore
+      setExpensesLoading(false);
+      return;
+    }
+
     setExpensesLoading(true);
 
     // 1. Kill orphaned listeners before spawning a new connection

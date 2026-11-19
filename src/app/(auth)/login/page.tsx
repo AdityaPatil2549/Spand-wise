@@ -29,6 +29,7 @@ import { signInWithGoogle, signInWithEmail, signUpWithEmail, sendPasswordReset }
 import { useStore } from '@/store';
 import { APP_NAME } from '@/config/constants';
 import { isLightTheme } from '@/lib/themes/catalog';
+import { activateGuestDemo } from '@/lib/demo/guestData';
 
 interface Roommate {
   id: number;
@@ -44,6 +45,7 @@ export default function LoginPage() {
   const addToast = useStore((s) => s.addToast);
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'auth' | 'demo'>('auth');
 
   useEffect(() => {
     setMounted(true);
@@ -267,6 +269,12 @@ export default function LoginPage() {
     }
   };
 
+  const handleExploreGuestDemo = () => {
+    activateGuestDemo(useStore.getState());
+    addToast({ type: 'success', message: 'Loaded Alex Sharma’s Campus Demo Sandbox!' });
+    router.push('/dashboard');
+  };
+
   const inputStyle = isDark ? {
     WebkitBoxShadow: '0 0 0 1000px #090d16 inset',
     WebkitTextFillColor: '#f8fafc',
@@ -329,14 +337,14 @@ export default function LoginPage() {
       <header className="w-full pt-3 px-4 sm:px-6 lg:px-8 relative z-30 shrink-0">
         <div className={`max-w-6xl mx-auto rounded-full px-4 sm:px-5 py-2 backdrop-blur-xl border transition-all duration-300 flex items-center justify-between shadow-sm ${
           isDark 
-            ? 'bg-stone-900/40 border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' 
+            ? 'bg-zinc-900/40 border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.5)]' 
             : 'bg-white/70 border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.04)]'
         }`}>
           {/* Brand Logo & Live Status Pill */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-[1px] shadow-sm flex items-center justify-center">
-                <div className={`w-full h-full rounded-[11px] flex items-center justify-center ${isDark ? 'bg-stone-950' : 'bg-white'}`}>
+                <div className={`w-full h-full rounded-[11px] flex items-center justify-center ${isDark ? 'bg-zinc-950' : 'bg-white'}`}>
                   <span className="text-emerald-400 font-black text-sm tracking-tight">S</span>
                 </div>
               </div>
@@ -369,7 +377,7 @@ export default function LoginPage() {
               onClick={toggleTheme}
               className={`w-9 h-9 rounded-full border backdrop-blur-md transition-all shadow-sm active:scale-95 focus:outline-none cursor-pointer flex items-center justify-center ${
                 isDark 
-                  ? 'bg-stone-900/80 border-white/10 text-slate-300 hover:text-white hover:border-white/20' 
+                  ? 'bg-zinc-900/80 border-white/10 text-slate-300 hover:text-white hover:border-white/20' 
                   : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:border-slate-300'
               }`}
               aria-label="Toggle visual theme"
@@ -385,6 +393,36 @@ export default function LoginPage() {
         </div>
       </header>
 
+      {/* Mobile-Only Segmented Switcher (Zero-Scroll Instant Switch) */}
+      <div className="lg:hidden w-full px-4 pt-1 pb-1 relative z-20 shrink-0">
+        <div className={`flex items-center justify-center p-1 max-w-[280px] mx-auto rounded-2xl border transition-colors shadow-sm ${
+          isDark ? 'bg-zinc-900/80 border-white/10' : 'bg-slate-200/80 border-slate-300'
+        }`}>
+          <button
+            type="button"
+            onClick={() => setMobileTab('auth')}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+              mobileTab === 'auth'
+                ? isDark ? 'bg-zinc-800 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                : isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Sign In / Register
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('demo')}
+            className={`flex-1 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+              mobileTab === 'demo'
+                ? isDark ? 'bg-zinc-800 text-white shadow-sm' : 'bg-white text-slate-900 shadow-sm'
+                : isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            ⚡ Live Splitter
+          </button>
+        </div>
+      </div>
+
       {/* =========================================================================
           MAIN HERO SECTION (Balanced 2-Column Desktop Grid)
          ========================================================================= */}
@@ -398,7 +436,9 @@ export default function LoginPage() {
             initial={{ opacity: 0, x: -24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 flex flex-col justify-center space-y-3 sm:space-y-4"
+            className={`lg:col-span-7 flex flex-col justify-center space-y-3 sm:space-y-4 ${
+              mobileTab === 'auth' ? 'hidden lg:flex' : 'flex'
+            }`}
           >
             
             {/* Authentic Tagline Badge */}
@@ -432,7 +472,7 @@ export default function LoginPage() {
             {/* Tactile Bill Split Glass Widget */}
             <div className={`rounded-3xl backdrop-blur-2xl p-4 sm:p-4.5 shadow-2xl space-y-3 relative overflow-hidden transition-all duration-300 ${
               isDark 
-                ? 'bg-stone-900/50 border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]' 
+                ? 'bg-zinc-900/60 border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]' 
                 : 'bg-white/80 border border-slate-200/90 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)]'
             }`}>
               
@@ -444,12 +484,12 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                    <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-zinc-300' : 'text-slate-800'}`}>
                       Interactive Bill Splitter
                     </span>
                   </div>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
-                    isDark ? 'bg-white/5 border-white/10 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                    isDark ? 'bg-zinc-800 border-zinc-700 text-emerald-400' : 'bg-emerald-100 border-emerald-300 text-emerald-900'
                   }`}>
                     Live Math
                   </span>
@@ -457,10 +497,10 @@ export default function LoginPage() {
 
                 {/* Amount Slider Container */}
                 <div className={`p-3 rounded-2xl border transition-colors flex items-center justify-between gap-3 ${
-                  isDark ? 'bg-stone-950/70 border-white/5' : 'bg-slate-50 border-slate-200/80'
+                  isDark ? 'bg-zinc-950/70 border-white/5' : 'bg-slate-50 border-slate-200/90'
                 }`}>
                   <div>
-                    <span className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <span className={`text-[10px] font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                       Total Expense
                     </span>
                     <div className={`text-xl sm:text-2xl font-black font-mono tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -470,31 +510,36 @@ export default function LoginPage() {
 
                   <div className="flex items-center gap-3">
                     <input
+                      id="demo-bill-amount"
+                      name="demoBillAmount"
                       type="range"
                       min="200"
                       max="3000"
                       step="100"
                       value={billAmount}
                       onChange={(e) => setBillAmount(Number(e.target.value))}
-                      className="w-28 sm:w-36 accent-emerald-500 cursor-pointer h-2 bg-stone-800 rounded-lg"
+                      className="w-28 sm:w-36 accent-emerald-500 cursor-pointer h-2 bg-zinc-800 rounded-lg"
                       aria-label="Adjust bill amount"
                     />
 
                     {/* Flatmates Selector Pills */}
                     <div className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs shrink-0 ${
-                      isDark ? 'bg-stone-900 border-white/10' : 'bg-white border-slate-200'
+                      isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-300'
                     }`}>
-                      <Users className="w-3 h-3 text-emerald-400" />
-                      <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Split:</span>
+                      <Users className="w-3 h-3 text-emerald-500" />
+                      <span className={`text-[10px] ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>Split:</span>
                       <select
+                        id="demo-roommate-count"
+                        name="demoRoommateCount"
+                        aria-label="Number of flatmates"
                         value={roommateCount}
                         onChange={(e) => setRoommateCount(Number(e.target.value))}
                         className={`bg-transparent text-xs font-bold focus:outline-none cursor-pointer ${
-                          isDark ? 'text-emerald-400' : 'text-emerald-700'
+                          isDark ? 'text-emerald-400' : 'text-emerald-800'
                         }`}
                       >
                         {[2, 3, 4, 5, 6].map((num) => (
-                          <option key={num} value={num} className={isDark ? 'bg-stone-900 text-white' : 'bg-white text-slate-900'}>
+                          <option key={num} value={num} className={isDark ? 'bg-zinc-900 text-white' : 'bg-white text-slate-900'}>
                             {num}p
                           </option>
                         ))}
@@ -506,9 +551,11 @@ export default function LoginPage() {
 
               {/* Roommate Cards with Colorful Avatars (Real Life Metaphor) */}
               <div className="space-y-1.5">
-                <div className={`flex items-center justify-between text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                <div className={`flex items-center justify-between text-[11px] ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
                   <span>Tap any person to toggle settled status:</span>
-                  <span className="font-bold text-emerald-400 font-mono text-xs">₹{perPersonAmount} each</span>
+                  <span className={`font-mono text-xs ${isDark ? 'font-bold text-emerald-400' : 'font-extrabold text-emerald-800'}`}>
+                    ₹{perPersonAmount} each
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -522,33 +569,35 @@ export default function LoginPage() {
                         rm.status === 'paid'
                           ? isDark 
                             ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200' 
-                            : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                            : 'bg-emerald-50 border-emerald-300 text-emerald-950'
                           : isDark
-                            ? 'bg-stone-950/60 border-amber-500/25 text-amber-200 hover:border-amber-400/40'
-                            : 'bg-amber-50/80 border-amber-300 text-amber-900 hover:border-amber-400'
+                            ? 'bg-zinc-950/60 border-amber-500/25 text-amber-200 hover:border-amber-400/40'
+                            : 'bg-amber-50/90 border-amber-300 text-amber-950 hover:border-amber-400'
                       } ${!rm.isSelf ? 'cursor-pointer' : 'cursor-default'}`}
                     >
                       <div className="flex items-center justify-between gap-1 w-full">
                         <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold ${
                           rm.status === 'paid'
-                            ? 'bg-emerald-500 text-stone-950'
-                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            ? isDark ? 'bg-emerald-500 text-zinc-950' : 'bg-emerald-600 text-white'
+                            : isDark ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-amber-600 text-white'
                         }`}>
                           {rm.avatar}
                         </div>
                         <span className={`text-[9px] font-semibold flex items-center gap-0.5 ${
-                          rm.status === 'paid' ? 'text-emerald-400' : 'text-amber-400'
+                          rm.status === 'paid' 
+                            ? isDark ? 'text-emerald-400' : 'text-emerald-800 font-bold' 
+                            : isDark ? 'text-amber-400' : 'text-amber-800 font-bold'
                         }`}>
-                          {rm.status === 'paid' && <Check className="w-2 h-2" />}
+                          {rm.status === 'paid' && <Check className="w-2.5 h-2.5" />}
                           {rm.method}
                         </span>
                       </div>
 
                       <div className="mt-1.5">
-                        <div className={`text-[10px] font-medium truncate ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <div className={`text-[10px] font-medium truncate ${isDark ? 'text-zinc-300' : 'text-slate-800'}`}>
                           {rm.name}
                         </div>
-                        <div className={`text-xs font-bold font-mono tracking-tight mt-0.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <div className={`text-xs font-bold font-mono tracking-tight mt-0.5 ${isDark ? 'text-white' : 'text-slate-950'}`}>
                           ₹{perPersonAmount}
                         </div>
                       </div>
@@ -560,16 +609,16 @@ export default function LoginPage() {
               {/* Monthly Safe Allowance Runway Gauge */}
               <div className={`pt-2 border-t space-y-1.5 ${isDark ? 'border-white/5' : 'border-slate-200/80'}`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <span className={`font-medium ${isDark ? 'text-zinc-400' : 'text-slate-700'}`}>
                     Remaining Daily Allowance
                   </span>
-                  <span className="font-bold font-mono text-emerald-400 text-xs">
-                    ₹{safeDailyRunway} <span className={`font-normal text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>/ day safe</span>
+                  <span className={`font-mono text-xs ${isDark ? 'font-bold text-emerald-400' : 'font-extrabold text-emerald-800'}`}>
+                    ₹{safeDailyRunway} <span className={`font-normal text-[10px] ${isDark ? 'text-zinc-500' : 'text-slate-500'}`}>/ day safe</span>
                   </span>
                 </div>
                 
                 <div className={`w-full h-1.5 rounded-full overflow-hidden p-[1px] border flex ${
-                  isDark ? 'bg-stone-950 border-white/5' : 'bg-slate-100 border-slate-200'
+                  isDark ? 'bg-zinc-950 border-white/5' : 'bg-slate-100 border-slate-200'
                 }`}>
                   <motion.div 
                     className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full"
@@ -589,19 +638,19 @@ export default function LoginPage() {
             {/* Three Tactile Guarantees */}
             <div className="grid grid-cols-3 gap-2 pt-0.5">
               <div className={`p-2 rounded-xl border transition-colors flex items-center gap-2 ${
-                isDark ? 'bg-stone-900/30 border-white/5 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                isDark ? 'bg-zinc-900/40 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'
               }`}>
                 <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 <span className="text-[11px] font-medium">3s Quick Add</span>
               </div>
               <div className={`p-2 rounded-xl border transition-colors flex items-center gap-2 ${
-                isDark ? 'bg-stone-900/30 border-white/5 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                isDark ? 'bg-zinc-900/40 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'
               }`}>
                 <WifiOff className="w-3.5 h-3.5 text-teal-400 shrink-0" />
                 <span className="text-[11px] font-medium">100% Offline</span>
               </div>
               <div className={`p-2 rounded-xl border transition-colors flex items-center gap-2 ${
-                isDark ? 'bg-stone-900/30 border-white/5 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                isDark ? 'bg-zinc-900/40 border-white/5 text-zinc-300' : 'bg-slate-50 border-slate-200 text-slate-700'
               }`}>
                 <ShieldCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                 <span className="text-[11px] font-medium">No Bank Login</span>
@@ -617,7 +666,9 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 flex justify-center w-full"
+            className={`lg:col-span-5 flex justify-center w-full ${
+              mobileTab === 'demo' ? 'hidden lg:flex' : 'flex'
+            }`}
           >
             <motion.div 
               ref={cardRef}
@@ -628,7 +679,7 @@ export default function LoginPage() {
               transition={{ duration: 0.4 }}
               className={`w-full max-w-[420px] rounded-3xl backdrop-blur-2xl p-4 sm:p-5 flex flex-col gap-3.5 relative overflow-hidden transition-all duration-300 shadow-2xl ${
                 isDark 
-                  ? 'bg-stone-900/60 border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]' 
+                  ? 'bg-zinc-900/70 border border-white/10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)]' 
                   : 'bg-white/95 border border-slate-200/90 shadow-[0_25px_50px_-15px_rgba(0,0,0,0.08)]'
               }`}
             >
@@ -655,7 +706,7 @@ export default function LoginPage() {
               <div className="text-center space-y-1">
                 <div className={`w-10 h-10 rounded-2xl border p-2 shadow-md mx-auto flex items-center justify-center transition-all ${
                   isDark 
-                    ? 'bg-gradient-to-b from-stone-800 to-stone-900 border-white/10 text-emerald-400' 
+                    ? 'bg-gradient-to-b from-zinc-800 to-zinc-900 border-white/10 text-emerald-400' 
                     : 'bg-gradient-to-b from-slate-50 to-slate-100 border-slate-200 text-emerald-600'
                 }`}>
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -668,7 +719,7 @@ export default function LoginPage() {
                   <h2 className={`font-display text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {APP_NAME}
                   </h2>
-                  <p className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <p className={`text-[11px] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                     Track your campus spends in 3 seconds.
                   </p>
                 </div>
@@ -676,7 +727,7 @@ export default function LoginPage() {
 
               {/* Apple-style Smooth Segmented Switcher */}
               <div className={`grid grid-cols-2 p-1 border rounded-xl relative transition-colors ${
-                isDark ? 'bg-stone-950/80 border-white/5' : 'bg-slate-100 border-slate-200'
+                isDark ? 'bg-zinc-950/80 border-white/5' : 'bg-slate-100 border-slate-200'
               }`}>
                 <button
                   type="button"
@@ -691,7 +742,7 @@ export default function LoginPage() {
                     <motion.div 
                       layoutId="auth-tab-pill-craft" 
                       className={`absolute inset-0 rounded-lg shadow-sm -z-10 border ${
-                        isDark ? 'bg-stone-800/90 border-white/10' : 'bg-white border-slate-200'
+                        isDark ? 'bg-zinc-800/90 border-white/10' : 'bg-white border-slate-200'
                       }`} 
                       transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                     />
@@ -705,14 +756,14 @@ export default function LoginPage() {
                   className={`py-2 text-xs font-semibold rounded-lg transition-all relative z-10 cursor-pointer ${
                     mode === 'signup' 
                       ? isDark ? 'text-white' : 'text-slate-900' 
-                      : isDark ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-800'
+                      : isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
                   {mode === 'signup' && (
                     <motion.div 
                       layoutId="auth-tab-pill-craft" 
                       className={`absolute inset-0 rounded-lg shadow-sm -z-10 border ${
-                        isDark ? 'bg-stone-800/90 border-white/10' : 'bg-white border-slate-200'
+                        isDark ? 'bg-zinc-800/90 border-white/10' : 'bg-white border-slate-200'
                       }`} 
                       transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                     />
@@ -729,7 +780,7 @@ export default function LoginPage() {
                 id="google-signin-btn"
                 className={`w-full h-11 px-4 rounded-xl border font-medium text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-[0.985] disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400/30 ${
                   isDark 
-                    ? 'bg-stone-900 hover:bg-stone-800/90 border-white/10 hover:border-white/20 text-white' 
+                    ? 'bg-zinc-900 hover:bg-zinc-800/90 border-white/10 hover:border-white/20 text-white' 
                     : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-800'
                 }`}
               >
@@ -768,13 +819,14 @@ export default function LoginPage() {
                       transition={{ duration: 0.2 }}
                       className="flex flex-col gap-1"
                     >
-                      <label htmlFor="name-input" className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      <label htmlFor="name-input" className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                         Full Name
                       </label>
                       <div className="relative flex items-center group">
-                        <User className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                        <User className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
                         <input
                           type="text"
+                          name="name"
                           placeholder="e.g. Alex Sharma"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
@@ -784,7 +836,7 @@ export default function LoginPage() {
                           style={inputStyle}
                           className={`w-full h-11 rounded-xl border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all disabled:opacity-50 ${
                             isDark 
-                              ? 'bg-stone-950/80 text-slate-100 placeholder:text-slate-500 border-white/10 focus:border-emerald-400' 
+                              ? 'bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 border-white/10 focus:border-emerald-400' 
                               : 'bg-slate-100/90 text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-emerald-500 focus:bg-white'
                           }`}
                         />
@@ -795,14 +847,15 @@ export default function LoginPage() {
 
                 {/* Email Address */}
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="email-input" className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  <label htmlFor="email-input" className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                     College or Personal Email
                   </label>
                   <div className="relative flex items-center group">
-                    <Mail className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <Mail className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
                     <input
                       ref={emailInputRef}
                       type="email"
+                      name="email"
                       placeholder="student@college.edu"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -812,7 +865,7 @@ export default function LoginPage() {
                       style={inputStyle}
                       className={`w-full h-11 rounded-xl border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all disabled:opacity-50 ${
                         isDark 
-                          ? 'bg-stone-950/80 text-slate-100 placeholder:text-slate-500 border-white/10 focus:border-emerald-400' 
+                          ? 'bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 border-white/10 focus:border-emerald-400' 
                           : 'bg-slate-100/90 text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-emerald-500 focus:bg-white'
                       }`}
                     />
@@ -823,7 +876,7 @@ export default function LoginPage() {
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <label htmlFor="password-input" className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                      <label htmlFor="password-input" className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                         Password
                       </label>
                       {isCapsLock && (
@@ -839,7 +892,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className={`transition-colors font-medium flex items-center gap-1 focus:outline-none cursor-pointer ${
-                          isDark ? 'text-slate-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
+                          isDark ? 'text-zinc-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
                         }`}
                       >
                         {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -848,7 +901,7 @@ export default function LoginPage() {
                       
                       {mode === 'signin' && (
                         <>
-                          <span className={isDark ? 'text-slate-700' : 'text-slate-300'}>·</span>
+                          <span className={isDark ? 'text-zinc-700' : 'text-slate-300'}>·</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -857,7 +910,7 @@ export default function LoginPage() {
                               setError('');
                             }}
                             className={`transition-colors font-medium hover:underline focus:outline-none cursor-pointer ${
-                              isDark ? 'text-slate-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
+                              isDark ? 'text-zinc-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
                             }`}
                           >
                             Forgot?
@@ -868,9 +921,10 @@ export default function LoginPage() {
                   </div>
 
                   <div className="relative flex items-center group">
-                    <Lock className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <Lock className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
                     <input
                       type={showPassword ? 'text' : 'password'}
+                      name="password"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -882,7 +936,7 @@ export default function LoginPage() {
                       style={inputStyle}
                       className={`w-full h-11 rounded-xl border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all disabled:opacity-50 font-mono tracking-wider ${
                         isDark 
-                          ? 'bg-stone-950/80 text-slate-100 placeholder:text-slate-500 border-white/10 focus:border-emerald-400' 
+                          ? 'bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 border-white/10 focus:border-emerald-400' 
                           : 'bg-slate-100/90 text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-emerald-500 focus:bg-white'
                       }`}
                     />
@@ -891,13 +945,13 @@ export default function LoginPage() {
                   {/* Password Strength Gauge */}
                   {mode === 'signup' && password.length > 0 && (
                     <div className="space-y-1 pt-1">
-                      <div className={`flex gap-1 h-1 w-full rounded-full overflow-hidden ${isDark ? 'bg-stone-950' : 'bg-slate-100'}`}>
+                      <div className={`flex gap-1 h-1 w-full rounded-full overflow-hidden ${isDark ? 'bg-zinc-950' : 'bg-slate-100'}`}>
                         <div className={`h-full transition-all duration-300 ${passwordStrength.score >= 1 ? passwordStrength.color : 'bg-transparent'} w-1/4`} />
                         <div className={`h-full transition-all duration-300 ${passwordStrength.score >= 2 ? passwordStrength.color : 'bg-transparent'} w-1/4`} />
                         <div className={`h-full transition-all duration-300 ${passwordStrength.score >= 3 ? passwordStrength.color : 'bg-transparent'} w-1/4`} />
                         <div className={`h-full transition-all duration-300 ${passwordStrength.score >= 4 ? passwordStrength.color : 'bg-transparent'} w-1/4`} />
                       </div>
-                      <div className={`flex justify-between text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      <div className={`flex justify-between text-[10px] ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                         <span>Strength: <strong className={isDark ? 'text-white' : 'text-slate-900'}>{passwordStrength.label}</strong></span>
                         <span>Min 6 characters</span>
                       </div>
@@ -916,14 +970,14 @@ export default function LoginPage() {
                       className="flex flex-col gap-1"
                     >
                       <div className="flex items-center justify-between">
-                        <label htmlFor="confirm-password-input" className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <label htmlFor="confirm-password-input" className={`text-xs font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                           Confirm Password
                         </label>
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           className={`text-xs py-1.5 px-1.5 -my-1 transition-colors font-medium flex items-center gap-1 focus:outline-none cursor-pointer ${
-                            isDark ? 'text-slate-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
+                            isDark ? 'text-zinc-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-700'
                           }`}
                         >
                           {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -931,9 +985,10 @@ export default function LoginPage() {
                         </button>
                       </div>
                       <div className="relative flex items-center group">
-                        <Lock className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                        <Lock className={`w-4 h-4 absolute left-3.5 pointer-events-none transition-colors group-focus-within:text-emerald-400 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
                         <input
                           type={showConfirmPassword ? 'text' : 'password'}
+                          name="confirmPassword"
                           placeholder="••••••••"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
@@ -943,7 +998,7 @@ export default function LoginPage() {
                           style={inputStyle}
                           className={`w-full h-11 rounded-xl border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all disabled:opacity-50 font-mono tracking-wider ${
                             isDark 
-                              ? 'bg-stone-950/80 text-slate-100 placeholder:text-slate-500 border-white/10 focus:border-emerald-400' 
+                              ? 'bg-zinc-950/80 text-zinc-100 placeholder:text-zinc-500 border-white/10 focus:border-emerald-400' 
                               : 'bg-slate-100/90 text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-emerald-500 focus:bg-white'
                           }`}
                         />
@@ -958,14 +1013,14 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setRememberMe(!rememberMe)}
                     className={`flex items-center gap-2.5 text-xs select-none cursor-pointer group text-left pt-0.5 ${
-                      isDark ? 'text-slate-400 hover:text-slate-300' : 'text-slate-600 hover:text-slate-800'
+                      isDark ? 'text-zinc-400 hover:text-zinc-300' : 'text-slate-600 hover:text-slate-800'
                     }`}
                   >
                     <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
                       rememberMe 
-                        ? 'bg-emerald-500 border-emerald-400 text-stone-950 shadow-sm' 
+                        ? 'bg-emerald-500 border-emerald-400 text-zinc-950 shadow-sm' 
                         : isDark 
-                          ? 'bg-stone-950 border-white/10 group-hover:border-white/20' 
+                          ? 'bg-zinc-950 border-white/10 group-hover:border-white/20' 
                           : 'bg-white border-slate-300 group-hover:border-slate-400'
                     }`}>
                       {rememberMe && <Check className="w-3 h-3 stroke-[3]" />}
@@ -1001,15 +1056,15 @@ export default function LoginPage() {
                   </motion.div>
                 )}
 
-                {/* Tactile Luminous Primary Submit Button (No more radioactive flat green slab!) */}
+                {/* Tactile Luminous Primary Submit Button */}
                 <button 
                   type="submit" 
                   disabled={isAnyLoading} 
                   id="email-auth-btn"
-                  className="w-full h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 text-stone-950 font-bold text-sm tracking-wide shadow-[0_10px_25px_-5px_rgba(16,185,129,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:shadow-[0_16px_32px_-5px_rgba(16,185,129,0.5)] active:scale-[0.985] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer group mt-1 relative overflow-hidden"
+                  className="w-full h-11 px-5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 text-zinc-950 font-bold text-sm tracking-wide shadow-[0_10px_25px_-5px_rgba(16,185,129,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:shadow-[0_16px_32px_-5px_rgba(16,185,129,0.5)] active:scale-[0.985] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer group mt-1 relative overflow-hidden"
                 >
                   {isEmailLoading ? (
-                    <div className="w-4 h-4 border-2 border-stone-950 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>{mode === 'signin' ? 'Sign In to SpendWise' : 'Create Free Student Account'}</span>
@@ -1018,6 +1073,29 @@ export default function LoginPage() {
                   )}
                 </button>
               </form>
+
+              {/* Instant 1-Click Guest Demo Sandbox Access */}
+              <div className="relative flex py-1 items-center mt-0.5">
+                <div className={`flex-grow border-t ${isDark ? 'border-zinc-800' : 'border-slate-200'}`} />
+                <span className={`flex-shrink mx-2 text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-zinc-500' : 'text-slate-400'}`}>
+                  Instant Preview
+                </span>
+                <div className={`flex-grow border-t ${isDark ? 'border-zinc-800' : 'border-slate-200'}`} />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleExploreGuestDemo}
+                id="guest-demo-btn"
+                className={`w-full py-2.5 px-3 rounded-xl border font-semibold text-xs transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer shadow-sm active:scale-[0.985] ${
+                  isDark
+                    ? 'bg-zinc-800/90 hover:bg-zinc-750 border-zinc-700/80 text-zinc-100 hover:text-white'
+                    : 'bg-slate-100 hover:bg-slate-200/90 border-slate-300 text-slate-800'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-12 transition-transform shrink-0" />
+                <span>⚡ Explore Live Demo as Guest (Instant Access)</span>
+              </button>
 
               {/* Legal Footnote */}
               <div className={`pt-1 text-center text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -1079,7 +1157,7 @@ export default function LoginPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className={`w-full max-w-sm rounded-3xl border p-6 shadow-2xl space-y-4 relative overflow-hidden ${
-                isDark ? 'bg-stone-900 border-white/10' : 'bg-white border-slate-200'
+                isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'
               }`}
             >
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
@@ -1110,6 +1188,8 @@ export default function LoginPage() {
                   <Mail className={`w-4 h-4 absolute left-3.5 pointer-events-none ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
                   <input
                     type="email"
+                    name="resetEmail"
+                    id="reset-email-input"
                     placeholder="student@college.edu"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
@@ -1118,7 +1198,7 @@ export default function LoginPage() {
                     style={inputStyle}
                     className={`w-full h-11 rounded-xl border py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/20 ${
                       isDark 
-                        ? 'bg-stone-950 text-white placeholder:text-slate-500 border-white/10 focus:border-emerald-400' 
+                        ? 'bg-zinc-950 text-white placeholder:text-zinc-500 border-white/10 focus:border-emerald-400' 
                         : 'bg-slate-100 text-slate-900 placeholder:text-slate-400 border-slate-200 focus:border-emerald-500'
                     }`}
                   />
@@ -1137,7 +1217,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={isResetLoading}
-                    className="px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 text-stone-950 transition-all shadow-md disabled:opacity-50 cursor-pointer"
+                    className="px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 text-zinc-950 transition-all shadow-md disabled:opacity-50 cursor-pointer"
                   >
                     {isResetLoading ? 'Sending...' : 'Send Link'}
                   </button>
@@ -1157,7 +1237,7 @@ export default function LoginPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className={`w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-3xl border p-6 shadow-2xl space-y-4 relative ${
-                isDark ? 'bg-stone-900 border-white/10' : 'bg-white border-slate-200'
+                isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-slate-200'
               }`}
             >
               <div className={`flex items-center justify-between pb-3 border-b ${isDark ? 'border-white/10' : 'border-slate-200'}`}>
@@ -1200,7 +1280,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setLegalModal(null)}
                   className={`px-4 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer ${
-                    isDark ? 'bg-stone-800 hover:bg-stone-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+                    isDark ? 'bg-zinc-800 hover:bg-zinc-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
                   }`}
                 >
                   Understood

@@ -56,6 +56,9 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'SpendWise',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 };
 
 export const viewport: Viewport = {

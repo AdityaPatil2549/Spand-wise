@@ -50,6 +50,12 @@ export const useAuthListener = (): void => {
             setQuickAddPresets(null);
           });
       } else {
+        // Preserve guest demo session if active
+        const currentUser = useStore.getState().user;
+        if (currentUser?.uid === 'guest_demo_user') {
+          return;
+        }
+
         setUser(null);
         setOnboardingComplete(false);
         setHouseholdId(null);

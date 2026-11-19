@@ -12,34 +12,39 @@ import type { BudgetDocument } from '@/types/firestore';
  * Single-document read — extremely efficient (1 read per session).
  */
 export const useBudgetListener = (householdId: string | null, month: string): void => {
- const { setBudget, setBudgetLoading } = useStore();
+  const { setBudget, setBudgetLoading } = useStore();
 
- useEffect(() => {
- if (!householdId) {
- setBudget(null);
- setBudgetLoading(false);
- return;
- }
+  useEffect(() => {
+    if (!householdId) {
+      setBudget(null);
+      setBudgetLoading(false);
+      return;
+    }
 
- setBudgetLoading(true);
+    if (householdId === 'guest_demo_household') {
+      setBudgetLoading(false);
+      return;
+    }
 
- const ref = budgetDocRef(householdId, month);
- const unsubscribe = onSnapshot(
- ref,
- (snap) => {
- if (snap.exists()) {
- setBudget({ ...snap.data(), id: snap.id } as BudgetDocument);
- } else {
- setBudget(null);
- }
- setBudgetLoading(false);
- },
- (error) => {
- console.error('[useBudgetListener]', error);
- setBudgetLoading(false);
- }
- );
+    setBudgetLoading(true);
 
- return () => unsubscribe();
- }, [householdId, month, setBudget, setBudgetLoading]);
+    const ref = budgetDocRef(householdId, month);
+    const unsubscribe = onSnapshot(
+      ref,
+      (snap) => {
+        if (snap.exists()) {
+          setBudget({ ...snap.data(), id: snap.id } as BudgetDocument);
+        } else {
+          setBudget(null);
+        }
+        setBudgetLoading(false);
+      },
+      (error) => {
+        console.error('[useBudgetListener]', error);
+        setBudgetLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [householdId, month, setBudget, setBudgetLoading]);
 };
