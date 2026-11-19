@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Timestamp } from 'firebase/firestore';
 import { Calculator, Handshake, Users } from 'lucide-react';
 import { useStore } from '@/store';
 import { CURRENCY_SYMBOL } from '@/config/constants';
@@ -24,6 +25,82 @@ export default function SplitBillsPage() {
 
   useEffect(() => {
     if (!householdId) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (householdId === 'guest_demo_household') {
+      const now = Timestamp.now();
+      const mockGroups: SplitGroupDocument[] = [
+        {
+          id: 'demo_group_flat302',
+          name: 'Flat 302 Roommates',
+          emoji: '🏠',
+          simplifyDebts: true,
+          members: [
+            { id: 'guest_demo_user', name: 'Alex Sharma', isSelf: true, upiId: 'alex@oksbi' },
+            { id: 'mem_rohan', name: 'Rohan Verma', upiId: 'rohan@paytm' },
+            { id: 'mem_aarav', name: 'Aarav Patel', upiId: 'aarav@apl' },
+          ],
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          id: 'demo_group_goatrip',
+          name: 'Goa Weekend Roadtrip',
+          emoji: '🏖️',
+          simplifyDebts: true,
+          members: [
+            { id: 'guest_demo_user', name: 'Alex Sharma', isSelf: true, upiId: 'alex@oksbi' },
+            { id: 'mem_priya', name: 'Priya Nair', upiId: 'priya@okhdfc' },
+            { id: 'mem_sameer', name: 'Sameer Khan', upiId: 'sameer@axis' },
+          ],
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ];
+
+      const mockExpenses: SplitExpenseDocument[] = [
+        {
+          id: 'demo_split_wifi',
+          groupId: 'demo_group_flat302',
+          description: 'Airtel Fiber Gigabit 300Mbps',
+          totalPaise: 104900,
+          paidById: 'guest_demo_user',
+          paidByName: 'Alex Sharma',
+          mode: 'equal',
+          allocations: [
+            { memberId: 'guest_demo_user', amountPaise: 34967 },
+            { memberId: 'mem_rohan', amountPaise: 34967 },
+            { memberId: 'mem_aarav', amountPaise: 34966 },
+          ],
+          isDeleted: false,
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+        },
+        {
+          id: 'demo_split_groceries',
+          groupId: 'demo_group_flat302',
+          description: 'Monthly Kitchen Provisions (Blinkit)',
+          totalPaise: 240000,
+          paidById: 'mem_rohan',
+          paidByName: 'Rohan Verma',
+          mode: 'equal',
+          allocations: [
+            { memberId: 'guest_demo_user', amountPaise: 80000 },
+            { memberId: 'mem_rohan', amountPaise: 80000 },
+            { memberId: 'mem_aarav', amountPaise: 80000 },
+          ],
+          isDeleted: false,
+          createdBy: 'mem_rohan',
+          createdAt: now,
+        },
+      ];
+
+      setGroups(mockGroups);
+      setSplitExpenses(mockExpenses);
       setIsLoading(false);
       return;
     }

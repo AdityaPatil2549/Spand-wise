@@ -17,6 +17,10 @@ export const createScheduledSlice: StateCreator<AppStore, [], [], ScheduledSlice
   isScheduledLoading: false,
 
   fetchScheduledTransactions: async (householdId) => {
+    if (!householdId || householdId === 'guest_demo_household') {
+      set({ isScheduledLoading: false });
+      return;
+    }
     set({ isScheduledLoading: true });
     try {
       const data = await getScheduledTransactions(householdId);

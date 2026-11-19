@@ -27,6 +27,48 @@ export const createGoalsSlice: StateCreator<
 
   loadGoals: async (householdId: string) => {
     if (!householdId) return;
+
+    if (householdId === 'guest_demo_household') {
+      const now = Timestamp.now();
+      const mockGoals: GoalDocument[] = [
+        {
+          id: 'goal_laptop',
+          name: 'New Coding Laptop (M3 Air)',
+          targetAmount: 85000,
+          currentAmount: 34000,
+          category: 'education',
+          isCompleted: false,
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          id: 'goal_goa',
+          name: 'Semester Break Goa Trip',
+          targetAmount: 12000,
+          currentAmount: 8500,
+          category: 'travel',
+          isCompleted: false,
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+          updatedAt: now,
+        },
+        {
+          id: 'goal_emergency',
+          name: 'Hostel Emergency Cash Buffer',
+          targetAmount: 10000,
+          currentAmount: 6000,
+          category: 'emergency',
+          isCompleted: false,
+          createdBy: 'guest_demo_user',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ];
+      set({ goals: mockGoals, isGoalsLoading: false });
+      return;
+    }
+
     set({ isGoalsLoading: true });
     try {
       const q = query(goalsColRef(householdId), orderBy('createdAt', 'desc'));

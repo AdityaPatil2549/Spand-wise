@@ -8,6 +8,7 @@ import { getDoc } from 'firebase/firestore';
 import { useStore } from '@/store';
 import type { UserDocument } from '@/types/firestore';
 import type { User } from 'firebase/auth';
+import { activateGuestDemo } from '@/lib/demo/guestData';
 
 /**
  * useAuth — Global auth state listener.
@@ -50,7 +51,13 @@ export const useAuthListener = (): void => {
             setQuickAddPresets(null);
           });
       } else {
-        // Preserve guest demo session if active
+        // Check if guest demo session is stored in localStorage
+        if (typeof window !== 'undefined' && localStorage.getItem('spendwise_guest_mode') === 'true') {
+          activateGuestDemo(useStore.getState());
+          return;
+        }
+
+        // Preserve in-memory guest demo session if active
         const currentUser = useStore.getState().user;
         if (currentUser?.uid === 'guest_demo_user') {
           return;

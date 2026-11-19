@@ -179,4 +179,29 @@ export const activateGuestDemo = (store: AppStore): void => {
   store.setExpenses(mockExpenses);
   store.setExpensesLoading(false);
   store.setSelectedMonth(currentMonth);
+
+  // Persist guest mode so browser reloads and hard navigation retain sandbox state
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('spendwise_guest_mode', 'true');
+    } catch {
+      // LocalStorage might be disabled in private browsing
+    }
+  }
+};
+
+export const exitGuestDemo = (store: AppStore): void => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem('spendwise_guest_mode');
+    } catch {
+      // ignore
+    }
+  }
+  store.setUser(null);
+  store.setHouseholdId(null);
+  store.setOnboardingComplete(false);
+  store.setBudget(null);
+  store.setExpenses([]);
+  store.setAccounts([]);
 };

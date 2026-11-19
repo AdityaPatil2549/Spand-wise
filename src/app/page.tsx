@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/store';
+import { activateGuestDemo } from '@/lib/demo/guestData';
 
 /**
  * RootPage — Auth + Onboarding Router.
@@ -19,6 +20,11 @@ export default function RootPage() {
     if (isAuthLoading) return;
 
     if (!user) {
+      if (typeof window !== 'undefined' && localStorage.getItem('spendwise_guest_mode') === 'true') {
+        activateGuestDemo(useStore.getState());
+        router.replace('/dashboard');
+        return;
+      }
       router.replace('/login');
     } else if (isOnboardingComplete) {
       router.replace('/dashboard');
