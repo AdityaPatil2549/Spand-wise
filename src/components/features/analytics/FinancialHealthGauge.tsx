@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Info, ChevronRight, X } from 'lucide-react';
+import { ShieldCheck, Info, ChevronRight } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/Dialog';
 import type { FinancialHealthResult } from '@/lib/algorithms/financialHealth';
 
 interface FinancialHealthGaugeProps {
@@ -143,108 +150,97 @@ export const FinancialHealthGauge: React.FC<FinancialHealthGaugeProps> = ({
       </div>
 
       {/* Algorithmic Breakdown Modal */}
-      {showModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="relative w-full max-w-lg rounded-3xl bg-theme-surface border border-theme-border p-6 sm:p-7 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center pb-3 border-b border-theme-border/30">
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-theme-accent" />
-                <h4 className="font-sans text-base font-bold text-theme-primary">
-                  Financial Health Algorithm (0–100)
-                </h4>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                aria-label="Close dialog"
-                className="p-1.5 rounded-full hover:bg-theme-base text-theme-secondary hover:text-theme-primary transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="max-w-lg p-6 sm:p-7 space-y-4">
+          <DialogHeader className="pb-3 border-b border-theme-border/30 text-left">
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="w-5 h-5 text-theme-accent" />
+              <DialogTitle className="font-sans text-base font-bold text-theme-primary">
+                Financial Health Algorithm (0–100)
+              </DialogTitle>
             </div>
+            <DialogDescription className="sr-only">
+              Weighted breakdown of your savings rate, burn rate, volatility, allocation, and momentum metrics.
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="space-y-3.5 text-xs">
-              {metrics && (
-                <>
-                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
-                    <div className="flex justify-between font-bold text-theme-primary">
-                      <span>1. {metrics.savings.name}</span>
-                      <span className="tabular-nums font-mono">
-                        {metrics.savings.score} / {metrics.savings.maxScore}
-                      </span>
-                    </div>
-                    <p className="text-theme-secondary leading-normal">
-                      {metrics.savings.explanation}
-                    </p>
+          <div className="space-y-3 text-xs max-h-[60vh] overflow-y-auto pr-1">
+            {metrics && (
+              <>
+                <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                  <div className="flex justify-between font-bold text-theme-primary">
+                    <span>1. {metrics.savings.name}</span>
+                    <span className="tabular-nums font-mono">
+                      {metrics.savings.score} / {metrics.savings.maxScore}
+                    </span>
                   </div>
+                  <p className="text-theme-secondary leading-normal">
+                    {metrics.savings.explanation}
+                  </p>
+                </div>
 
-                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
-                    <div className="flex justify-between font-bold text-theme-primary">
-                      <span>2. {metrics.burnRate.name}</span>
-                      <span className="tabular-nums font-mono">
-                        {metrics.burnRate.score} / {metrics.burnRate.maxScore}
-                      </span>
-                    </div>
-                    <p className="text-theme-secondary leading-normal">
-                      {metrics.burnRate.explanation}
-                    </p>
+                <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                  <div className="flex justify-between font-bold text-theme-primary">
+                    <span>2. {metrics.burnRate.name}</span>
+                    <span className="tabular-nums font-mono">
+                      {metrics.burnRate.score} / {metrics.burnRate.maxScore}
+                    </span>
                   </div>
+                  <p className="text-theme-secondary leading-normal">
+                    {metrics.burnRate.explanation}
+                  </p>
+                </div>
 
-                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
-                    <div className="flex justify-between font-bold text-theme-primary">
-                      <span>3. {metrics.volatility.name}</span>
-                      <span className="tabular-nums font-mono">
-                        {metrics.volatility.score} / {metrics.volatility.maxScore}
-                      </span>
-                    </div>
-                    <p className="text-theme-secondary leading-normal">
-                      {metrics.volatility.explanation}
-                    </p>
+                <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                  <div className="flex justify-between font-bold text-theme-primary">
+                    <span>3. {metrics.volatility.name}</span>
+                    <span className="tabular-nums font-mono">
+                      {metrics.volatility.score} / {metrics.volatility.maxScore}
+                    </span>
                   </div>
+                  <p className="text-theme-secondary leading-normal">
+                    {metrics.volatility.explanation}
+                  </p>
+                </div>
 
-                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
-                    <div className="flex justify-between font-bold text-theme-primary">
-                      <span>4. {metrics.allocation.name}</span>
-                      <span className="tabular-nums font-mono">
-                        {metrics.allocation.score} / {metrics.allocation.maxScore}
-                      </span>
-                    </div>
-                    <p className="text-theme-secondary leading-normal">
-                      {metrics.allocation.explanation}
-                    </p>
+                <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                  <div className="flex justify-between font-bold text-theme-primary">
+                    <span>4. {metrics.allocation.name}</span>
+                    <span className="tabular-nums font-mono">
+                      {metrics.allocation.score} / {metrics.allocation.maxScore}
+                    </span>
                   </div>
+                  <p className="text-theme-secondary leading-normal">
+                    {metrics.allocation.explanation}
+                  </p>
+                </div>
 
-                  <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
-                    <div className="flex justify-between font-bold text-theme-primary">
-                      <span>5. {metrics.momentum.name}</span>
-                      <span className="tabular-nums font-mono">
-                        {metrics.momentum.score} / {metrics.momentum.maxScore}
-                      </span>
-                    </div>
-                    <p className="text-theme-secondary leading-normal">
-                      {metrics.momentum.explanation}
-                    </p>
+                <div className="p-3.5 rounded-2xl bg-theme-base/60 border border-theme-border/30 space-y-1">
+                  <div className="flex justify-between font-bold text-theme-primary">
+                    <span>5. {metrics.momentum.name}</span>
+                    <span className="tabular-nums font-mono">
+                      {metrics.momentum.score} / {metrics.momentum.maxScore}
+                    </span>
                   </div>
-                </>
-              )}
-            </div>
-
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="w-full py-2.5 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold text-xs hover:opacity-95 transition-opacity cursor-pointer"
-              >
-                Close Breakdown
-              </button>
-            </div>
+                  <p className="text-theme-secondary leading-normal">
+                    {metrics.momentum.explanation}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
-        </div>
-      )}
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowModal(false)}
+              className="w-full py-2.5 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold text-xs hover:opacity-95 transition-opacity cursor-pointer"
+            >
+              Close Breakdown
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

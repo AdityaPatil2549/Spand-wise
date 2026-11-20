@@ -437,6 +437,46 @@
   - `src/lib/__tests__/react-query.test.ts`: Added unit tests for React Query layer.
   - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 12.
 
+---
+
+## Phase 13: Radix UI Headless Design System Primitives & Accessible Modals — COMPLETE
+- **Timestamp:** `2026-11-20 16:00 IST`
+- **Work Domain:** `Design System / Radix UI Primitives / WAI-ARIA 1.2 Focus Trapping / Accessible Modals & Tooltips`
+- **Context & Motivation:** Executed Phase 2 of the master blueprint: replacing handwritten modals, unstyled browser tooltips, and custom dropdowns with `@radix-ui` headless primitives while strictly preserving the Obsidian Zinc theme design system.
+- **Architectural & Code Fixes Executed:**
+  - **1. Package Installation:**
+    - Installed `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-tooltip`.
+  - **2. Core Dialog Primitive (`Dialog.tsx`):**
+    - Built [`src/components/ui/Dialog.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/ui/Dialog.tsx) exporting accessible `Dialog`, `DialogTrigger`, `DialogContent`, `DialogHeader`, `DialogFooter`, `DialogTitle`, and `DialogDescription` primitives with backdrop blur, focus trapping, and ESC dismissal.
+  - **3. Floating Tooltip Primitive (`Tooltip.tsx`):**
+    - Built [`src/components/ui/Tooltip.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/ui/Tooltip.tsx) with smooth micro-fade animations and collision padding.
+    - Mounted `TooltipProvider` at the root in [`src/components/layout/GlobalProviders.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/layout/GlobalProviders.tsx).
+  - **4. DropdownMenu Hardening (`DropdownMenu.tsx`):**
+    - Upgraded [`src/components/ui/DropdownMenu.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/ui/DropdownMenu.tsx) with `@radix-ui/react-dropdown-menu`: Added arrow key navigation, focus return on escape, and collision avoidance while keeping 100% backward-compatible component props.
+  - **5. App-Wide Modal & Surface Refactoring:**
+    - [`ExportReportModal.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/analytics/ExportReportModal.tsx): Replaced custom fixed container with accessible Radix `Dialog`.
+    - [`FinancialHealthGauge.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/analytics/FinancialHealthGauge.tsx): Replaced custom breakdown dialog with accessible Radix `Dialog`.
+    - [`SavingsGoalCards.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/analytics/SavingsGoalCards.tsx): Replaced custom goal creation dialog with accessible Radix `Dialog`.
+    - [`BentoHeroBalance.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoHeroBalance.tsx): Replaced unstyled native `title` attribute with instant Radix `Tooltip`.
+  - **6. Automated Regression Test Suite:**
+    - Added [`src/lib/__tests__/radix-ui.test.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/__tests__/radix-ui.test.tsx) testing `Dialog`, `DropdownMenu`, and `Tooltip` exports and props.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **8 test files / 31 tests passed (100%)**.
+  - Next.js dev server hot-reloaded cleanly with zero runtime warnings.
+- **Files Changed:**
+  - `package.json`: Added `@radix-ui/react-dialog`, `@radix-ui/react-dropdown-menu`, `@radix-ui/react-tooltip`.
+  - `src/components/ui/Dialog.tsx`: New Radix Dialog primitives.
+  - `src/components/ui/Tooltip.tsx`: New Radix Tooltip primitives.
+  - `src/components/ui/DropdownMenu.tsx`: Upgraded to Radix DropdownMenu.
+  - `src/components/layout/GlobalProviders.tsx`: Added `TooltipProvider`.
+  - `src/components/features/analytics/ExportReportModal.tsx`: Refactored to Radix Dialog.
+  - `src/components/features/analytics/FinancialHealthGauge.tsx`: Refactored to Radix Dialog.
+  - `src/components/features/analytics/SavingsGoalCards.tsx`: Refactored to Radix Dialog.
+  - `src/components/features/dashboard/BentoHeroBalance.tsx`: Refactored to Radix Tooltip.
+  - `src/lib/__tests__/radix-ui.test.tsx`: Added unit test suite.
+  - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 13.
+
 
 
 

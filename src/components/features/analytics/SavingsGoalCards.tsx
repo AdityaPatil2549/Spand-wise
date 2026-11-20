@@ -4,6 +4,13 @@ import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
 import { Target, Plus, Trophy, X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/Dialog';
 import type { GoalDocument } from '@/types/firestore';
 
 interface SavingsGoalCardsProps {
@@ -194,80 +201,72 @@ export const SavingsGoalCards: React.FC<SavingsGoalCardsProps> = ({
       )}
 
       {/* Add New Goal Modal */}
-      {showAddModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="relative w-full max-w-md rounded-3xl bg-theme-surface border border-theme-border p-6 shadow-2xl space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-theme-border/30">
-              <h4 className="font-bold text-base text-theme-primary">Create Savings Target</h4>
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-md p-6 space-y-4">
+          <DialogHeader className="pb-2 border-b border-theme-border/30 text-left">
+            <DialogTitle className="font-bold text-base text-theme-primary">
+              Create Savings Target
+            </DialogTitle>
+            <DialogDescription className="text-xs text-theme-secondary">
+              Set a dedicated savings target for gadgets, travel, or an emergency buffer.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateGoal} className="space-y-3 text-xs">
+            <div>
+              <label className="block text-theme-secondary font-medium mb-1">Goal Name</label>
+              <input
+                type="text"
+                placeholder="e.g. New Laptop, Goa Trip"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-theme-secondary font-medium mb-1">Target Amount (₹)</label>
+              <input
+                type="number"
+                placeholder="e.g. 15000"
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                required
+                className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-theme-secondary font-medium mb-1">Category</label>
+              <input
+                type="text"
+                placeholder="e.g. Gadgets, Travel, Emergency"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
+              />
+            </div>
+
+            <div className="pt-2 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="p-1.5 rounded-full hover:bg-theme-base text-theme-secondary hover:text-theme-primary"
+                className="py-2 px-4 rounded-xl bg-theme-base hover:bg-theme-surface border border-theme-border text-theme-primary font-semibold"
               >
-                <X className="w-5 h-5" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="py-2 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating...' : 'Create Goal'}
               </button>
             </div>
-
-            <form onSubmit={handleCreateGoal} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-theme-secondary font-medium mb-1">Goal Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. New Laptop, Goa Trip"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-theme-secondary font-medium mb-1">Target Amount (₹)</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 15000"
-                  value={target}
-                  onChange={(e) => setTarget(e.target.value)}
-                  required
-                  className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-theme-secondary font-medium mb-1">Category</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Gadgets, Travel, Emergency"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full py-2 px-3 rounded-xl bg-theme-base border border-theme-border text-theme-primary focus:outline-none"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="py-2 px-4 rounded-xl bg-theme-base hover:bg-theme-surface border border-theme-border text-theme-primary font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="py-2 px-4 rounded-xl bg-theme-primary text-theme-on-primary font-semibold disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Creating...' : 'Create Goal'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

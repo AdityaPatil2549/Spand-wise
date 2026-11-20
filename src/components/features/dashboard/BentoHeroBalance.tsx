@@ -5,6 +5,7 @@ import { getDaysInMonth, getDate } from 'date-fns';
 import { AnimatedNumber } from '@/components/ui/motion/animated-number';
 import { BorderTrail } from '@/components/ui/motion/border-trail';
 import { DropdownMenu } from '@/components/ui/DropdownMenu';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/Tooltip';
 import { AlertTriangle, CheckCircle2, MoreHorizontal, AlertCircle, Gauge } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { CURRENCY_SYMBOL } from '@/config/constants';
@@ -121,19 +122,23 @@ export const BentoHeroBalance: React.FC<BentoHeroBalanceProps> = ({
 
         {/* Prominent Safe Daily Spend Runway Pill */}
         <div className="pt-1.5 flex items-center gap-2 text-xs flex-wrap">
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-theme-base/90 border border-theme-border/50 text-theme-secondary hover:border-theme-accent/40 transition-colors cursor-help"
-            title={`Runway Formula: Remaining ${CURRENCY_SYMBOL}${Math.max(0, balance).toLocaleString('en-IN')} ÷ ${daysRemaining} days left = ${CURRENCY_SYMBOL}${safeDailySpend}/day max target`}
-          >
-            <span className="w-2 h-2 rounded-full bg-theme-accent shrink-0 animate-pulse" />
-            <span>
-              Safe Daily Spend:{' '}
-              <strong className="text-theme-primary font-bold tabular-nums font-mono">
-                {formatCurrency(safeDailySpend)}
-              </strong>{' '}
-              <span className="text-theme-secondary">({daysRemaining}d runway)</span>
-            </span>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-theme-base/90 border border-theme-border/50 text-theme-secondary hover:border-theme-accent/40 transition-colors cursor-help">
+                <span className="w-2 h-2 rounded-full bg-theme-accent shrink-0 animate-pulse" />
+                <span>
+                  Safe Daily Spend:{' '}
+                  <strong className="text-theme-primary font-bold tabular-nums font-mono">
+                    {formatCurrency(safeDailySpend)}
+                  </strong>{' '}
+                  <span className="text-theme-secondary">({daysRemaining}d runway)</span>
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs text-center leading-relaxed">
+              Runway Target: Remaining {CURRENCY_SYMBOL}{Math.max(0, balance).toLocaleString('en-IN')} ÷ {daysRemaining} days left = {CURRENCY_SYMBOL}{safeDailySpend}/day
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

@@ -4,7 +4,14 @@ import React, { useState } from 'react';
 import { generateMonthlyPDFReport } from '@/lib/export/pdfReport';
 import { format } from 'date-fns';
 import { triggerHaptic } from '@/lib/haptics';
-import { FileDown, FileText, Table, X } from 'lucide-react';
+import { FileDown, FileText, Table } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/Dialog';
 import type { ExpenseDocument, BudgetDocument, CategoryDocument } from '@/types/firestore';
 
 interface ExportReportModalProps {
@@ -104,32 +111,23 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="relative w-full max-w-md rounded-3xl bg-theme-surface border border-theme-border p-6 sm:p-7 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center pb-3 border-b border-theme-border/30">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md p-6 sm:p-7 space-y-5">
+        <DialogHeader className="pb-3 border-b border-theme-border/30 text-left">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-theme-accent/10 text-theme-accent flex items-center justify-center">
               <FileDown className="w-4 h-4 stroke-[2.2]" />
             </div>
             <div>
-              <h4 className="font-bold text-base text-theme-primary">Export Statement</h4>
-              <p className="text-xs text-theme-secondary">
+              <DialogTitle className="font-bold text-base text-theme-primary">
+                Export Statement
+              </DialogTitle>
+              <DialogDescription className="text-xs text-theme-secondary">
                 For parents, hostel accounting & personal tax
-              </p>
+              </DialogDescription>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-theme-base text-theme-secondary hover:text-theme-primary"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        </DialogHeader>
 
         <div className="space-y-3">
           {/* PDF Report Option */}
@@ -188,7 +186,7 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({
             Exports are compiled 100% on device for maximum student privacy.
           </p>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
