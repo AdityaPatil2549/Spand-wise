@@ -191,12 +191,18 @@ export default function ExpensesPage() {
             </div>
   {/* Search/Category Filter */}
   <div className="relative w-full md:w-72 group">
+  <label htmlFor="expenses-search-input" className="sr-only">
+    Search expenses
+  </label>
   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-tertiary group-focus-within:text-theme-accent transition-colors" />
   <input 
+    id="expenses-search-input"
+    name="searchQuery"
     value={searchQuery}
     onChange={(e) => setSearchQuery(e.target.value)}
     className="w-full bg-theme-surface/70 border border-theme-border/60 rounded-xl py-2 pl-10 pr-4 font-sans text-xs text-theme-primary focus:outline-none focus:border-theme-accent/60 transition-all shadow-sm placeholder:text-theme-tertiary" 
     placeholder="Search expenses..." 
+    aria-label="Search expenses by note or description"
     type="text" 
   />
   </div>
