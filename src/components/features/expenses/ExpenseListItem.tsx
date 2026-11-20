@@ -6,7 +6,7 @@ import { Edit2, Trash2, ArrowDownRight } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { CategoryIcon } from '@/components/shared/CategoryIcon';
 import { useStore } from '@/store';
-import { softDeleteExpense, restoreExpense } from '@/lib/expenses/index';
+import { useDeleteExpenseMutation, useRestoreExpenseMutation } from '@/hooks/mutations/useExpenseMutations';
 import { formatCurrency } from '@/lib/utils/format';
 import { formatTime } from '@/lib/utils/date';
 import { UNDO_TOAST_DURATION_MS } from '@/config/constants';
@@ -28,8 +28,9 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
   const controls = useAnimation();
   const haptic = useHaptic();
   
-  const { user, householdId, addToast, removeExpenseOptimistic, restoreExpenseOptimistic, adjustTotalSpentOptimistic } =
-    useStore();
+  const { user, householdId, addToast, adjustTotalSpentOptimistic } = useStore();
+  const deleteExpenseMutation = useDeleteExpenseMutation();
+  const restoreExpenseMutation = useRestoreExpenseMutation();
 
   const storeCategories = useStore((s) => s.categories);
   const category =
@@ -47,8 +48,11 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
     // Animate out to the left
     await controls.start({ x: -100, opacity: 0, transition: { duration: 0.2 } });
     
-    // Optimistic UI: remove from list immediately
-    removeExpenseOptimistic(expense.id);
+    // Optimistic UI: remove from list immediately via mutation
+    deleteExpenseMutation.mutate({
+      householdId: householdId || user.uid,
+      expense,
+    });
     adjustTotalSpentOptimistic(-expense.amount);
 
     addToast({
@@ -57,25 +61,14 @@ export const ExpenseListItem = ({ expense, onEdit }: ExpenseListItemProps) => {
       duration: UNDO_TOAST_DURATION_MS,
       actionLabel: 'Undo',
       onAction: async () => {
-        // Restore optimistically
-        restoreExpenseOptimistic(expense);
+        // Restore optimistically via mutation
+        restoreExpenseMutation.mutate({
+          householdId: householdId || user.uid,
+          expense,
+        });
         adjustTotalSpentOptimistic(expense.amount);
-        try {
-          await restoreExpense(householdId || user.uid, expense.id, expense.amount, expense.month);
-        } catch {
-          addToast({ type: 'error', message: 'Failed to restore expense.' });
-        }
       },
     });
-
-    // After undo timeout, commit the delete
-    setTimeout(async () => {
-      try {
-        await softDeleteExpense(householdId || user.uid, expense.id, expense.amount, expense.month);
-      } catch {
-        // Silently fail — if Firestore offline, it will sync later
-      }
-    }, UNDO_TOAST_DURATION_MS);
   };
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {

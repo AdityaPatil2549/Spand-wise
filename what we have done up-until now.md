@@ -391,6 +391,52 @@
   - `Via antigravity/PRODUCTION_GRADE_BLUEPRINT.md`: Root project copy of master blueprint.
   - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 11.
 
+---
+
+## Phase 12: TanStack Query v5 State Separation & Optimistic Mutation Architecture — COMPLETE
+- **Timestamp:** `2026-11-20 15:15 IST`
+- **Work Domain:** `State Management / TanStack Query v5 / Optimistic Rollback Pipeline / Offline First Architecture`
+- **Context & Motivation:** Executed Phase 1 of the $100M-grade production blueprint: eliminating manual store mutations and race conditions by isolating server cache into `@tanstack/react-query` v5 with optimistic updates and automatic snapshot rollback.
+- **Architectural & Code Fixes Executed:**
+  - **1. Package Installation:**
+    - Installed `@tanstack/react-query` v5 (`^5.108.1`).
+  - **2. QueryClient Singleton & Offline Defaults:**
+    - Created [`src/lib/react-query/index.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/react-query/index.ts) with resilient offline defaults: `staleTime: 2m`, `gcTime: 10m`, `retry: 1`, `refetchOnWindowFocus: false`, and fail-fast mutation retries.
+  - **3. Root Provider Ingestion:**
+    - In [`src/components/layout/GlobalProviders.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/layout/GlobalProviders.tsx), mounted `QueryClientProvider` around all client applications and portals.
+  - **4. Deterministic Query Keys & Fetcher:**
+    - Created [`src/hooks/queries/keys.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/queries/keys.ts) and [`src/hooks/queries/useExpensesQuery.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/queries/useExpensesQuery.ts) for pure query key generation (`['expenses', householdId, monthsKey]`) and direct async Firestore fetching with zero-latency initial store hydration.
+  - **5. Real-Time Listener Cache Synchronization:**
+    - Upgraded `useExpensesListener` in [`src/hooks/useExpenses.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/useExpenses.ts) to push incoming Firestore snapshots simultaneously into TanStack Query Cache and Zustand store.
+  - **6. Strongly-Typed Mutation Pipeline (`useExpenseMutations.ts`):**
+    - Built [`src/hooks/mutations/useExpenseMutations.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/mutations/useExpenseMutations.ts) with full optimistic update and snapshot rollback lifecycle:
+      - `useAddExpenseMutation`: Immediate UI prepend, query cancellation, snapshot rollback on error, and automatic cache invalidation on settle.
+      - `useDeleteExpenseMutation`: Immediate UI removal, snapshot rollback, and cache invalidation.
+      - `useUpdateExpenseMutation`: In-place cache patch, optimistic rollback, and cache invalidation.
+      - `useRestoreExpenseMutation`: Undo restoration with automatic cache synchronization.
+  - **7. Form & List Component Migration:**
+    - Refactored [`ExpenseForm.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/expenses/ExpenseForm.tsx), [`BentoFastLogBar.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoFastLogBar.tsx), and [`ExpenseListItem.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/expenses/ExpenseListItem.tsx) to consume typed mutation hooks.
+    - Eradicated manual `tempId` hacks, messy try/catch rollback cascades, and fragile `setTimeout` logic.
+  - **8. Automated Regression Test Suite:**
+    - Added [`src/lib/__tests__/react-query.test.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/__tests__/react-query.test.ts) covering QueryClient options, deterministic key generation, and optimistic cache mutations with snapshot rollback.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **7 test files / 28 tests passed (100%)**.
+  - Dev server recompiled 3,626 modules cleanly with zero runtime warnings.
+- **Files Changed:**
+  - `package.json`: Added `@tanstack/react-query`.
+  - `src/lib/react-query/index.ts`: QueryClient singleton.
+  - `src/components/layout/GlobalProviders.tsx`: Wrapped application in `QueryClientProvider`.
+  - `src/hooks/queries/keys.ts`: Deterministic query keys.
+  - `src/hooks/queries/useExpensesQuery.ts`: Typed expense query hook.
+  - `src/hooks/mutations/useExpenseMutations.ts`: Add, delete, update, and restore mutation hooks.
+  - `src/hooks/useExpenses.ts`: Synced real-time listener to QueryClient.
+  - `src/components/features/dashboard/BentoFastLogBar.tsx`: Migrated quick log to `useAddExpenseMutation`.
+  - `src/components/features/expenses/ExpenseForm.tsx`: Migrated submit and delete to mutation hooks.
+  - `src/components/features/expenses/ExpenseListItem.tsx`: Migrated swipe delete and undo to mutation hooks.
+  - `src/lib/__tests__/react-query.test.ts`: Added unit tests for React Query layer.
+  - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 12.
+
 
 
 

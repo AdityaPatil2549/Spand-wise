@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Timestamp } from 'firebase/firestore';
 import { useStore } from '@/store';
-import { addExpense } from '@/lib/expenses/index';
-import { getLocalMonthString } from '@/lib/date-sharding';
+import { useAddExpenseMutation } from '@/hooks/mutations/useExpenseMutations';
 import { formatCurrency } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/haptics';
 import { Plus, Zap, Coffee, Utensils, Bus, FileText, ShoppingBag } from 'lucide-react';
 import { AddExpenseMorph } from '@/components/features/expenses/AddExpenseMorph';
-import type { ExpenseDocument, QuickAddPreset } from '@/types/firestore';
+import type { QuickAddPreset } from '@/types/firestore';
 
 const STUDENT_PRESETS: Array<QuickAddPreset & { iconColor: string; bgTint: string }> = [
   { id: 'chai', amount: 15, categoryId: 'food', note: 'Chai', icon: 'Coffee', color: '#f59e0b', iconColor: 'text-amber-500', bgTint: 'bg-amber-500/10' },
@@ -23,13 +21,12 @@ export const BentoFastLogBar: React.FC = () => {
   const {
     user,
     householdId,
-    addExpenseOptimistic,
-    removeExpenseOptimistic,
     adjustTotalSpentOptimistic,
     addToast,
     quickAddPresets,
   } = useStore();
 
+  const addExpenseMutation = useAddExpenseMutation();
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const activePresets =
@@ -43,25 +40,6 @@ export const BentoFastLogBar: React.FC = () => {
     setLoadingId(preset.id);
 
     const now = new Date();
-    const tempId = `temp-${Date.now()}`;
-    const newMonth = getLocalMonthString(now);
-
-    const tempExpense: ExpenseDocument = {
-      id: tempId,
-      amount: preset.amount,
-      categoryId: preset.categoryId,
-      note: preset.note,
-      date: Timestamp.fromDate(now),
-      month: newMonth,
-      isDeleted: false,
-      createdAt: Timestamp.now(),
-      createdBy: user.uid,
-      updatedAt: Timestamp.now(),
-    };
-
-    // Immediate optimistic store injection
-    addExpenseOptimistic(tempExpense);
-    adjustTotalSpentOptimistic(preset.amount);
 
     try {
       const data = {
@@ -71,19 +49,17 @@ export const BentoFastLogBar: React.FC = () => {
         date: now.toISOString(),
       };
 
-      const newExpense = await addExpense(householdId || user.uid, user.uid, data);
+      await addExpenseMutation.mutateAsync({
+        householdId: householdId || user.uid,
+        userId: user.uid,
+        input: data,
+      });
 
-      // Settle temp document with remote Firestore entity
-      removeExpenseOptimistic(tempId);
-      addExpenseOptimistic(newExpense);
+      adjustTotalSpentOptimistic(preset.amount);
       addToast({ type: 'success', message: `Logged ${preset.note} (${formatCurrency(preset.amount)})` });
       triggerHaptic('heavy');
     } catch (error) {
       console.error('Failed to quick add expense:', error);
-
-      // Atomic Rollback
-      removeExpenseOptimistic(tempId);
-      adjustTotalSpentOptimistic(-preset.amount);
       addToast({ type: 'error', message: 'Failed to record expense. Rolled back.' });
     } finally {
       setLoadingId(null);

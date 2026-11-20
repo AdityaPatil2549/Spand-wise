@@ -27,7 +27,12 @@ import { AnimatedSelect } from '@/components/ui/AnimatedSelect';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { ReceiptScanner } from '@/components/features/expenses/ReceiptScanner';
 import { useStore } from '@/store';
-import { addExpense, editExpense, parseExpenseDate, softDeleteExpense } from '@/lib/expenses/index';
+import { parseExpenseDate } from '@/lib/expenses/index';
+import {
+  useAddExpenseMutation,
+  useUpdateExpenseMutation,
+  useDeleteExpenseMutation,
+} from '@/hooks/mutations/useExpenseMutations';
 import { dateToInputValue } from '@/lib/utils/date';
 import { getLocalMonthString } from '@/lib/date-sharding';
 import { predictCategory } from '@/lib/ml/categorizer';
@@ -77,10 +82,11 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const householdId = useStore((s) => s.householdId);
   const categoriesMap = useStore((s) => s.categoriesMap);
   const addToast = useStore((s) => s.addToast);
-  const addExpenseOptimistic = useStore((s) => s.addExpenseOptimistic);
-  const updateExpenseOptimistic = useStore((s) => s.updateExpenseOptimistic);
-  const removeExpenseOptimistic = useStore((s) => s.removeExpenseOptimistic);
   const adjustTotalSpentOptimistic = useStore((s) => s.adjustTotalSpentOptimistic);
+
+  const addExpenseMutation = useAddExpenseMutation();
+  const updateExpenseMutation = useUpdateExpenseMutation();
+  const deleteExpenseMutation = useDeleteExpenseMutation();
 
   const isEdit = !!editingExpense;
   const haptic = useHaptic();
@@ -290,70 +296,36 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const onSubmit = async (data: ExpenseFormValues) => {
     if (!user) return;
     const previousState = isEdit ? editingExpense : null;
-    let tempId = '';
 
     try {
       if (isEdit && editingExpense) {
-        // Optimistic update
-        const parsedDate = parseExpenseDate(data.date);
-        const newMonth = getLocalMonthString(parsedDate);
-        updateExpenseOptimistic({ 
-          id: editingExpense.id, 
-          amount: data.amount, 
-          categoryId: data.categoryId, 
-          note: data.note ?? null,
-          date: Timestamp.fromDate(parsedDate),
-          month: newMonth,
-          accountId: data.accountId,
-          type: data.type
+        await updateExpenseMutation.mutateAsync({
+          householdId: householdId || user.uid,
+          input: { ...data, id: editingExpense.id },
+          previousExpense: editingExpense,
         });
-        
-        // This is a rough optimistic update that doesn't handle type switching, 
-        // but backend will correct it on next refresh.
+
         const delta = data.amount - editingExpense.amount;
         if (data.type === editingExpense.type && data.type === 'expense') {
           adjustTotalSpentOptimistic(delta);
         }
-        
-        await editExpense(
-          householdId || user.uid, 
-          { ...data, id: editingExpense.id }, 
-          editingExpense.amount, 
-          editingExpense.month, 
-          editingExpense.type,
-          editingExpense.accountId
-        );
+
         haptic.medium();
         addToast({ type: 'success', message: 'Transaction updated!' });
       } else {
-        // Optimistic add — create a temporary ID
-        tempId = `temp-${Date.now()}`;
-        const parsedDate = parseExpenseDate(data.date);
-        const newMonth = getLocalMonthString(parsedDate);
-        const tempExpense: ExpenseDocument = {
-          id: tempId,
-          amount: data.amount,
-          categoryId: data.categoryId,
-          note: data.note ?? null,
-          date: Timestamp.fromDate(parsedDate),
-          month: newMonth,
-          isDeleted: false,
-          type: data.type,
-          createdAt: Timestamp.now(),
-          createdBy: user.uid,
-          updatedAt: Timestamp.now(),
-          accountId: data.accountId || resolvedDefaultAccountId,
-        };
-        
-        addExpenseOptimistic(tempExpense);
+        await addExpenseMutation.mutateAsync({
+          householdId: householdId || user.uid,
+          userId: user.uid,
+          input: {
+            ...data,
+            accountId: data.accountId || resolvedDefaultAccountId,
+          },
+        });
+
         if (data.type === 'expense') {
           adjustTotalSpentOptimistic(data.amount);
         }
-        
-        const newExpense = await addExpense(householdId || user.uid, user.uid, data);
-        // Replace temp expense with real one
-        removeExpenseOptimistic(tempId);
-        addExpenseOptimistic(newExpense);
+
         haptic.success();
         triggerConfetti();
         addToast({ type: 'success', message: data.type === 'income' ? 'Income added! 💰' : 'Expense added! 💸' });
@@ -393,20 +365,6 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
       onSuccess();
     } catch (error: unknown) {
       console.error('Failed to save transaction:', error);
-      
-      // ATOMIC ROLLBACK
-      if (isEdit && previousState) {
-        updateExpenseOptimistic(previousState);
-        if (previousState.type === 'expense' && data.type === 'expense') {
-          adjustTotalSpentOptimistic(previousState.amount - data.amount);
-        }
-      } else if (!isEdit && tempId) {
-        removeExpenseOptimistic(tempId);
-        if (data.type === 'expense') {
-          adjustTotalSpentOptimistic(-data.amount);
-        }
-      }
-      
       addToast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to save transaction' });
     }
   };
@@ -414,32 +372,22 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
   const handleDelete = async () => {
     if (!editingExpense || !householdId || !user) return;
     try {
-      // Optimistic delete
-      removeExpenseOptimistic(editingExpense.id);
       if (editingExpense.type !== 'income') {
         adjustTotalSpentOptimistic(-editingExpense.amount);
       }
-      
-      await softDeleteExpense(
-        householdId, 
-        editingExpense.id, 
-        editingExpense.amount, 
-        editingExpense.month, 
-        editingExpense.type,
-        editingExpense.accountId
-      );
+
+      await deleteExpenseMutation.mutateAsync({
+        householdId,
+        expense: editingExpense,
+      });
+
       addToast({ type: 'success', message: 'Transaction deleted' });
       onSuccess();
     } catch (error: unknown) {
       console.error('Failed to delete transaction:', error);
-      
-      // ATOMIC ROLLBACK
-      const { restoreExpenseOptimistic } = useStore.getState();
-      restoreExpenseOptimistic(editingExpense);
       if (editingExpense.type !== 'income') {
         adjustTotalSpentOptimistic(editingExpense.amount);
       }
-      
       addToast({ type: 'error', message: error instanceof Error ? error.message : 'Failed to delete transaction' });
     }
   };
