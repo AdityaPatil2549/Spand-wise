@@ -93,6 +93,8 @@ export interface ExpenseDocument {
  createdBy?: string;
  /** ID of the account this expense was paid from (e.g., Bank, Cash) */
  accountId?: string;
+ /** Household ID this expense belongs to */
+ householdId?: string;
 }
 
 /**

@@ -7,6 +7,7 @@ import { EXPENSES_PAGE_SIZE } from '@/config/constants';
 import type { ExpenseDocument } from '@/types/firestore';
 import { useStore } from '@/store';
 import { EXPENSES_QUERY_KEY, getExpensesQueryKey } from './keys';
+import { expenseRepository } from '@/lib/repositories';
 
 export { EXPENSES_QUERY_KEY, getExpensesQueryKey } from './keys';
 
@@ -53,7 +54,7 @@ export function useExpensesQuery(householdId: string | null, months: string[]) {
     queryKey,
     queryFn: () => {
       if (!householdId) return Promise.resolve([]);
-      return fetchExpenses(householdId, months);
+      return expenseRepository.getExpenses(householdId, months);
     },
     enabled: Boolean(householdId),
     initialData: () => {

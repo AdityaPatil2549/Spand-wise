@@ -8,6 +8,7 @@ import { EXPENSES_PAGE_SIZE } from '@/config/constants';
 import type { ExpenseDocument } from '@/types/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { getExpensesQueryKey } from '@/hooks/queries/useExpensesQuery';
+import { localDb, toLocalExpense } from '@/lib/db/dexie';
 
 /**
  * useExpensesListener — Real-time Firestore listener for expenses.
@@ -69,6 +70,12 @@ export const useExpensesListener = (householdId: string | null, months: string[]
         queryClient.setQueryData(queryKey, expenses);
         setExpenses(expenses);
         setExpensesLoading(false);
+
+        // Synchronize local Dexie cache for 0ms offline availability
+        if (typeof window !== 'undefined') {
+          const records = expenses.map((doc) => toLocalExpense(doc, 'synced'));
+          localDb.expenses.bulkPut(records).catch(() => {});
+        }
       },
       (error) => {
         console.error('[useExpensesListener]', error);

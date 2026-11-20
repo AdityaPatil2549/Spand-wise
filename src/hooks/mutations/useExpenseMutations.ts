@@ -3,12 +3,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Timestamp } from 'firebase/firestore';
 import {
-  addExpense,
-  editExpense,
-  softDeleteExpense,
-  restoreExpense,
   parseExpenseDate,
 } from '@/lib/expenses';
+import { expenseRepository } from '@/lib/repositories';
 import { getLocalMonthString } from '@/lib/date-sharding';
 import { useStore } from '@/store';
 import { EXPENSES_QUERY_KEY, getExpensesQueryKey } from '@/hooks/queries/useExpensesQuery';
@@ -47,7 +44,7 @@ export function useAddExpenseMutation() {
 
   return useMutation({
     mutationFn: ({ householdId, userId, input }: AddExpenseMutationVariables) =>
-      addExpense(householdId, userId, input),
+      expenseRepository.addExpense(householdId, userId, input),
 
     onMutate: async ({ householdId, userId, input }) => {
       const queryKey = getExpensesQueryKey(householdId, loadedMonths);
@@ -111,7 +108,7 @@ export function useDeleteExpenseMutation() {
 
   return useMutation({
     mutationFn: ({ householdId, expense }: DeleteExpenseMutationVariables) =>
-      softDeleteExpense(
+      expenseRepository.softDeleteExpense(
         householdId,
         expense.id,
         expense.amount,
@@ -161,7 +158,7 @@ export function useUpdateExpenseMutation() {
 
   return useMutation({
     mutationFn: ({ householdId, input, previousExpense }: UpdateExpenseMutationVariables) =>
-      editExpense(
+      expenseRepository.editExpense(
         householdId,
         input,
         previousExpense.amount,
@@ -235,7 +232,7 @@ export function useRestoreExpenseMutation() {
 
   return useMutation({
     mutationFn: ({ householdId, expense }: RestoreExpenseMutationVariables) =>
-      restoreExpense(
+      expenseRepository.restoreExpense(
         householdId,
         expense.id,
         expense.amount,

@@ -515,3 +515,53 @@
 
 
 
+
+
+---
+
+## Phase 15: Local-First IndexedDB Outbox Replication & Abstract Repository Architecture (Dexie.js v4) — COMPLETE
+- **Timestamp:** `2026-11-20 18:55 IST`
+- **Work Domain:** `Local-First Storage / IndexedDB / Dexie.js v4 / Outbox CDC Engine / Repository Pattern / Offline Resilience`
+- **Context & Motivation:** Executed Phase 4 of the Master Production-Grade Blueprint. Replaced direct tight coupling between UI mutations and Firestore with a zero-latency local-first abstract repository architecture powered by Dexie.js (IndexedDB) and an autonomous Change Data Capture (CDC) Outbox replication worker.
+- **Architectural & Code Fixes Executed:**
+  - **1. Abstract Repository Contract (`IExpenseRepository`):**
+    - Created [`src/lib/repositories/IExpenseRepository.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/repositories/IExpenseRepository.ts) defining pure CRUD, date-range, and outbox sync contracts (`addExpense`, `editExpense`, `softDeleteExpense`, `restoreExpense`, `getExpenses`, `getExpensesByDateRange`, `syncOutbox`).
+    - Decoupled React components, TanStack Query, and Zustand stores from cloud-specific vendor APIs.
+  - **2. High-Performance IndexedDB Schema (`SpendWiseLocalDB`):**
+    - Created [`src/lib/db/dexie.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/db/dexie.ts) utilizing Dexie.js v4 with compound indexes:
+      - `expenses`: `id, householdId, month, isDeleted, date, syncStatus, [householdId+month], [householdId+isDeleted]`.
+      - `outbox`: `++id, mutationId, householdId, status, createdAt, [householdId+status]`.
+    - Added bi-directional lossless transformers (`toLocalExpense`, `toExpenseDocument`) bridging Firestore `Timestamp` objects with high-speed epoch milliseconds.
+  - **3. Autonomous Outbox CDC Replication Worker (`outboxWorker.ts`):**
+    - Built [`src/lib/sync/outboxWorker.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/sync/outboxWorker.ts) delivering guaranteed in-order FIFO mutation replay (`add` -> `edit` -> `delete` -> `restore`) to Firestore.
+    - Integrated network-awareness via `navigator.onLine`, `window.addEventListener('online', ...)`, and visibility-change triggers with exponential backoff up to 5 attempts.
+    - Exported `useOutboxSync()` hook in [`src/hooks/useOutboxSync.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/useOutboxSync.ts) and mounted in [`GlobalProviders.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/layout/GlobalProviders.tsx) for zero-maintenance background synchronization.
+  - **4. Concrete Repository Implementations (`DexieExpenseRepository` & `FirestoreExpenseRepository`):**
+    - Built [`src/lib/repositories/DexieExpenseRepository.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/repositories/DexieExpenseRepository.ts): Guarantees 0ms local reads from IndexedDB, writes mutations immediately to Dexie and Outbox, and triggers non-blocking background synchronization when connected.
+    - Built [`src/lib/repositories/FirestoreExpenseRepository.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/repositories/FirestoreExpenseRepository.ts) providing direct Firestore transactional fallback.
+    - Exported factory `getExpenseRepository()` in [`src/lib/repositories/index.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/repositories/index.ts).
+  - **5. TanStack Query & Real-time Snapshot Integration:**
+    - Routed `useExpenseMutations` (`useAddExpenseMutation`, `useDeleteExpenseMutation`, `useUpdateExpenseMutation`, `useRestoreExpenseMutation`) through `expenseRepository` for automatic outbox persistence.
+    - Enhanced `useExpensesQuery` to fetch from `expenseRepository.getExpenses(householdId, months)` with instant local cache hits.
+    - Enhanced `useExpensesListener` in [`src/hooks/useExpenses.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/hooks/useExpenses.ts) to push incoming Firestore snapshots into Dexie local database via `localDb.expenses.bulkPut(...)` in the background.
+  - **6. Automated Unit & Integration Test Suite:**
+    - Added [`src/lib/__tests__/dexie-outbox.test.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/__tests__/dexie-outbox.test.ts) testing Dexie schema, document transformers, compound queries, outbox tracking, outbox FIFO execution, and repository persistence.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **10 test files / 41 tests passed (100%)**.
+  - Dev server compiled all 3783 modules with 0 runtime errors.
+- **Files Changed:**
+  - `src/lib/repositories/IExpenseRepository.ts`: Abstract repository interface.
+  - `src/lib/repositories/FirestoreExpenseRepository.ts`: Pure Firestore repository adapter.
+  - `src/lib/repositories/DexieExpenseRepository.ts`: Local-first IndexedDB repository adapter.
+  - `src/lib/repositories/index.ts`: Repository exports & factory.
+  - `src/lib/db/dexie.ts`: Dexie v4 database schema and converters.
+  - `src/lib/sync/outboxWorker.ts`: CDC outbox replay worker with network listeners.
+  - `src/hooks/useOutboxSync.ts`: React hook for background outbox synchronization.
+  - `src/components/layout/GlobalProviders.tsx`: Mounted background outbox sync manager.
+  - `src/hooks/mutations/useExpenseMutations.ts`: Bridged mutations to `expenseRepository`.
+  - `src/hooks/queries/useExpensesQuery.ts`: Bridged queries to `expenseRepository`.
+  - `src/hooks/useExpenses.ts`: Synced incoming snapshots to Dexie local cache.
+  - `src/types/firestore.ts`: Added `householdId?: string` to `ExpenseDocument`.
+  - `src/lib/__tests__/dexie-outbox.test.ts`: 8 unit and integration tests.
+  - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 15.
