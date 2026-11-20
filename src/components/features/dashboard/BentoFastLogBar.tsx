@@ -91,7 +91,9 @@ export const BentoFastLogBar: React.FC = () => {
   };
 
   return (
-    <div className="w-full rounded-3xl p-5 sm:p-6 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+    <div className="relative overflow-hidden w-full rounded-3xl p-5 sm:p-6 bg-theme-surface/70 border border-theme-border/60 shadow-sm hover:border-theme-border hover:shadow-md transition-all duration-300 group flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      {/* Top subtle specular highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
       {/* Title & Quick Guidance */}
       <div className="flex items-center gap-3 flex-shrink-0">
         <div className="w-9 h-9 rounded-xl bg-theme-accent text-theme-on-accent flex items-center justify-center shadow-sm">

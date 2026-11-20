@@ -116,7 +116,9 @@ export const BentoVelocitySparkline: React.FC<BentoVelocitySparklineProps> = ({
     : '';
 
   return (
-    <div className="relative w-full rounded-3xl p-6 sm:p-8 bg-theme-surface/70 border border-theme-border/60 flex flex-col justify-between min-h-[350px] shadow-sm">
+    <div className="relative overflow-hidden w-full rounded-3xl p-6 sm:p-8 bg-theme-surface/70 border border-theme-border/60 flex flex-col justify-between min-h-[350px] shadow-sm hover:border-theme-border hover:shadow-md transition-all duration-300 group">
+      {/* Top subtle specular highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
       {/* Top Header */}
       <div className="flex justify-between items-start">
         <div className="space-y-1">

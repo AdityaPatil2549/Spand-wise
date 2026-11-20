@@ -41,14 +41,16 @@ export const BentoHeroBalance: React.FC<BentoHeroBalanceProps> = ({
 
   return (
     <div
-      className={`relative w-full rounded-3xl overflow-hidden border transition-all flex flex-col justify-between p-5 sm:p-7 min-h-[265px] sm:min-h-[340px] shadow-sm ${
+      className={`relative w-full rounded-3xl overflow-hidden border transition-all flex flex-col justify-between p-5 sm:p-7 min-h-[265px] sm:min-h-[340px] shadow-sm hover:shadow-lg hover:shadow-black/20 group duration-300 ${
         isOverBudget
-          ? 'border-rose-500/35 bg-theme-surface/90'
+          ? 'border-rose-500/35 bg-theme-surface/90 hover:border-rose-500/60'
           : isTight || isAheadOfPace
-          ? 'border-amber-500/35 bg-theme-surface/90'
-          : 'border-theme-border/60 bg-theme-surface/80'
+          ? 'border-amber-500/35 bg-theme-surface/90 hover:border-amber-500/60'
+          : 'border-theme-border/60 bg-theme-surface/80 hover:border-theme-accent/40'
       }`}
     >
+      {/* Top subtle specular highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
       {isOverBudget && (
         <BorderTrail size={120} transition={{ ease: 'linear', duration: 4, repeat: Infinity }} />
       )}
@@ -119,14 +121,17 @@ export const BentoHeroBalance: React.FC<BentoHeroBalanceProps> = ({
 
         {/* Prominent Safe Daily Spend Runway Pill */}
         <div className="pt-1.5 flex items-center gap-2 text-xs flex-wrap">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-theme-base/90 border border-theme-border/50 text-theme-secondary">
-            <span className="w-2 h-2 rounded-full bg-theme-accent shrink-0" />
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-theme-base/90 border border-theme-border/50 text-theme-secondary hover:border-theme-accent/40 transition-colors cursor-help"
+            title={`Runway Formula: Remaining ${CURRENCY_SYMBOL}${Math.max(0, balance).toLocaleString('en-IN')} ÷ ${daysRemaining} days left = ${CURRENCY_SYMBOL}${safeDailySpend}/day max target`}
+          >
+            <span className="w-2 h-2 rounded-full bg-theme-accent shrink-0 animate-pulse" />
             <span>
               Safe Daily Spend:{' '}
               <strong className="text-theme-primary font-bold tabular-nums font-mono">
                 {formatCurrency(safeDailySpend)}
               </strong>{' '}
-              <span className="text-theme-secondary">({daysRemaining}d left)</span>
+              <span className="text-theme-secondary">({daysRemaining}d runway)</span>
             </span>
           </div>
         </div>

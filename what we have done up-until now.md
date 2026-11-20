@@ -307,6 +307,34 @@
   - `src/components/features/splits/SplitLedgerPanel.tsx`: Added UPI copy button with toast feedback and accessible form controls.
   - `src/app/(auth)/onboarding/page.tsx`: Added accessible slider attributes and label.
 
+---
+
+## Phases 7 & 9: Bento Specular Sheen, Dynamic Interactive Donut & Duplicate Key Eradication — COMPLETE
+- **Timestamp:** `2026-11-20 02:54 IST`
+- **Work Domain:** `Visual Sheen / Micro-Interactions / Interactive Recharts / React Console Hygiene / Apple & Linear Polish`
+- **Context & Motivation:** Resolving Phase 7 (Bento Card Micro-Interactions & Specular Sheen) and Phase 9 (Dynamic Interactive Donut Ring on `/analytics`) while eradicating a React duplicate key warning (`Encountered two children with the same key, 'Other'`).
+- **Architectural & Visual Upgrades Executed:**
+  - **1. Bento Card Specular Sheen & Border Polish:**
+    - In [`BentoHeroBalance.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoHeroBalance.tsx), [`BentoFastLogBar.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoFastLogBar.tsx), [`BentoUpcomingSplits.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoUpcomingSplits.tsx), and [`BentoVelocitySparkline.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/dashboard/BentoVelocitySparkline.tsx), added subtle 1px top specular gradient highlights (`inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent`) and smooth border hover transitions (`hover:border-theme-border/80 hover:shadow-md transition-all duration-300`).
+    - Added an interactive calculation tooltip (`Runway Formula: Remaining ₹... ÷ ... days left = ₹.../day`) and pulsing status dot to the Safe Daily Spend pill in `BentoHeroBalance.tsx`.
+  - **2. Interactive Donut Chart Overhaul:**
+    - Upgraded both [`CategorySpendDonut.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/analytics/CategorySpendDonut.tsx) and [`DonutChart.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/analytics/DonutChart.tsx) to be fully interactive: hovering over any slice in the chart or any item in the category list scales the slice and dynamically updates the central label with that category's name, spend, and percentage.
+    - Replaced legacy CSS variables (`var(--surface-*)`, `var(--text-*)`) with theme tokens (`bg-theme-surface`, `text-theme-primary`, `text-theme-secondary`, `text-theme-tertiary`, `border-theme-border`).
+  - **3. React Duplicate Key Eradication:**
+    - In `CategorySpendDonut.tsx`, replaced `key={item.name}` with `key={`${item.name}-${index}`}`, completely resolving the console error `Warning: Encountered two children with the same key, 'Other'`.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **6 test files / 25 tests passed (100%)**.
+  - Chrome DevTools Telemetry: **0 Errors** • **0 Warnings** • **0 A11y Issues** across `/dashboard` and `/analytics`.
+- **Files Changed:**
+  - `src/components/features/dashboard/BentoHeroBalance.tsx`: Added top specular highlight and runway calculation tooltip.
+  - `src/components/features/dashboard/BentoFastLogBar.tsx`: Added specular highlight and hover border sheen.
+  - `src/components/features/dashboard/BentoUpcomingSplits.tsx`: Added specular highlight and hover border sheen.
+  - `src/components/features/dashboard/BentoVelocitySparkline.tsx`: Added specular highlight and hover border sheen.
+  - `src/components/features/analytics/CategorySpendDonut.tsx`: Added hover interaction, dynamic center total, unique keys, and specular highlight.
+  - `src/components/features/analytics/DonutChart.tsx`: Full interactive rewrite with theme token migration.
+
+
 
 
 

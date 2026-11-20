@@ -89,7 +89,9 @@ export const BentoUpcomingSplits: React.FC = () => {
   };
 
   return (
-    <div className="w-full rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between min-h-[350px]">
+    <div className="relative overflow-hidden w-full rounded-3xl p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm hover:border-theme-border hover:shadow-md transition-all duration-300 group flex flex-col justify-between min-h-[350px]">
+      {/* Top subtle specular highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
       {/* Top Header */}
       <div className="flex justify-between items-center pb-3 border-b border-theme-border/30">
         <div className="flex items-center gap-2">

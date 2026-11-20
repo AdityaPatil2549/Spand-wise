@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
 import { PieChart as PieIcon, Layers } from 'lucide-react';
@@ -22,8 +22,14 @@ export const CategorySpendDonut: React.FC<CategorySpendDonutProps> = ({
   pieData,
   totalSpent,
 }) => {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const activeItem = activeIndex !== null && pieData[activeIndex] ? pieData[activeIndex] : null;
+
   return (
-    <div className="w-full rounded-[28px] p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm flex flex-col justify-between">
+    <div className="relative overflow-hidden w-full rounded-[28px] p-6 sm:p-7 bg-theme-surface/70 border border-theme-border/60 shadow-sm hover:border-theme-border hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+      {/* Top subtle specular highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+
       {/* Header */}
       <div className="flex justify-between items-center pb-3 border-b border-theme-border/30">
         <div className="flex items-center gap-2.5">
@@ -60,17 +66,20 @@ export const CategorySpendDonut: React.FC<CategorySpendDonutProps> = ({
                   cx="50%"
                   cy="50%"
                   innerRadius={55}
-                  outerRadius={80}
+                  outerRadius={activeIndex !== null ? 82 : 80}
                   paddingAngle={3}
                   dataKey="value"
                   animationDuration={800}
+                  onMouseEnter={(_, index) => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(null)}
                 >
                   {pieData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={entry.color}
-                      stroke="var(--theme-surface)"
-                      strokeWidth={2}
+                      stroke={activeIndex === index ? 'rgb(var(--theme-primary))' : 'var(--theme-surface)'}
+                      strokeWidth={activeIndex === index ? 3 : 2}
+                      className="cursor-pointer transition-all duration-150 outline-none"
                     />
                   ))}
                 </Pie>
@@ -87,31 +96,46 @@ export const CategorySpendDonut: React.FC<CategorySpendDonutProps> = ({
               </PieChart>
             </ResponsiveContainer>
 
-            {/* Inner Donut Center Total */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-[10px] uppercase tracking-widest text-theme-secondary font-semibold">
-                Total
+            {/* Inner Donut Center Dynamic Total */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none transition-all duration-150">
+              <span className="text-[10px] uppercase tracking-widest text-theme-secondary font-semibold max-w-[100px] truncate text-center">
+                {activeItem ? activeItem.name : 'Total'}
               </span>
-              <span className="text-sm font-bold text-theme-primary tabular-nums">
-                {formatCurrency(totalSpent)}
+              <span className="text-sm font-bold text-theme-primary tabular-nums font-mono">
+                {formatCurrency(activeItem ? activeItem.value : totalSpent)}
               </span>
+              {activeItem && totalSpent > 0 && (
+                <span className="text-[10px] text-theme-accent font-semibold font-mono animate-in fade-in">
+                  {Math.round((activeItem.value / totalSpent) * 100)}%
+                </span>
+              )}
             </div>
           </div>
 
           {/* Category Items Breakdown List */}
           <div className="md:col-span-7 space-y-2.5 max-h-56 overflow-y-auto pr-1">
-            {pieData.slice(0, 5).map((item) => {
+            {pieData.slice(0, 5).map((item, index) => {
               const pct = totalSpent > 0 ? Math.round((item.value / totalSpent) * 100) : 0;
+              const isSelected = activeIndex === index;
 
               return (
                 <div
-                  key={item.name}
-                  className="p-2.5 rounded-xl bg-theme-base/60 border border-theme-border/30 flex items-center justify-between text-xs gap-3"
+                  key={`${item.name}-${index}`}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(null)}
+                  className={`p-2.5 rounded-xl border flex items-center justify-between text-xs gap-3 cursor-pointer transition-all ${
+                    isSelected
+                      ? 'bg-theme-elevated border-theme-border shadow-sm'
+                      : 'bg-theme-base/60 border-theme-border/30 hover:border-theme-border/60'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span
-                      className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: item.color }}
+                      className="w-3 h-3 rounded-full flex-shrink-0 transition-transform"
+                      style={{
+                        backgroundColor: item.color,
+                        transform: isSelected ? 'scale(1.2)' : 'scale(1)',
+                      }}
                     />
                     <span className="font-semibold text-theme-primary truncate">
                       {item.name}
@@ -122,7 +146,7 @@ export const CategorySpendDonut: React.FC<CategorySpendDonutProps> = ({
                     <span className="text-theme-secondary font-mono font-medium text-[11px]">
                       {pct}%
                     </span>
-                    <strong className="text-theme-primary font-bold tabular-nums">
+                    <strong className="text-theme-primary font-bold tabular-nums font-mono">
                       {formatCurrency(item.value)}
                     </strong>
                   </div>
