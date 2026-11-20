@@ -26,6 +26,7 @@ import { AnimatedDatePicker } from '@/components/ui/AnimatedDatePicker';
 import { AnimatedSelect } from '@/components/ui/AnimatedSelect';
 import { CategoryPicker } from '@/components/shared/CategoryPicker';
 import { ReceiptScanner } from '@/components/features/expenses/ReceiptScanner';
+import { SectionErrorBoundary } from '@/components/shared/SectionErrorBoundary';
 import { useStore } from '@/store';
 import { parseExpenseDate } from '@/lib/expenses/index';
 import {
@@ -524,27 +525,29 @@ export const ExpenseForm = ({ editingExpense, initialCategoryId, onSuccess }: Ex
               </span>
             )}
           </div>
-          <ReceiptScanner
-            onScanComplete={(data) => {
-              if (data.amount) {
-                syncExpression(String(data.amount));
-              }
-              if (data.date) {
-                setValue('date', `${data.date}T12:00`, { shouldValidate: true });
-                setShowMoreOptions(true);
-              }
-              if (data.note) {
-                setValue('note', data.note, { shouldValidate: true });
-              }
-              if (data.categoryId) {
-                setValue('categoryId', data.categoryId, { shouldValidate: true });
-                setUserSelectedCategoryManually(false);
-                setIsAutoCategorized(true);
-                const catName = categoriesMap.get(data.categoryId)?.name || data.categoryId;
-                setAutoCategoryName(catName);
-              }
-            }}
-          />
+          <SectionErrorBoundary fallbackTitle="Scanner Error">
+            <ReceiptScanner
+              onScanComplete={(data) => {
+                if (data.amount) {
+                  syncExpression(String(data.amount));
+                }
+                if (data.date) {
+                  setValue('date', `${data.date}T12:00`, { shouldValidate: true });
+                  setShowMoreOptions(true);
+                }
+                if (data.note) {
+                  setValue('note', data.note, { shouldValidate: true });
+                }
+                if (data.categoryId) {
+                  setValue('categoryId', data.categoryId, { shouldValidate: true });
+                  setUserSelectedCategoryManually(false);
+                  setIsAutoCategorized(true);
+                  const catName = categoriesMap.get(data.categoryId)?.name || data.categoryId;
+                  setAutoCategoryName(catName);
+                }
+              }}
+            />
+          </SectionErrorBoundary>
         </div>
 
         {/* Inline Operator Bar + Quick Chips (Hidden when full 4x4 keypad is expanded) */}

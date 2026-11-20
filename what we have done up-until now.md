@@ -477,6 +477,38 @@
   - `src/lib/__tests__/radix-ui.test.tsx`: Added unit test suite.
   - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 13.
 
+---
+
+## Phase 14: Telemetry, Sonner Stacked Toasts & Section Error Boundaries — COMPLETE
+- **Timestamp:** `2026-11-20 16:15 IST`
+- **Work Domain:** `Telemetry / Toast Notification Stack / Sonner / Error Boundaries / Fault Isolation`
+- **Context & Motivation:** Executed Phase 3 of the master blueprint: replacing handwritten toasts with Linear-grade stacked cards with native Undo action callbacks, implementing structured JSON telemetry, and mounting defensive `<SectionErrorBoundary>` wrappers around critical SVG/canvas visualization surfaces and receipt scanner OCR.
+- **Architectural & Code Fixes Executed:**
+  - **1. Sonner Stacked Toaster Ingestion:**
+    - Replaced custom Toaster in [`src/components/ui/Toaster.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/ui/Toaster.tsx) with Sonner `<Toaster position="bottom-right" richColors closeButton />` styled with Obsidian Zinc theme tokens.
+    - Upgraded `addToast` in [`src/store/ui.slice.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/store/ui.slice.ts) to transparently bridge toast calls with interactive action callbacks (`label: 'Undo'`, `onClick`).
+  - **2. Structured Telemetry Logger:**
+    - Created [`src/lib/telemetry/logger.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/telemetry/logger.ts) providing structured JSON error logging, debug diagnostics, and runtime telemetry.
+  - **3. Section Error Boundary (`SectionErrorBoundary.tsx`):**
+    - Built [`src/components/shared/SectionErrorBoundary.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/shared/SectionErrorBoundary.tsx) to catch component-level exceptions and provide clean in-place retry fallbacks.
+    - Wrapped critical visual analytics in [`src/app/(app)/analytics/page.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/app/(app)/analytics/page.tsx) (`CategorySpendDonut`, `BurnRateVelocityChart`, `WaterfallMoneyFlow`).
+    - Wrapped `<ReceiptScanner>` in [`src/components/features/expenses/ExpenseForm.tsx`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/components/features/expenses/ExpenseForm.tsx).
+  - **4. Automated Regression Test Suite:**
+    - Added [`src/lib/__tests__/telemetry.test.ts`](file:///d:/Projects/Expense%20Tracker/Via%20antigravity/src/lib/__tests__/telemetry.test.ts) validating structured logging and error boundary state derivation.
+- **Verification Gates Passed:**
+  - `.\node_modules\.bin\tsc.cmd --noEmit --incremental false`: **0 errors** (exit code 0).
+  - `npm test` (`vitest run --no-cache`): **9 test files / 33 tests passed (100%)**.
+  - Dev server hot-reloaded cleanly with zero runtime warnings.
+- **Files Changed:**
+  - `src/components/ui/Toaster.tsx`: Mounted Sonner Toaster.
+  - `src/store/ui.slice.ts`: Bridged `addToast` to Sonner with action buttons.
+  - `src/lib/telemetry/logger.ts`: Structured telemetry logger.
+  - `src/components/shared/SectionErrorBoundary.tsx`: Resilient error boundary with retry UI.
+  - `src/app/(app)/analytics/page.tsx`: Guarded Recharts widgets with error boundaries.
+  - `src/components/features/expenses/ExpenseForm.tsx`: Guarded receipt scanner with error boundary.
+  - `src/lib/__tests__/telemetry.test.ts`: Added telemetry unit tests.
+  - `what we have done up-until now.md`: Updated comprehensive engineering log with Phase 14.
+
 
 
 

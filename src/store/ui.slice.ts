@@ -1,7 +1,7 @@
 import type { StateCreator } from 'zustand';
 import type { AppStore } from './index';
 import type { Toast, BottomSheetState } from '@/types/ui';
-
+import { toast as sonnerToast } from 'sonner';
 import { DEFAULT_TOAST_DURATION_MS } from '@/config/constants';
 
 let toastIdCounter = 0;
@@ -27,16 +27,44 @@ export const createUISlice: StateCreator<AppStore, [], [], UISlice> = (set) => (
     const id = `toast-${++toastIdCounter}`;
     const duration = toastData.duration ?? DEFAULT_TOAST_DURATION_MS;
     const toast: Toast = { ...toastData, id, duration };
+
+    // Synchronize to internal store state for backward compatibility
     set((state) => ({ toasts: [...state.toasts, toast] }));
-    // Auto-dismiss after duration
-    setTimeout(() => {
-      set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
-    }, duration);
+
+    const action =
+      toastData.actionLabel && toastData.onAction
+        ? {
+            label: toastData.actionLabel,
+            onClick: () => {
+              toastData.onAction?.();
+            },
+          }
+        : undefined;
+
+    // Trigger Sonner notification with native action button
+    switch (toastData.type) {
+      case 'success':
+        sonnerToast.success(toastData.message, { id, duration, action });
+        break;
+      case 'error':
+        sonnerToast.error(toastData.message, { id, duration, action });
+        break;
+      case 'warning':
+        sonnerToast.warning(toastData.message, { id, duration, action });
+        break;
+      case 'info':
+      default:
+        sonnerToast.info(toastData.message, { id, duration, action });
+        break;
+    }
+
     return id;
   },
 
-  removeToast: (id) =>
-    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
+  removeToast: (id) => {
+    sonnerToast.dismiss(id);
+    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
+  },
 
   openBottomSheet: (options) =>
     set({

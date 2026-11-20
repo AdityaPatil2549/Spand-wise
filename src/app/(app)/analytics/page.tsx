@@ -27,6 +27,7 @@ import { WaterfallMoneyFlow } from '@/components/features/analytics/WaterfallMon
 import { RecurringVsVariableSplit } from '@/components/features/analytics/RecurringVsVariableSplit';
 import { SavingsGoalCards } from '@/components/features/analytics/SavingsGoalCards';
 import { ExportReportModal } from '@/components/features/analytics/ExportReportModal';
+import { SectionErrorBoundary } from '@/components/shared/SectionErrorBoundary';
 
 export default function AnalyticsPage() {
   const isHydrated = useHydrated();
@@ -364,30 +365,36 @@ export default function AnalyticsPage() {
         </div>
 
         <div className="lg:col-span-6 flex">
-          <CategorySpendDonut
-            pieData={pieData}
-            totalSpent={totalSpent}
-            categoriesMap={categoriesMap}
-          />
+          <SectionErrorBoundary fallbackTitle="Category Allocation Unavailable" className="w-full">
+            <CategorySpendDonut
+              pieData={pieData}
+              totalSpent={totalSpent}
+              categoriesMap={categoriesMap}
+            />
+          </SectionErrorBoundary>
         </div>
       </div>
 
       {/* Domain Row 2: Burn Rate Velocity Chart & Historical 6-Month Comparison */}
-      <BurnRateVelocityChart
-        areaData={areaData}
-        pastBudgets={pastBudgets}
-        momChange={momChange}
-        velocityStats={velocityStats}
-        dayOfWeekStats={dayOfWeekStats}
-      />
+      <SectionErrorBoundary fallbackTitle="Burn Rate Velocity Unavailable">
+        <BurnRateVelocityChart
+          areaData={areaData}
+          pastBudgets={pastBudgets}
+          momChange={momChange}
+          velocityStats={velocityStats}
+          dayOfWeekStats={dayOfWeekStats}
+        />
+      </SectionErrorBoundary>
 
       {/* Domain Row 3: Waterfall Cashflow Stepwise Breakdown */}
-      <WaterfallMoneyFlow
-        income={savingsThisMonth.monthlyIncome}
-        budgetAmount={budget?.budgetAmount || 0}
-        expenses={currentMonthExpenses}
-        categoriesMap={categoriesMap}
-      />
+      <SectionErrorBoundary fallbackTitle="Cashflow Flow Unavailable">
+        <WaterfallMoneyFlow
+          income={savingsThisMonth.monthlyIncome}
+          budgetAmount={budget?.budgetAmount || 0}
+          expenses={currentMonthExpenses}
+          categoriesMap={categoriesMap}
+        />
+      </SectionErrorBoundary>
 
       {/* Domain Row 4: Recurring vs Variable Split */}
       <RecurringVsVariableSplit
