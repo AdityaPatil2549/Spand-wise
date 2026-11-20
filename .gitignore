@@ -40,3 +40,4 @@ next-env.d.ts
 .firebase
 public/sw.js
 public/swe-worker*.js
+Screenshots/
