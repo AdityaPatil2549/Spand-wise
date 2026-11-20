@@ -203,10 +203,16 @@ function TransactionsContent() {
         {/* Search Bar & Filter Toggle */}
         <div className="flex gap-2.5 mb-3">
           <div className="relative flex-1">
+            <label htmlFor="transactions-search-input" className="sr-only">
+              Search transactions
+            </label>
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-secondary" />
             <input
+              id="transactions-search-input"
+              name="transactionSearch"
               type="text"
               placeholder="Search by amount, note, or merchant..."
+              aria-label="Search transactions by amount, note, or merchant"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-theme-surface border border-theme-border/60 rounded-2xl pl-10 pr-9 py-3 text-sm text-theme-primary placeholder:text-theme-secondary focus:outline-none focus:border-theme-accent transition-colors shadow-sm"
