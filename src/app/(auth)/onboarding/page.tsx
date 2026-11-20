@@ -104,9 +104,11 @@ export default function OnboardingPage() {
     addToast({ type: 'success', message: 'Monthly budget established.' });
 
     // 3. Background Sync: All 17 writes (15 categories + budget + user) in 1 single Firestore batch
-    completeOnboardingSetup(user.uid, effectiveHouseholdId, data.budgetAmount).catch((err) => {
-      console.error('[Onboarding] Background setup sync failed:', err);
-    });
+    if (effectiveHouseholdId !== 'guest_demo_household') {
+      completeOnboardingSetup(user.uid, effectiveHouseholdId, data.budgetAmount).catch((err) => {
+        console.error('[Onboarding] Background setup sync failed:', err);
+      });
+    }
   };
 
   return (
